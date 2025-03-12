@@ -10,7 +10,7 @@
 
     <div class="login-container">
         <h2>Login to Book&Play</h2>
-        <form action="authenticate.php" method="POST">
+        <form id="loginForm">
             <div class="input-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
@@ -19,11 +19,15 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit">Login</button>
+            <!-- Updated Button -->
+            <button id="loginButton" type="button">Login</button>
         </form>
         <p>Did you forget your password? <a href="reset-password.html">Reset Password</a></p>
         <p>Don't have an account? <a href="../Register Page/Register.html">Register</a></p>
     </div>
+
+    <!-- Link to External JavaScript File -->
+    <script src="Login.js"></script>
 
 </body>
 </html>

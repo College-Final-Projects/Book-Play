@@ -1,0 +1,97 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+    --primary-color: #0078D4;
+    --secondary-color: #0056b3;
+    --background-color: #F4F7FE;
+    --text-color: #333;
+    --shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: var(--background-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    text-align: center;
+}
+
+.container {
+    max-width: 600px;
+}
+
+h1 {
+    font-size: 28px;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 16px;
+    color: var(--text-color);
+    margin-bottom: 20px;
+}
+
+.user-options {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.user-card {
+    width: 250px;
+    height: 300px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.user-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 6px 15px rgba(0, 120, 212, 0.3);
+}
+
+.user-card img {
+    width: 110px;
+    height: 110px;
+    margin-bottom: 15px;
+}
+
+.user-card h2 {
+    font-size: 22px;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.user-card p {
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+@media (max-width: 600px) {
+    .user-options {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .user-card {
+        width: 100%;
+    }
+}
