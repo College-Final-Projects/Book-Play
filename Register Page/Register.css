@@ -77,7 +77,7 @@ body {
 /* 🔹 Submit Button */
 .signup-btn {
     width: 100%;
-    padding: 12px;
+    padding: 12px; 
     font-size: 16px;
     font-weight: 600;
     background: var(--primary-color);

@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up | Book&Play</title>
-    <link rel="stylesheet" href="signup.css">
+    <link rel="stylesheet" href="Register.css">
 </head>
 <body>
 
     <div class="signup-container">
         <h2>Create Your Account</h2>
-        <form action="signup.php" method="POST">
+        <form action="Register Page/Register.php" method="POST">
             <div class="input-group">
                 <label for="name">Full Name</label>
                 <input type="text" id="name" name="name" required>
@@ -22,4 +22,15 @@
             </div>
 
             <div class="input-group">
-                <l
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="signup-btn">Sign Up</button>
+        </form>
+        
+        <p>Already have an account? <a href="Login Page/Login.html">Login here</a></p>
+    </div>
+
+</body>
+</html>
