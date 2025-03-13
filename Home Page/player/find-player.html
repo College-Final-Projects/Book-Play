@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find a Player | Book&Play</title>
+    <link rel="stylesheet" href="PlayerDashboard.css">
+</head>
+<body>
+
+    <header>
+        <h1>Book&Play</h1>
+        <nav>
+            <ul>
+                <li><a href="home.html">Book a Venue</a></li>
+                <li><a href="join-group.html">Join a Group</a></li>
+                <li><a href="find-player.html" class="active">Find a Player</a></li>
+                <li><a href="favorites.html">Favorites</a></li>
+                <li><a href="my-friends.html">My Friends</a></li>
+                <li><a href="logout.php">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="location-selector">
+        <label for="location-select">Choose a Location:</label>
+        <select id="location-select">
+            <option value="all">All Locations</option>
+            <option value="tel-aviv">Tel Aviv</option>
+            <option value="haifa">Haifa</option>
+            <option value="mazraa">Mazraa</option>
+            <option value="iksal">Iksal</option>
+        </select>
+    </section>
+
+    <section class="categories">
+        <h2>Sports Categories</h2>
+        <div class="category-list">
+            <div class="category"><img src="../Images/soccer_ball.jpg" alt="Soccer"><p>Soccer</p></div>
+            <div class="category"><img src="../Images/basketball.jpeg" alt="Basketball"><p>Basketball</p></div>
+            <div class="category"><img src="../Images/tennis_ball.jpeg" alt="Tennis"><p>Tennis</p></div>
+            <div class="category"><img src="../Images/horseRiding.png" alt="Horse Riding"><p>Horse Riding</p></div>
+        </div>
+    </section>
+
+    <section class="available-players">
+        <h2>Available Players</h2>
+        <div class="player-list">
+            <div class="player">
+                <img src="../Images/player_icon.png" alt="Player">
+                <h3>Jake</h3>
+                <p>Sport: Soccer</p>
+                <p>Location: Tel Aviv</p>
+                <button class="connect-btn">Connect</button>
+            </div>
+            <div class="player">
+                <img src="../Images/player_icon.png" alt="Player">
+                <h3>Elissa</h3>
+                <p>Sport: Basketball</p>
+                <p>Location: Tel Aviv</p>
+                <button class="connect-btn">Connect</button>
+            </div>
+            <div class="player">
+                <img src="../Images/player_icon.png" alt="Player">
+                <h3>Christian</h3>
+                <p>Sport: Tennis</p>
+                <p>Location: Tel Aviv</p>
+                <button class="connect-btn">Connect</button>
+            </div>
+            <div class="player">
+                <img src="../Images/player_icon.png" alt="Player">
+                <h3>Bakir</h3>
+                <p>Sport: Horse Riding</p>
+                <p>Location: Tel Aviv</p>
+                <button class="connect-btn">Connect</button>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Book&Play. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
