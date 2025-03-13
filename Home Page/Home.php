@@ -1,4 +1,6 @@
 <?php
+include "Home.html";
+
 session_start();
 
 // Check if the user is logged in and get their role

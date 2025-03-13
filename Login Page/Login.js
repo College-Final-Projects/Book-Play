@@ -6,8 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Add event listener to the login button
     loginButton.addEventListener("click", function () {
         // Redirect to the User Selection Page
-        window.location.href = "../User_Selection_Page/user-selection.html";
-
-
+        window.location.href = "../User_Selection_Page/user-selection.php";
     });
 });
