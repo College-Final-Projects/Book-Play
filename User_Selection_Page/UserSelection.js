@@ -12,4 +12,4 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = "../Home Page/Facility_Owner/FacilityDashboard.php";
 
     });
-
+});
