@@ -1,3 +1,0 @@
-<?php
-include "Register.html";
-?>

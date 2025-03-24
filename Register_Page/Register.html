@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Step Sign Up</title>
+    <link rel="stylesheet" href="Register.css">
+    <script src="Register.js" defer></script>
+</head>
+<body>
+    <form id="registerForm" action="register.php" method="POST">
+        <div class="step">
+            <div class="input-group">
+                <label>User Name</label>
+                <input type="text" name="fullName" required>
+            </div>
+
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" name="email" required>
+            </div>
+            <button type="button" class="signup-btn" onclick="nextStep()">Next</button>
+            <p>Already have an account? <a href="../Login_Page/Login.php">Login here</a></p>
+        </div>
+
+        <div class="step">
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="button" class="signup-btn" onclick="prevStep()">Prev</button>
+            <button type="button" class="signup-btn" onclick="nextStep()">Next</button>
+        </div>
+    
+        <div class="step">
+            <p>يرجى مراجعة البيانات قبل الإرسال.</p>
+            <button type="button" class="signup-btn" onclick="prevStep()">Prev</button>
+            <button type="submit" class="signup-btn" name="Register">Register</button>
+        </div>
+    </form>    
+</body>
+</html>
+

@@ -15,8 +15,8 @@ try {
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
     $mail->Username   = 'bookandplay.team@gmail.com'; 
-    $mail->Password   = 'your-app-password'; // Use App Password, NOT your Gmail password
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // or PHPMailer::ENCRYPTION_SMTPS
+    $mail->Password   = 'yxfb ifsl szkz phma'; 
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port       = 587; // 465 for SSL
 
     // Email Content
