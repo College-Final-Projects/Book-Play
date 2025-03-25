@@ -5,199 +5,100 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Register | Book&Play</title>
   <link rel="stylesheet" href="Register.css" />
-  <style>
-    :root {
-      --primary: #0078D4;
-      --bg: #F4F7FE;
-      --text: #333;
-    }
-
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      background-color: var(--bg);
-      display: flex;
-      height: 100vh;
-    }
-
-    .container {
-      display: flex;
-      width: 100%;
-    }
-
-    .left, .right {
-      flex: 1;
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .left {
-      background: white;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
-    }
-
-    .right {
-      background: #e9f3ff;
-      opacity: 0.4;
-      pointer-events: none;
-      transition: all 0.3s ease-in-out;
-    }
-
-    .right.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    h2 {
-      color: var(--primary);
-      margin-bottom: 20px;
-    }
-
-    .input-group {
-      margin-bottom: 15px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .input-group label {
-      font-weight: 500;
-      margin-bottom: 5px;
-    }
-
-    .input-group input {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-
-    .register-btn, .code-btn {
-      padding: 12px;
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .step {
-      display: none;
-    }
-
-    .step.active {
-      display: block;
-    }
-
-    .success-msg {
-      color: green;
-      font-weight: 500;
-    }
-  </style>
+  <script defer src="Register.js"></script>
 </head>
 <body>
+  <div class="register-container">
+    <!-- Left Section - Registration & Code Verification -->
+    <div class="left-section" id="leftSection">
+      <h2>Create Your Account</h2>
+      <form id="registerForm">
+        <div class="input-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div class="input-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+        <button type="submit" class="submit-btn">Send Me Code</button>
+      </form>
 
-  <div class="container">
-
-    <!-- Left Section -->
-    <div class="left">
-      <!-- Step 1: Registration -->
-      <div class="step" id="step1">
-        <h2>Create Account</h2>
-        <div class="input-group">
-          <label>Full Name</label>
-          <input type="text" id="name" required />
-        </div>
-        <div class="input-group">
-          <label>Email</label>
-          <input type="email" id="email" required />
-        </div>
-        <div class="input-group">
-          <label>Password</label>
-          <input type="password" id="password" required />
-        </div>
-        <button class="register-btn" id="signupBtn">Sign Up</button>
-      </div>
-
-      <!-- Step 2: Enter Code -->
-      <div class="step" id="step2">
-        <h2>Enter Verification Code</h2>
-        <p>Check your email for the 4-digit code.</p>
-        <div class="input-group">
-          <label>Code</label>
-          <input type="text" id="codeInput" maxlength="4" />
-        </div>
-        <button class="code-btn" id="verifyCodeBtn">Verify Code</button>
-        <p class="success-msg" id="codeSuccess" style="display:none;">✅ Code verified successfully!</p>
+      <div class="code-verification" id="codeVerification" style="display: none;">
+        <h3>Enter the Code You Received</h3>
+        <input type="text" id="codeInput" placeholder="Enter verification code" />
+        <button class="verify-btn" onclick="verifyCode()">Verify</button>
+        <div id="verificationMessage" class="verification-message"></div>
       </div>
     </div>
 
-    <!-- Right Section -->
-    <div class="right" id="profileSection">
-      <h2>Make Your Profile</h2>
-      <div class="input-group">
-        <label>Age</label>
-        <input type="number" placeholder="Enter your age" />
-      </div>
-      <div class="input-group">
-        <label>Gender</label>
-        <select>
-          <option>Male</option>
-          <option>Female</option>
-          <option>Other</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <label>Favorite Sports</label>
-        <label><input type="checkbox" /> Soccer</label>
-        <label><input type="checkbox" /> Basketball</label>
-        <label><input type="checkbox" /> Tennis</label>
-        <label><input type="checkbox" /> Horse Riding</label>
-      </div>
-      <div class="input-group">
-        <label>Personal Bio</label>
-        <textarea rows="4" placeholder="Describe yourself..."></textarea>
-      </div>
-      <button class="register-btn" onclick="window.location.href='../Home Page/player/playerProfile.html'">Save Profile</button>
-    </div>
+    <!-- Right Section - Profile Setup -->
+    <div class="right-section" id="rightSection">
+      <h2>Start Your Journey</h2>
+      <p>Customize your profile and get discovered by other players and venue owners!</p>
+      
+      <!-- ✅ Removed the extra player icon image from here -->
 
+      <button id="makeProfileBtn" class="make-profile-btn disabled" disabled>Make Your Profile</button>
+
+      <!-- Profile Form (Hidden initially) -->
+      <form id="profileForm" class="profile-form">
+        <h3>Create Your Player Profile</h3>
+        
+        <div class="photo-upload">
+          <img id="profileImagePreview" src="../Images/player_icon.png" alt="Profile Preview">
+          <input type="file" id="profileImage" accept="image/*" onchange="previewImage()" />
+        </div>
+
+        <div class="input-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" name="firstName" required />
+        </div>
+
+        <div class="input-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" name="lastName" required />
+        </div>
+
+        <div class="input-group">
+          <label for="age">Age</label>
+          <input type="number" id="age" name="age" min="12" required />
+        </div>
+
+        <div class="input-group">
+          <label for="gender">Gender</label>
+          <select id="gender" name="gender" required>
+            <option value="" disabled selected>Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="favoriteSport">Favorite Sport</label>
+          <select id="favoriteSport" name="favoriteSport" multiple required>
+            <option value="soccer">Soccer</option>
+            <option value="basketball">Basketball</option>
+            <option value="tennis">Tennis</option>
+            <option value="horseRiding">Horse Riding</option>
+          </select>
+          <small>Hold Ctrl (Windows) / Cmd (Mac) to select multiple</small>
+        </div>
+
+        <div class="input-group">
+          <label for="description">Personal Description</label>
+          <textarea id="description" name="description" rows="4" placeholder="Tell us about yourself..."></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">Save Profile</button>
+        <button type="button" id="backBtn" class="back-btn">← Back</button>
+      </form>
+    </div>
   </div>
-
-  <script>
-    const signupBtn = document.getElementById("signupBtn");
-    const verifyCodeBtn = document.getElementById("verifyCodeBtn");
-
-    const step1 = document.getElementById("step1");
-    const step2 = document.getElementById("step2");
-    const profileSection = document.getElementById("profileSection");
-    const codeInput = document.getElementById("codeInput");
-    const codeSuccess = document.getElementById("codeSuccess");
-
-    // Simulate step 1 done (you can replace with real backend logic)
-    signupBtn.addEventListener("click", () => {
-      step1.classList.remove("active");
-      step2.classList.add("active");
-    });
-
-    // Step 2: Verify code and activate profile
-    verifyCodeBtn.addEventListener("click", () => {
-      const code = codeInput.value.trim();
-      if (code === "1234") { // Mock verification
-        codeSuccess.style.display = "block";
-        setTimeout(() => {
-          document.querySelector(".left").style.display = "none";
-          profileSection.classList.add("active");
-        }, 1000);
-      } else {
-        alert("Invalid code. Please try again.");
-      }
-    });
-
-    // Initial step
-    step1.classList.add("active");
-  </script>
-
 </body>
 </html>
