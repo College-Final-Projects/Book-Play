@@ -1,35 +1,48 @@
 <?php
-include "Register.html";
 include '../config/connection.php';
 
-// التحقق من تقديم النموذج
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['Register'])) {
-    // جمع البيانات من النموذج
-    $fullName = $_POST['fullName'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-
-    if (!empty($fullName) && !empty($email) && !empty($password)) {
-        // تجهيز بيانات المستخدم
-        $userData = [
-            'fullName' => $fullName,
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // استقبال البيانات من النموذج
+  
+    $email= $_POST['email'] ?? '';
+    $password= $_POST['password'] ?? '';
+    $firstName = $_POST['firstName'] ?? '';
+    $lastName = $_POST['lastName'] ?? '';
+    $username = $_POST['username'] ?? '';
+    $age = $_POST['age'] ?? '';
+    $gender = $_POST['gender'] ?? '';
+    $phone = $_POST['phone'] ?? '';
+    $favoriteSport = $_POST['favoriteSport'] ?? [];
+    $description = $_POST['description'] ?? '';
+    echo "<pre>";
+    print_r($_POST);
+    echo "</pre>";
+    
+    if (!empty($firstName) && !empty($lastName) && !empty($username) && !empty($age) && !empty($gender)&& !empty($email)&& !empty($password)) {
+        $profileData = [
             'email' => $email,
-            'password' => $password, // تشفير كلمة المرور
+            'password' => $password,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'username' => $username,
+            'age' => (int)$age,
+            'gender' => $gender,
+            'phone' => $phone,
+            'favoriteSport' => is_array($favoriteSport) ? $favoriteSport : [$favoriteSport],
+            'description' => $description,
             'created_at' => date('Y-m-d H:i:s')
         ];
 
-        // إدخال البيانات في Firebase Realtime Database
-        $newUserRef = $database->getReference('users')->push($userData);
+        $newProfileRef = $database->getReference('users')->push($profileData);
 
-        if ($newUserRef) {
-            // إعادة التوجيه إلى YouTube بعد التسجيل بنجاح
-            header("Location: https://www.youtube.com");
-            exit; // توقف السكربت هنا
+        if ($newProfileRef) {
+            header("Location: ../Login_Page/Login.php");
+            exit;
         } else {
-            echo "❌ حدث خطأ أثناء التسجيل.";
+            echo "❌ فشل في حفظ البيانات في قاعدة البيانات.";
         }
     } else {
-        echo "⚠️ الرجاء ملء جميع الحقول.";
+        echo "⚠️ تأكد من ملء جميع الحقول المطلوبة.";
     }
 }
 ?>
