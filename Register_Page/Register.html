@@ -1,43 +1,203 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Step Sign Up</title>
-    <link rel="stylesheet" href="Register.css">
-    <script src="Register.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register | Book&Play</title>
+  <link rel="stylesheet" href="Register.css" />
+  <style>
+    :root {
+      --primary: #0078D4;
+      --bg: #F4F7FE;
+      --text: #333;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background-color: var(--bg);
+      display: flex;
+      height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+    }
+
+    .left, .right {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .left {
+      background: white;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .right {
+      background: #e9f3ff;
+      opacity: 0.4;
+      pointer-events: none;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .right.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    h2 {
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-group label {
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .register-btn, .code-btn {
+      padding: 12px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .success-msg {
+      color: green;
+      font-weight: 500;
+    }
+  </style>
 </head>
 <body>
-    <form id="registerForm" action="register.php" method="POST">
-        <div class="step">
-            <div class="input-group">
-                <label>User Name</label>
-                <input type="text" name="fullName" required>
-            </div>
 
-            <div class="input-group">
-                <label>Email</label>
-                <input type="email" name="email" required>
-            </div>
-            <button type="button" class="signup-btn" onclick="nextStep()">Next</button>
-            <p>Already have an account? <a href="../Login_Page/Login.php">Login here</a></p>
-        </div>
+  <div class="container">
 
-        <div class="step">
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" name="password" required>
-            </div>
-            <button type="button" class="signup-btn" onclick="prevStep()">Prev</button>
-            <button type="button" class="signup-btn" onclick="nextStep()">Next</button>
+    <!-- Left Section -->
+    <div class="left">
+      <!-- Step 1: Registration -->
+      <div class="step" id="step1">
+        <h2>Create Account</h2>
+        <div class="input-group">
+          <label>Full Name</label>
+          <input type="text" id="name" required />
         </div>
-    
-        <div class="step">
-            <p>يرجى مراجعة البيانات قبل الإرسال.</p>
-            <button type="button" class="signup-btn" onclick="prevStep()">Prev</button>
-            <button type="submit" class="signup-btn" name="Register">Register</button>
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="email" required />
         </div>
-    </form>    
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="password" required />
+        </div>
+        <button class="register-btn" id="signupBtn">Sign Up</button>
+      </div>
+
+      <!-- Step 2: Enter Code -->
+      <div class="step" id="step2">
+        <h2>Enter Verification Code</h2>
+        <p>Check your email for the 4-digit code.</p>
+        <div class="input-group">
+          <label>Code</label>
+          <input type="text" id="codeInput" maxlength="4" />
+        </div>
+        <button class="code-btn" id="verifyCodeBtn">Verify Code</button>
+        <p class="success-msg" id="codeSuccess" style="display:none;">✅ Code verified successfully!</p>
+      </div>
+    </div>
+
+    <!-- Right Section -->
+    <div class="right" id="profileSection">
+      <h2>Make Your Profile</h2>
+      <div class="input-group">
+        <label>Age</label>
+        <input type="number" placeholder="Enter your age" />
+      </div>
+      <div class="input-group">
+        <label>Gender</label>
+        <select>
+          <option>Male</option>
+          <option>Female</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Favorite Sports</label>
+        <label><input type="checkbox" /> Soccer</label>
+        <label><input type="checkbox" /> Basketball</label>
+        <label><input type="checkbox" /> Tennis</label>
+        <label><input type="checkbox" /> Horse Riding</label>
+      </div>
+      <div class="input-group">
+        <label>Personal Bio</label>
+        <textarea rows="4" placeholder="Describe yourself..."></textarea>
+      </div>
+      <button class="register-btn" onclick="window.location.href='../Home Page/player/playerProfile.html'">Save Profile</button>
+    </div>
+
+  </div>
+
+  <script>
+    const signupBtn = document.getElementById("signupBtn");
+    const verifyCodeBtn = document.getElementById("verifyCodeBtn");
+
+    const step1 = document.getElementById("step1");
+    const step2 = document.getElementById("step2");
+    const profileSection = document.getElementById("profileSection");
+    const codeInput = document.getElementById("codeInput");
+    const codeSuccess = document.getElementById("codeSuccess");
+
+    // Simulate step 1 done (you can replace with real backend logic)
+    signupBtn.addEventListener("click", () => {
+      step1.classList.remove("active");
+      step2.classList.add("active");
+    });
+
+    // Step 2: Verify code and activate profile
+    verifyCodeBtn.addEventListener("click", () => {
+      const code = codeInput.value.trim();
+      if (code === "1234") { // Mock verification
+        codeSuccess.style.display = "block";
+        setTimeout(() => {
+          document.querySelector(".left").style.display = "none";
+          profileSection.classList.add("active");
+        }, 1000);
+      } else {
+        alert("Invalid code. Please try again.");
+      }
+    });
+
+    // Initial step
+    step1.classList.add("active");
+  </script>
+
 </body>
 </html>
-
