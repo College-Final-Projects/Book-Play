@@ -16,7 +16,7 @@ if (isset($_POST['Login'])) {
                 if ($user['email'] === $email) {
                     $userFound = true;
 
-                    if (password_verify($password, $user['password'])) {
+                    if ($user['password'] == $password) {
                         // סיסמה נכונה – הפניה לדשבורד
                         session_start();
                         $_SESSION['email'] = $email;
@@ -44,8 +44,4 @@ if (isset($_POST['Login'])) {
 // הצגת הדף לאחר הטיפול ב-login
 include 'Login.html';
 
-// הצגת הודעת שגיאה אם קיימת
-if (!empty($error_message)) {
-    echo "<p style='color:red; text-align:center;'>$error_message</p>";
-}
 ?>
