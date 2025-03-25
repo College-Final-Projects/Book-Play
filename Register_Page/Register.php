@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['Register'])) {
         $userData = [
             'fullName' => $fullName,
             'email' => $email,
-            'password' => password_hash($password, PASSWORD_BCRYPT), // تشفير كلمة المرور
+            'password' => $password, // تشفير كلمة المرور
             'created_at' => date('Y-m-d H:i:s')
         ];
 

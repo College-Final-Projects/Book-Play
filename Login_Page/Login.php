@@ -1,38 +1,51 @@
 <?php
-include 'Login.html';
-include '../config/connection.php'; // الاتصال بـ Firebase
+include '../config/connection.php'; // התחברות ל-Firebase
+$error_message = ""; // ברירת מחדל
 
 if (isset($_POST['Login'])) {
-    // Get form data
     $email = $_POST['username'];
     $password = $_POST['password'];
 
-    // Validate input
     if (!empty($email) && !empty($password)) {
-        // Fetch users from Firebase
         $usersRef = $database->getReference('users')->getValue();
 
         if ($usersRef) {
+            $userFound = false;
+
             foreach ($usersRef as $key => $user) {
-                // Check if email matches
                 if ($user['email'] === $email) {
-                    // Check if password is correct
+                    $userFound = true;
+
                     if (password_verify($password, $user['password'])) {
-                        // Successful login
-                        header("Location: dashboard.php"); // Redirect to dashboard
+                        // סיסמה נכונה – הפניה לדשבורד
+                        session_start();
+                        $_SESSION['email'] = $email;
+                        header("Location: dashboard.php");
                         exit;
                     } else {
-                        // Incorrect password
+                        // סיסמה שגויה
                         $error_message = "❌ Incorrect password!";
+                        break;
                     }
                 }
             }
-        }
 
-        // User not found
-        $error_message = "⚠️ User not found!";
+            if (!$userFound) {
+                $error_message = "⚠️ User not found!";
+            }
+        } else {
+            $error_message = "⚠️ No users in the system.";
+        }
     } else {
-        // Form fields are empty
         $error_message = "⚠️ Please fill in all fields.";
     }
 }
+
+// הצגת הדף לאחר הטיפול ב-login
+include 'Login.html';
+
+// הצגת הודעת שגיאה אם קיימת
+if (!empty($error_message)) {
+    echo "<p style='color:red; text-align:center;'>$error_message</p>";
+}
+?>
