@@ -1,30 +1,22 @@
-document.getElementById("loginButton").addEventListener("click", function (event) {
-    event.preventDefault(); // منع إعادة تحميل الصفحة
+// login.js
+import { app } from '../firebase-config.js';
+import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
-    let email = document.getElementById("username").value.trim();
-    let password = document.getElementById("password").value.trim();
+const auth = getAuth(app);
 
-    if (email === "" || password === "") {
-        alert("⚠️ Please fill in all fields.");
-        return;
-    }
+// Define loginUser function and attach it to window so HTML can call it
+window.loginUser = async function () {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
 
-    fetch("login.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        let messageBox = document.getElementById("loginMessage");
-        messageBox.innerText = data.message;
-        messageBox.style.color = data.status === "success" ? "green" : "red";
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    console.log("Logged in:", user.email);
 
-        if (data.status === "success") {
-            setTimeout(() => {
-                window.location.href = "dashboard.php"; // إعادة التوجيه بعد نجاح تسجيل الدخول
-            }, 1500);
-        }
-    })
-    .catch(error => console.error("Error:", error));
-});
+    // Redirect after successful login
+    window.location.href = '../User_Selection_Page/user-selection.html';
+  } catch (error) {
+    alert("Login failed: " + error.message);
+  }
+};

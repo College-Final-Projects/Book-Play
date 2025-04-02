@@ -1,38 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book&Play - Login</title>
-    <link rel="stylesheet" href="Login.css">
-    <script src="Login.html" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | Book&Play</title>
+  <link rel="stylesheet" href="login.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div class="login-container">
-        <h2>Login to Book&Play</h2>
-        <!-- Form that will POST data to login.php -->
-        <form id="loginForm" action="login.php" method="POST">
-            <div class="input-group">
-                <label for="username">Email</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <!-- Submit button -->
-            <button id="loginButton" type="submit" name="Login">Login</button>
-        </form>
+  <div class="auth-card">
+    <h2>Login to Book&Play</h2>
 
-        <!-- إضافة رسالة الخطأ في حال حدوث أي مشكلة -->
-        <?php if (isset($error_message)) { ?>
-            <p style="color: red;"><?= $error_message ?></p>
-        <?php } ?>
+    <form>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="example@email.com" required />
+      </div>
 
-        <p>Did you forget your password? <a href="../Reset_Password/Reset_Password.php">Reset Password</a></p>
-        <p>Don't have an account? <a href="../Register_Page/Register.html">Register</a></p>
-    </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required />
+      </div>
 
+    <button type="button" class="btn-primary" onclick="loginUser()">Login</button>
+
+
+      <p class="small-text">
+        Did you forget your password?
+        <a href="./Reset_Password/Reset_Password.php">Reset Password</a>
+      </p>
+      <p class="small-text">
+        Don’t have an account?
+        <a href="../Register_Page/Register.html">Register</a>
+      </p>
+    </form>
+  </div>
 </body>
 </html>

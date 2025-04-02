@@ -1,97 +1,109 @@
-/* Import Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap');
 
 :root {
-    --primary-color: #0078D4;
-    --secondary-color: #0056b3;
-    --background-color: #F4F7FE;
-    --text-color: #333;
-    --shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  --primary-color: #38bdf8;
+  --secondary-color: #22c55e;
+  --bg-color: #0f172a;
+  --card-bg: #1e293b;
+  --text-color: #f1f5f9;
+  --muted-text: #94a3b8;
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Outfit', sans-serif;
 }
 
 body {
-    background: var(--background-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
-    text-align: center;
+  background: var(--bg-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+  text-align: center;
+  color: var(--text-color);
+  transform: scale(1.1); /* <== هذا يعطي نفس إحساس الزوم */
+  transform-origin: top;
 }
 
 .container {
-    max-width: 600px;
+  max-width: 850px;
 }
 
 h1 {
-    font-size: 28px;
-    color: var(--primary-color);
-    margin-bottom: 10px;
+  font-size: 40px;
+  color: var(--primary-color);
+  margin-bottom: 15px;
 }
 
-p {
-    font-size: 16px;
-    color: var(--text-color);
-    margin-bottom: 20px;
+.container > p {
+  font-size: 20px;
+  color: var(--muted-text);
+  margin-bottom: 40px;
 }
 
+/* User Options */
 .user-options {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 35px;
+  flex-wrap: wrap;
 }
 
+/* User Cards */
 .user-card {
-    width: 250px;
-    height: 300px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    transition: transform 0.3s, box-shadow 0.3s;
-    cursor: pointer;
+  width: 300px;
+  height: 350px;
+  background: var(--card-bg);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 25px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
 }
 
 .user-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 6px 15px rgba(0, 120, 212, 0.3);
+  transform: translateY(-8px);
+  box-shadow: 0 14px 32px rgba(34, 197, 94, 0.3);
 }
 
 .user-card img {
-    width: 110px;
-    height: 110px;
-    margin-bottom: 15px;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 20px;
 }
 
 .user-card h2 {
-    font-size: 22px;
-    color: var(--primary-color);
-    margin-bottom: 10px;
+  font-size: 24px;
+  color: var(--primary-color);
+  margin-bottom: 12px;
 }
 
 .user-card p {
-    font-size: 14px;
-    color: var(--text-color);
+  font-size: 16px;
+  color: var(--muted-text);
+  line-height: 1.5;
+  padding: 0 12px;
 }
 
-@media (max-width: 600px) {
-    .user-options {
-        flex-direction: column;
-        gap: 20px;
-    }
+@media (max-width: 700px) {
+  body {
+    transform: scale(1); /* عادي على شاشات صغيرة */
+  }
 
-    .user-card {
-        width: 100%;
-    }
+  .user-options {
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .user-card {
+    width: 90%;
+  }
 }

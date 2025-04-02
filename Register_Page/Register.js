@@ -28,8 +28,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const code = document.getElementById("codeInput").value;
       if (code === "1234") {
         // نسخ البيانات من نموذج التسجيل إلى نموذج البروفايل
-    document.getElementById("profileEmail").value = document.getElementById("email").value;
-    document.getElementById("profilePassword").value = document.getElementById("password").value;
+        document.getElementById("profileEmail").value = document.getElementById("email").value;
+        document.getElementById("profilePassword").value = document.getElementById("password").value;
+        
 
   // تفعيل زر إنشاء البروفايل
     document.getElementById("rightSection").classList.add("active");

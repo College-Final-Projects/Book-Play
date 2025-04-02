@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Player Home | Book&Play</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #e6f2ff, #ffffff);
+    }
+
+    .container {
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .welcome {
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      margin: 30px 0 15px;
+      color: #007BFF;
+      border-left: 5px solid #007BFF;
+      padding-left: 10px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      padding: 20px;
+      transition: 0.3s ease;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      margin: 10px 0 5px;
+      color: #007BFF;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .card .btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .card .btn:hover {
+      background-color: #0056b3;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="welcome">Welcome back, Ahmad!</div>
+
+    <div class="section-title">Quick Actions</div>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Book a Venue</h3>
+        <p>Find and reserve the perfect field for your next match.</p>
+        <button class="btn">Book Now</button>
+      </div>
+
+      <div class="card">
+        <h3>Join a Group</h3>
+        <p>Explore open player groups and join a match near you.</p>
+        <button class="btn">Join Group</button>
+      </div>
+
+      <div class="card">
+        <h3>Find a Player</h3>
+        <p>Looking for a teammate? Connect with players nearby.</p>
+        <button class="btn">Find</button>
+      </div>
+    </div>
+
+    <div class="section-title">Recommended Fields</div>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Soccer Field - Tel Aviv</h3>
+        <p>Outdoor turf field with night lighting. Available 6pm - 10pm.</p>
+        <button class="btn">Book Now</button>
+      </div>
+
+      <div class="card">
+        <h3>Tennis Court - Nazareth</h3>
+        <p>Professional-grade court. Available 8am - 12pm.</p>
+        <button class="btn">Book Now</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

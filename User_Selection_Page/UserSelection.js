@@ -4,12 +4,12 @@ function redirectTo(page) {
 }
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("player").addEventListener("click", function () {
-        window.location.href = "../Home Page/player/PlayerDashboard.html"; 
+        window.location.href = "../Navbar/Navbar.php"; 
 
     });
 
     document.getElementById("facilityOwner").addEventListener("click", function () {
-        window.location.href = "../Home Page/Facility_Owner/FacilityDashboard.php";
+        window.location.href = "../Navbar/Navbar.php";
 
     });
 });
