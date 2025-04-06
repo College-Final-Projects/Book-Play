@@ -1,104 +1,109 @@
+/* Basic page styling */
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Outfit', sans-serif;
-    background-color: #0f172a;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
-  /* Auth Card */
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
+  background-color: #E3F2FD; /* Light blue background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Login card styling */
+.auth-card {
+  background-color: #FFFFFF; /* White background */
+  padding: 30px 28px;
+  border-radius: 15px;
+  width: 340px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  animation: fadeIn 0.6s ease;
+}
+
+.auth-card h2 {
+  color: #0277BD; /* Dark blue */
+  margin-bottom: 25px;
+  font-size: 22px;
+}
+
+/* Form input styling */
+.form-group {
+  text-align: left;
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  color: #01579B; /* Dark blue */
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #29B6F6; /* Light blue border */
+  background-color: #FFFFFF;
+  color: #000000; /* Black text */
+  border-radius: 10px;
+  font-size: 15px;
+  outline: none;
+}
+
+.form-group input::placeholder {
+  color: #64B5F6; /* Light blue */
+}
+
+/* Login button */
+.btn-primary {
+  background-color: #0288D1; /* Medium blue */
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 15px;
+  width: 100%;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 5px;
+}
+
+.btn-primary:hover {
+  background-color: #01579B; /* Dark blue */
+}
+
+/* Links */
+.small-text {
+  font-size: 13px;
+  margin-top: 12px;
+  color: #0277BD;
+}
+
+.small-text a {
+  color: #0288D1;
+  text-decoration: none;
+}
+
+.small-text a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive design for smaller screens */
+@media screen and (max-width: 600px) {
   .auth-card {
-    background-color: #1e293b;
-    padding: 30px 28px;
-    border-radius: 15px;
-    width: 340px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    text-align: center;
-    animation: fadeIn 0.6s ease;
+      width: 90%;
+      padding: 20px;
   }
-  
+}
+
+@media screen and (max-width: 400px) {
   .auth-card h2 {
-    color: #38bdf8;
-    margin-bottom: 25px;
-    font-size: 22px;
+      font-size: 18px;
   }
-  
-  /* Form Group */
-  .form-group {
-    text-align: left;
-    margin-bottom: 18px;
-  }
-  
-  .form-group label {
-    display: block;
-    font-size: 14px;
-    color: #cbd5e1;
-    margin-bottom: 6px;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 10px;
-    border: 2px solid #38bdf8;
-    background-color: #0f172a;
-    color: #f1f5f9;
-    border-radius: 10px;
-    font-size: 15px;
-    outline: none;
-  }
-  
-  .form-group input::placeholder {
-    color: #94a3b8;
-  }
-  
-  /* Button */
+
   .btn-primary {
-    background-color: #38bdf8;
-    color: #0f172a;
-    border: none;
-    padding: 10px 15px;
-    width: 100%;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 5px;
+      font-size: 14px;
   }
-  
-  .btn-primary:hover {
-    background-color: #22c55e;
-    color: white;
-  }
-  
-  /* Links */
-  .small-text {
-    font-size: 13px;
-    margin-top: 12px;
-    color: #94a3b8;
-  }
-  
-  .small-text a {
-    color: #38bdf8;
-    text-decoration: none;
-  }
-  
-  .small-text a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Animation */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
+}
