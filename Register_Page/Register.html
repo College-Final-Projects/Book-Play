@@ -46,7 +46,7 @@
 
       <!-- Profile Form (Hidden initially) -->
 
-      <form id="profileForm" class="profile-form" action="Register.php" method="POST">
+      <form id="profileForm" class="profile-form" action="Register.php" method="POST" enctype="multipart/form-data">
         <h3>Create Your Player Profile</h3>
         <!-- Hidden email and password fields to pass them from previous step -->
         <div class="input-group" style="display: none;">
@@ -92,11 +92,7 @@
 
         <div class="input-group">
           <label for="favoriteSport">Favorite Sport</label>
-          <select id="favoriteSport" name="favoriteSport" multiple>
-            <option value="soccer">Soccer ⚽</option>
-            <option value="basketball">Basketbal 🏀</option>
-            <option value="tennis">Tennis 🎾</option>
-            <option value="horseRiding">Horse Riding 🐎</option>
+          <select id="favoriteSport" name="favoriteSport[]" multiple>
           </select>
           <small>Hold Ctrl (Windows) / Cmd (Mac) to select multiple</small>
         </div>
@@ -105,7 +101,17 @@
           <label for="description">Personal Description</label>
           <textarea id="description" name="description" rows="4" placeholder="Tell us about yourself..."></textarea>
         </div>
-
+        <div class="input-group">
+          <label for="profileImage">Profile Picture</label>
+          <input type="file" id="profileImage" name="user_image" accept="image/*" onchange="previewImage()" required />
+          <div id="imagePreviewContainer" style="margin-top:10px;">
+            <img id="profileImagePreview" src="#" alt="Image Preview"
+                 style="display:none; width: 120px; height: 120px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 10px rgba(0,0,0,0.4);">
+            <br>
+            <button type="button" onclick="removeImage()" style="margin-top: 10px; display: none;" id="removeImageBtn">❌ Remove Image</button>
+          </div>
+        </div>
+        
         <button type="submit" class="submit-btn">Save Profile</button>
         <button type="button" id="backBtn" class="back-btn">← Back</button>
       </form>

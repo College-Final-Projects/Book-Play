@@ -203,3 +203,25 @@ textarea {
     transform: translateY(0);
   }
 }
+input[type="file"] {
+  background-color: #0f172a;
+  color: var(--muted);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  background-color: var(--primary);
+  color: var(--bg-dark);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: var(--secondary);
+  color: white;
+}
