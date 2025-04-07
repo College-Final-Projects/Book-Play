@@ -8,34 +8,29 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-
   <div class="auth-card">
     <h2>Login to Book&Play</h2>
-
-    <form>
+    <form id="loginForm" method="post">
       <div class="form-group">
         <label for="email">Email</label>
         <input type="email" id="email" name="email" placeholder="example@email.com" required />
       </div>
-
       <div class="form-group">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" placeholder="Enter your password" required />
       </div>
-
-    <button type="button" class="btn-primary" onclick="loginUser()">Login</button>
-
-
+      <button type="button" class="btn-primary" onclick="loginUser()">Login</button>
+      <div id="errorMessage" class="error-message"></div>
       <p class="small-text">
         Did you forget your password?
         <a href="./Reset_Password/Reset_Password.php">Reset Password</a>
       </p>
       <p class="small-text">
-        Don’t have an account?
-        <a href="../Register_Page/Register.html">Register</a>
+        Don't have an account?
+        <a href="../Register_Page/Register.php">Register</a>
       </p>
     </form>
   </div>
-  <script type="module" src="Login.js"></script>
+  <script src="Login.js"></script>
 </body>
 </html>
