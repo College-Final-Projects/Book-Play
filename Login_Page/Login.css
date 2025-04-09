@@ -1,109 +1,111 @@
-/* Basic page styling */
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Outfit', sans-serif;
-  background-color: #E3F2FD; /* Light blue background */
+  height: 100vh;
+  background: linear-gradient(135deg, #e0f7fa, #d0f8ce); /* Light gradient */
+  font-family: 'Segoe UI', sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  color: #1e293b;
 }
 
-/* Login card styling */
-.auth-card {
-  background-color: #FFFFFF; /* White background */
-  padding: 30px 28px;
-  border-radius: 15px;
-  width: 340px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+.container {
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 50px 40px;
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(30, 144, 255, 0.15);
+  width: 420px;
+  backdrop-filter: blur(15px);
+  border: 1px solid #d1d5db;
   text-align: center;
-  animation: fadeIn 0.6s ease;
+  color: #1e293b;
 }
 
-.auth-card h2 {
-  color: #0277BD; /* Dark blue */
-  margin-bottom: 25px;
-  font-size: 22px;
-}
-
-/* Form input styling */
-.form-group {
-  text-align: left;
-  margin-bottom: 18px;
-}
-
-.form-group label {
-  display: block;
-  font-size: 14px;
-  color: #01579B; /* Dark blue */
-  margin-bottom: 6px;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 10px;
-  border: 2px solid #29B6F6; /* Light blue border */
-  background-color: #FFFFFF;
-  color: #000000; /* Black text */
-  border-radius: 10px;
-  font-size: 15px;
-  outline: none;
-}
-
-.form-group input::placeholder {
-  color: #64B5F6; /* Light blue */
-}
-
-/* Login button */
-.btn-primary {
-  background-color: #0288D1; /* Medium blue */
-  color: #FFFFFF;
-  border: none;
-  padding: 10px 15px;
-  width: 100%;
-  border-radius: 10px;
-  font-size: 16px;
+.logo {
+  font-size: 32px;
   font-weight: bold;
+  background: linear-gradient(to right, #1e90ff, #22c55e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+}
+
+form input {
+  width: 100%;
+  padding: 14px;
+  margin: 12px 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #1e293b;
+  font-size: 15px;
+  transition: border 0.3s ease;
+}
+
+form input:focus {
+  border-color: #1e90ff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(30, 144, 255, 0.2);
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(to right, #1e90ff, #22c55e);
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 5px;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 10px rgba(30, 144, 255, 0.2);
 }
 
-.btn-primary:hover {
-  background-color: #01579B; /* Dark blue */
+button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 15px rgba(30, 144, 255, 0.3);
 }
 
-/* Links */
-.small-text {
+.slogan {
+  margin-top: 20px;
   font-size: 13px;
-  margin-top: 12px;
-  color: #0277BD;
+  color: #64748b;
 }
 
-.small-text a {
-  color: #0288D1;
+.slogan a {
+  color: #1e90ff;
   text-decoration: none;
 }
 
-.small-text a:hover {
+.slogan a:hover {
   text-decoration: underline;
 }
 
-/* Responsive design for smaller screens */
-@media screen and (max-width: 600px) {
-  .auth-card {
-      width: 90%;
-      padding: 20px;
-  }
+/* Decorative Background Icons */
+.bg-icons img {
+  position: absolute;
+  width: 260px;
+  opacity: 0.15;
+  pointer-events: none;
+  animation: float 12s ease-in-out infinite;
 }
 
-@media screen and (max-width: 400px) {
-  .auth-card h2 {
-      font-size: 18px;
-  }
+.icon1 { top: 5%; left: 2%; filter: drop-shadow(0 0 20px #38bdf8); }
+.icon2 { top: 35%; left: 2%; filter: drop-shadow(0 0 20px #22c55e); }
+.icon3 { bottom: 5%; left: 2%; filter: drop-shadow(0 0 20px #94a3b8); }
 
-  .btn-primary {
-      font-size: 14px;
-  }
+.icon4 { top: 5%; right: 2%; filter: drop-shadow(0 0 20px #60a5fa); }
+.icon5 { top: 35%; right: 2%; filter: drop-shadow(0 0 20px #34d399); }
+.icon6 { bottom: 5%; right: 2%; filter: drop-shadow(0 0 20px #94a3b8); }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }

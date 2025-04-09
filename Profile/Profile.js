@@ -1,30 +1,37 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("playerProfileForm");
+function previewImage() {
+    const fileInput = document.getElementById("profileImage");
+    const preview = document.getElementById("profileImagePreview");
+    const removeBtn = document.getElementById("removeImageBtn");
+    
+    // Check if a file is selected
+    const file = fileInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        // Show the image
+        preview.style.display = "block";
+        preview.src = event.target.result;
+        
+        // Show the remove button
+        removeBtn.style.display = "inline-block";
+      };
+      // Read the file as a data URL
+      reader.readAsDataURL(file);
+    }
+  }
 
-    form.addEventListener("submit", function (event) {
-        event.preventDefault(); // Prevent actual form submission
-
-        // Get form values
-        const firstName = document.getElementById("firstName").value;
-        const lastName = document.getElementById("lastName").value;
-        const age = document.getElementById("age").value;
-        const gender = document.getElementById("gender").value;
-        const favoriteSports = Array.from(document.getElementById("favoriteSport").selectedOptions).map(opt => opt.value);
-        const description = document.getElementById("description").value;
-
-        // Store data in sessionStorage
-        sessionStorage.setItem("playerProfile", JSON.stringify({
-            firstName,
-            lastName,
-            age,
-            gender,
-            favoriteSports,
-            description
-        }));
-
-        alert("Profile saved successfully!");
-
-        // Redirect to Player Dashboard inside Home Page Folder
-        window.location.href = "../../Home Page/player/BookVenue.html";
-    });
-});
+  function removeImage() {
+    const fileInput = document.getElementById("profileImage");
+    const preview = document.getElementById("profileImagePreview");
+    const removeBtn = document.getElementById("removeImageBtn");
+    
+    // Clear the file input
+    fileInput.value = "";
+    
+    // Reset and hide the preview
+    preview.src = "#";
+    preview.style.display = "none";
+    
+    // Hide the remove button
+    removeBtn.style.display = "none";
+  }

@@ -1,100 +1,182 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+/* profile.css */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap');
 
 :root {
-    --primary-color: #0078D4;
-    --secondary-color: #0056b3;
-    --background-color: #F4F7FE;
-    --text-color: #333;
-    --input-bg: #fff;
-    --input-border: #ccc;
-    --shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+  --primary: #38bdf8;
+  --secondary: #22c55e;
+  --bg-dark: #0f172a;
+  --card-bg: rgba(30, 41, 59, 0.3);
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 body {
-    background: var(--background-color);
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(135deg, #000000, #0f9b8e);
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     height: 100vh;
-}
-
-.container {
-    background: var(--input-bg);
-    padding: 30px;
-    width: 400px;
-    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .profile-form {
+    background-color: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
     box-shadow: var(--shadow);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh; /* Limit height */
+    padding: 20px 30px;
     text-align: center;
-}
+    animation: fadeInUp 0.6s ease forwards;
+    overflow-y: auto; /* Enable scroll INSIDE the form if needed */
+  }
 
-.container h2 {
-    font-size: 24px;
-    color: var(--primary-color);
-    margin-bottom: 10px;
-}
-
-.container p {
-    font-size: 14px;
-    color: var(--text-color);
-    margin-bottom: 20px;
+.profile-form h3 {
+  background: linear-gradient(to right, #1ed760, #66d9ef);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
 }
 
 .input-group {
-    text-align: left;
-    margin-bottom: 15px;
+  margin-bottom: 18px;
+  text-align: left;
 }
 
 .input-group label {
-    font-size: 14px;
-    color: var(--text-color);
-    font-weight: 500;
-    margin-bottom: 5px;
-    display: block;
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: var(--text);
 }
 
-.input-group textarea {
-    width: 100%;
-    padding: 12px;
-    font-size: 14px;
-    border: 1px solid var(--input-border);
-    border-radius: 8px;
-    outline: none;
-    transition: all 0.3s ease-in-out;
-    background: var(--input-bg);
+input, button, select, textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background-color: rgba(15, 23, 42, 0.7);
+  color: var(--text);
+}
+/* Remove spinner arrows in Chrome, Safari, and other WebKit browsers */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
-.input-group textarea:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0px 4px 8px rgba(0, 120, 212, 0.2);
+/* Remove spinner arrows in Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+
 }
 
-.save-btn {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 8px;
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+}
+
+.submit-btn,
+#backBtn {
+  background: linear-gradient(to right, #1ed760, #66d9ef);
+  color: #000;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: 0.3s;
+}
+
+.submit-btn:hover,
+#backBtn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 10px rgba(30, 215, 96, 0.3);
+}
+
+#backBtn {
+  background: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+textarea {
+  resize: none;
+  font-family: 'Outfit', sans-serif;
+}
+
+input[type="file"] {
+  background-color: rgba(15, 23, 42, 0.7);
+  color: var(--muted);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  background-color: var(--primary);
+  color: var(--bg-dark);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: var(--secondary);
+  color: white;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Custom styles for the multiple sports badge selection */
+.favorite-sports {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px;
+  }
+  
+  .sport-option input[type="checkbox"] {
+    display: none;
+  }
+  
+  .sport-label {
+    display: inline-block;
+    padding: 8px 15px;
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    border-radius: 20px;
     cursor: pointer;
-    transition: background 0.3s;
-}
-
-.save-btn:hover {
-    background: var(--secondary-color);
-}
-
-@media (max-width: 480px) {
-    .container {
-        width: 90%;
-        padding: 20px;
-    }
-}
+    transition: all 0.3s ease;
+  }
+  
+  .sport-label:hover {
+    transform: scale(1.05);
+  }
+  
+  .sport-option input[type="checkbox"]:checked + .sport-label {
+    background: linear-gradient(to right, #1ed760, #66d9ef);
+    color: #000;
+    border: none;
+    box-shadow: 0 0 10px rgba(30, 215, 96, 0.3);
+  }
+  
+  

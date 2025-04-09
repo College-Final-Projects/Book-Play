@@ -1,41 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login | Book&Play</title>
-  <link rel="stylesheet" href="Login.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Login - Book&Play</title>
+  <link rel="stylesheet" href="Login.css">
 </head>
 <body>
 
-  <div class="auth-card">
-    <h2>Login to Book&Play</h2>
+<!-- الخلفية بالأيقونات -->
+<div class="bg-icons">
+  <img src="../Images/TennisPlayer_icon.png" class="icon1" alt="">
+  <img src="../Images/GroupPlayers_icon.png" class="icon2" alt="">
+  <img src="../Images/FootBallPlayer_icon.png" class="icon3" alt="">
+  <img src="../Images/Facility_icon.png" class="icon4" alt="">
+  <img src="../Images/SearchPlayer_icon.png" class="icon5" alt="">
+  <img src="../Images/Booking_icon.png" class="icon6" alt="">
+</div>
 
-    <form>
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="example@email.com" required />
-      </div>
+<!-- نموذج تسجيل الدخول -->
+<div class="container">
+  <h2 class="logo">BOOK&PLAY</h2>
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter your password" required />
-      </div>
+  <form method="POST" action="login_action.php">
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
 
-    <button type="button" class="btn-primary" onclick="loginUser()">Login</button>
-
-
-      <p class="small-text">
-        Did you forget your password?
-        <a href="./Reset_Password/Reset_Password.php">Reset Password</a>
-      </p>
-      <p class="small-text">
-        Don’t have an account?
-        <a href="../Register_Page/Register.html">Register</a>
-      </p>
-    </form>
+  <div class="slogan">
+    Not registered? <a href="../Register_Page/Register.html">Create an account</a>
   </div>
-  <script type="module" src="Login.js"></script>
+
+  <div class="slogan">
+    Forgot Your Password?? <a href="../Reset_Password/Reset_Password.html">Rest Paswword</a>
+  </div>
+</div>
+
 </body>
 </html>
