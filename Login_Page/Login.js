@@ -1,22 +1,54 @@
-// login.js
-import { app } from '../firebase-config.js';
-import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-
-const auth = getAuth(app);
-
-// Define loginUser function and attach it to window so HTML can call it
-window.loginUser = async function () {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    console.log("Logged in:", user.email);
-
-    // Redirect after successful login
-    window.location.href = '../User_Selection_Page/user-selection.html';
-  } catch (error) {
-    alert("Login failed: " + error.message);
+// تنفيذ الكود عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+    // إضافة مستمع الحدث لزر تسجيل الدخول
+    document.querySelector('.btn-primary').addEventListener('click', loginUser);
+    
+    // إضافة استماع لحدث الضغط على Enter في حقول النموذج
+    document.getElementById('loginForm').addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        loginUser();
+      }
+    });
+  });
+  
+  function loginUser() {
+    // إخفاء أي رسائل خطأ سابقة
+    document.getElementById('errorMessage').textContent = '';
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    // إنشاء كائن FormData لإرسال البيانات
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
+    
+    // إظهار رسالة للمستخدم أثناء المعالجة
+    document.getElementById('errorMessage').textContent = 'جاري التحقق من البيانات...';
+    
+    // إرسال طلب AJAX إلى صفحة PHP للتحقق من بيانات تسجيل الدخول
+    fetch('login_process.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        // إذا كان تسجيل الدخول ناجحاً
+        window.location.href = 'dashboard.php'; // توجيه المستخدم إلى لوحة التحكم
+      } else {
+        // إذا فشل تسجيل الدخول
+        document.getElementById('errorMessage').textContent = data.message;
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      document.getElementById('errorMessage').textContent = 'حدث خطأ أثناء تسجيل الدخول، يرجى المحاولة مرة أخرى.';
+    });
   }
-};
