@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Sports | Admin</title>
+  <link rel="stylesheet" href="MangeSports.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
+  <script defer src="MangeSports.js"></script>
+
+</head>
+<body>
+
+  <div class="admin-title">
+    <h1 class="logo-title">Manage Sports</h1>
+  </div>
+
+  <!-- Current Sports Section -->
+  <section class="fresh-card">
+    <h2>Current Sports</h2>
+    <table class="fresh-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Sport Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="currentSports">
+        <tr>
+          <td>1</td>
+          <td>Football</td>
+          <td><button class="btn delete">Delete</button></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Tennis</td>
+          <td><button class="btn delete">Delete</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Toggle Buttons -->
+  <div class="toggle-buttons">
+    <button onclick="toggleSection('suggestedSection')" class="btn blue">View Suggested Sports</button>
+    <button onclick="toggleSection('addSection')" class="btn green">+ Add New Sport</button>
+  </div>
+
+  <!-- Suggested Sports Section -->
+  <section class="fresh-card hidden" id="suggestedSection">
+    <h2>Suggested Sports</h2>
+    <table class="fresh-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Sport Name</th>
+          <th>Suggested By</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Padel</td>
+          <td>user123</td>
+          <td>
+            <button class="btn accept">Accept</button>
+            <button class="btn delete">Reject</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Add New Sport Section -->
+  <section class="fresh-card hidden" id="addSection">
+    <h2>Add New Sport</h2>
+    <form class="add-sport-form">
+      <input type="text" placeholder="Sport Name" required />
+      <button type="submit" class="btn primary">Add Sport</button>
+    </form>
+  </section>
+
+
+</body>
+</html>
