@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Profile | Book&Play</title>
+  <link rel="stylesheet" href="EditProfile.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
+  <script src="EditProfile.js" defer></script>
+</head>
+<body>
+  <form id="profileForm" class="profile-form" action="profile.php" method="POST" enctype="multipart/form-data">
+    <h3>Edit Your User Profile</h3>
+
+    <div class="input-group" style="display: none;">
+      <input type="email" id="profileEmail" name="email" />
+    </div>
+    <div class="input-group" style="display: none;">
+      <input type="password" id="profilePassword" name="password" />
+    </div>
+
+    <div class="input-group">
+      <label for="firstName">First Name <span style="color:red">*</span></label>
+      <input 
+        type="text" 
+        id="firstName" 
+        name="firstName" 
+        maxlength="25" 
+        pattern="[A-Za-z]+" 
+        title="Only letters allowed" 
+        required 
+        oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')"
+      />
+    </div>
+    
+    <div class="input-group">
+      <label for="lastName">Last Name <span style="color:red">*</span></label>
+      <input 
+        type="text" 
+        id="lastName" 
+        name="lastName" 
+        maxlength="25" 
+        pattern="[A-Za-z]+" 
+        title="Only letters allowed" 
+        required 
+        oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')"
+      />
+    </div>
+    <div class="input-group">
+      <label for="username">
+        Username <span style="color:red">*</span>
+        <span style="color: red; font-size: 18px; margin-left: 8px;" title="You can't change your username">🔒</span>
+      </label>
+      <input 
+        type="text" 
+        id="username" 
+        name="username" 
+        maxlength="25" 
+        required 
+        readonly 
+        style="background-color: #f1f5f9; cursor: not-allowed;" 
+        placeholder="You Can't Change Your Username!" 
+      />
+    </div>
+    
+    <div class="input-group">
+      <label for="age">Age <span style="color:red">*</span></label>
+      <input type="number" id="age" name="age" min="10" max="99" required oninput="this.value = this.value.slice(0,2)" />
+    </div>
+    <div class="input-group">
+      <label for="gender">Gender <span style="color:red">*</span></label>
+      <select id="gender" name="gender" required>
+        <option value="" disabled selected>Select Gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" pattern="^\d{10}$" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10);" placeholder="1234567890" title="Enter exactly 10 digits" />
+    </div>
+
+    <div class="input-group">
+      <label for="favoriteSport">Favorite Sports</label>
+      <div class="favorite-sports" id="favoriteSportsContainer">
+        <?php include 'EdProfile.php';?>
+      </div>
+    </div>
+
+
+    <div class="input-group">
+      <label for="description">Personal Description</label>
+      <textarea id="description" name="description" rows="4" placeholder="Tell us about yourself..."></textarea>
+    </div>
+    <div class="input-group">
+      <label for="profileImage">Profile Picture</label>
+      <input type="file" id="profileImage" name="user_image" accept="image/*" onchange="previewImage()" />
+      <div id="imagePreviewContainer" style="margin-top: 10px;">
+        <img id="profileImagePreview" src="#" alt="Image Preview" style="display: none; width: 120px; height: 120px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 10px rgba(0,0,0,0.4);" />
+        <br>
+        <button type="button" id="removeImageBtn" style="margin-top: 10px; display: none;" onclick="removeImage()">❌ Remove Image</button>
+      </div>
+    </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Save Profile</button>
+    <button type="button" id="backBtn" class="back-btn">← Back</button>
+  </form>
+</body>
+</html>

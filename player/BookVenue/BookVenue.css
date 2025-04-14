@@ -1,25 +1,38 @@
+:root {
+  --primary: #1e90ff;
+  --secondary: #22c55e;
+  --bg: #e0f7fa;
+  --bg-alt: #d0f8ce;
+  --text: #0f172a;
+  --muted: #64748b;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --border: #d1d5db;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
 body {
   margin: 0;
   font-family: 'Outfit', sans-serif;
-  background-color: #0f172a;
-  color: #f1f5f9;
+  background: linear-gradient(135deg, var(--bg), var(--bg-alt));
+  color: var(--text);
 }
 
+/* Navbar */
 .navbar {
-  background-color: #1e293b;
+  background-color: white;
+  color: var(--text);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px 40px;
   height: 80px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow);
 }
 
 .navbar-left {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #ffffff;
   font-size: 22px;
   font-weight: 600;
 }
@@ -35,21 +48,21 @@ body {
 }
 
 .navbar-center a {
-  color: #f1f5f9;
+  color: var(--text);
   text-decoration: none;
   font-size: 15px;
   font-weight: 500;
 }
 
 .navbar-center a:hover {
-  color: #38bdf8;
+  color: var(--primary);
 }
 
 .profile-icon {
   width: 38px;
   height: 38px;
-  background-color: #38bdf8;
-  color: #1e293b;
+  background-color: var(--primary);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,19 +72,19 @@ body {
 }
 
 /* Sidebar */
-/* Sidebar */
 .sidebar {
   position: fixed;
   top: 80px;
   left: -260px;
   width: 240px;
   height: 100%;
-  background-color: #1e293b;
+  background-color: #ffffffcc;
   padding: 20px 16px;
-  box-shadow: 4px 0 10px rgba(0,0,0,0.3);
+  box-shadow: var(--shadow);
   transition: left 0.3s ease;
   z-index: 10;
-  border-right: 1px solid #334155;
+  border-right: 1px solid var(--border);
+  backdrop-filter: blur(10px);
 }
 
 .sidebar.active {
@@ -79,7 +92,7 @@ body {
 }
 
 .sidebar h3 {
-  color: #38bdf8;
+  color: var(--primary);
   font-size: 18px;
   margin-bottom: 20px;
   padding-left: 8px;
@@ -98,29 +111,23 @@ body {
   padding: 10px 12px;
   border-radius: 8px;
   margin-bottom: 8px;
-  color: #f1f5f9;
+  color: var(--text);
   font-size: 15px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .sidebar ul li:hover {
-  background-color: #334155;
+  background-color: #f1f5f9;
 }
 
-/* Emojis look cleaner this way */
-.sidebar ul li::before {
-  content: '';
-}
-
-/* Toggle Button */
 .sidebar-toggle {
   position: fixed;
   top: 90px;
   left: 15px;
   z-index: 15;
-  background-color: #38bdf8;
-  color: #0f172a;
+  background-color: var(--primary);
+  color: white;
   border: none;
   font-size: 22px;
   padding: 8px 12px;
@@ -128,33 +135,65 @@ body {
   cursor: pointer;
 }
 
-/* Main Content */
+/* Content */
 .content {
   padding: 40px;
   margin-left: 270px;
 }
 
 .content h2 {
-  color: #38bdf8;
+  color: var(--primary);
   margin-bottom: 30px;
 }
 
+.cards-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
 .cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  display: flex;
   gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 10px;
+}
+
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  z-index: 5;
+}
+
+.scroll-left {
+  left: 5px;
+}
+
+.scroll-right {
+  right: 5px;
 }
 
 .venue-card {
-  background-color: #1e293b;
+  flex: 0 0 250px;
+  background-color: var(--card-bg);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
 }
 
 .venue-image {
   height: 150px;
-  background-color: #334155;
+  background-color: #f0f4f8;
+  background-size: cover;
+  background-position: center;
 }
 
 .venue-info {
@@ -164,26 +203,28 @@ body {
 .venue-info h4 {
   margin: 0 0 8px;
   font-size: 18px;
+  color: var(--text);
 }
 
 .venue-info p {
   font-size: 14px;
-  color: #94a3b8;
+  color: var(--muted);
   margin-bottom: 12px;
 }
 
 .book-btn {
-  background-color: #38bdf8;
-  color: #0f172a;
+  background: linear-gradient(to right, var(--primary), var(--secondary));
+  color: white;
   border: none;
   padding: 8px 12px;
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 8px rgba(30, 144, 255, 0.3);
 }
 
 .book-btn:hover {
-  background-color: #22c55e;
-  color: white;
+  background-color: var(--secondary);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
 }

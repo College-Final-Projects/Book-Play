@@ -1,81 +1,50 @@
-/* Register.css + Profile.css merged for FreshGlow UI */
+/* profile.css - FreshGlow UI */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap');
 
 :root {
   --primary: #1e90ff;
   --secondary: #22c55e;
-  --bg-light: #e0f7fa;
-  --bg-light2: #d0f8ce;
-  --card-bg: rgba(255, 255, 255, 0.85);
+  --background: #e0f7fa;
+  --card-bg: #ffffff;
   --card-border: #d1d5db;
   --text-main: #0f172a;
   --text-muted: #64748b;
-  --shadow: 0 6px 20px rgba(30, 144, 255, 0.15);
+  --shadow: 0 4px 12px rgba(30, 144, 255, 0.1);
   --radius: 12px;
 }
 
 body {
   margin: 0;
   font-family: 'Outfit', sans-serif;
-  background: linear-gradient(135deg, var(--bg-light), var(--bg-light2));
+  background: linear-gradient(135deg, #e0f7fa, #d0f8ce);
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100vh;
+  overflow: hidden;
   color: var(--text-main);
-  overflow: hidden;
 }
 
-.register-container {
+.profile-form {
   background-color: var(--card-bg);
-  backdrop-filter: blur(10px);
-  display: flex;
-  border-radius: 20px;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
-  overflow: hidden;
-  width: 980px;
-  max-width: 100%;
-  transition: all 0.3s ease;
-}
-
-.left-section,
-.right-section {
-  flex: 1;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.right-section {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  padding: 30px 40px;
   text-align: center;
-  pointer-events: none;
-  opacity: 0.6;
-  transition: opacity 0.3s ease;
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: inset 0 0 40px rgba(30, 144, 255, 0.1);
+  animation: fadeInUp 0.6s ease forwards;
+  overflow-y: auto;
 }
 
-.right-section.active {
-  pointer-events: auto;
-  opacity: 1;
-}
-
-.right-section img {
-  width: 160px;
-  margin: 25px auto;
-  display: block;
-  filter: drop-shadow(0 0 10px rgba(30, 144, 255, 0.3));
-}
-
-h2, h3 {
-  margin-bottom: 20px;
+.profile-form h3 {
   background: linear-gradient(to right, var(--primary), var(--secondary));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
 }
 
 .input-group {
@@ -90,7 +59,10 @@ h2, h3 {
   color: var(--text-main);
 }
 
-input, button, select, textarea {
+input,
+button,
+select,
+textarea {
   width: 100%;
   padding: 12px;
   font-size: 15px;
@@ -100,25 +72,33 @@ input, button, select, textarea {
   color: var(--text-main);
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 input::placeholder,
 textarea::placeholder {
   color: var(--text-muted);
 }
 
 .submit-btn,
-.verify-btn,
 #backBtn {
   background: linear-gradient(to right, var(--primary), var(--secondary));
   color: white;
   border: none;
   cursor: pointer;
   font-weight: bold;
-  transition: 0.3s;
   margin-top: 10px;
+  transition: 0.3s;
 }
 
 .submit-btn:hover,
-.verify-btn:hover,
 #backBtn:hover {
   transform: scale(1.03);
   box-shadow: 0 0 10px rgba(30, 144, 255, 0.3);
@@ -130,30 +110,17 @@ textarea::placeholder {
   color: var(--primary);
 }
 
-.make-profile-btn {
-  font-family: 'Outfit', sans-serif;
-  text-decoration: none;
-  border: 2px solid var(--primary);
-  padding: 12px 25px;
-  border-radius: 25px;
-  color: var(--primary);
-  margin-top: 20px;
-  transition: 0.3s;
-  background: transparent;
-}
-
-.make-profile-btn:hover {
-  background-color: var(--primary);
-  color: white;
-}
-
 textarea {
   resize: none;
+  font-family: 'Outfit', sans-serif;
 }
 
 input[type="file"] {
   background-color: #f0f9ff;
   color: var(--text-muted);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 8px;
   cursor: pointer;
 }
 
@@ -168,6 +135,18 @@ input[type="file"]::-webkit-file-upload-button {
 
 input[type="file"]::-webkit-file-upload-button:hover {
   background-color: var(--secondary);
+  color: white;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .favorite-sports {
@@ -202,49 +181,7 @@ input[type="file"]::-webkit-file-upload-button:hover {
   border: none;
   box-shadow: 0 0 10px rgba(30, 144, 255, 0.3);
 }
-
-.verification-message {
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-.success { color: var(--secondary); }
-.error { color: #ef4444; }
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-#profileFormContainer {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-  animation: fadeInUp 0.6s ease;
-  background: linear-gradient(135deg, var(--bg-light), var(--bg-light2));
-  z-index: 9999;
-}
-
-.profile-form {
-  background-color: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  width: 90%;
-  max-width: 600px;
-  max-height: 90vh;
-  padding: 30px 40px;
-  text-align: center;
-  overflow-y: auto;
+input[readonly] {
+  background-color: #f1f5f9;
+  cursor: not-allowed;
 }
