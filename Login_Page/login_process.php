@@ -1,57 +1,70 @@
 <?php
-// استيراد ملف الاتصال بقاعدة البيانات
+session_start();
 require_once '../db.php'; 
 
-// تهيئة الرد
-$response = array('success' => false, 'message' => '');
+$response = ['success' => false, 'message' => ''];
 
-// التحقق من أن الطلب هو POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // الحصول على بيانات النموذج
-    $email = $_POST['email'];
+    $identifier = $_POST['username'];
     $password = $_POST['password'];
-    
-    // التحقق من وجود القيم
-    if (empty($email) || empty($password)) {
+
+    if (empty($identifier) || empty($password)) {
         $response['message'] = 'يرجى ملء جميع الحقول المطلوبة';
     } else {
-        // استعلام للتحقق من وجود المستخدم
-        $sql = "SELECT username, password, first_name, last_name FROM users WHERE email = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $email);
+        $user = null;
+        $role = null;
+
+        // 🔎 أولًا نبحث في جدول admins بواسطة admin_email
+        $stmt = $conn->prepare("SELECT * FROM admins WHERE admin_email = ? LIMIT 1");
+        $stmt->bind_param("s", $identifier);
         $stmt->execute();
         $result = $stmt->get_result();
-        
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
-            
-            // التحقق من كلمة المرور
+            $role = 'admin';
+        }
+        $stmt->close();
+
+        // 🔎 إذا لم يوجد، نبحث في جدول users بواسطة username فقط
+        if (!$user) {
+            $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? LIMIT 1");
+            $stmt->bind_param("s", $identifier);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows === 1) {
+                $user = $result->fetch_assoc();
+                $role = 'user';
+            }
+            $stmt->close();
+        }
+
+        if ($user) {
             if (password_verify($password, $user['password'])) {
-                // بدء جلسة
-                session_start();
-                
-                // تخزين معلومات المستخدم في الجلسة
-                $_SESSION['user_id'] = $user['username']; // لأن username هو المفتاح الأساسي
-                $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name']; // تجميع الاسم
                 $_SESSION['is_logged_in'] = true;
-                
+                $_SESSION['role'] = $role;
+
+                if ($role === 'admin') {
+                    $_SESSION['user_id'] = $user['admin_email'];
+                    $_SESSION['user_name'] = 'Administrator';
+                    $response['redirect'] = 'admin_dashboard.php';
+                } else {
+                    $_SESSION['user_id'] = $user['username'];
+                    $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
+                    $response['redirect'] = 'user_dashboard.php';
+                }
+
                 $response['success'] = true;
-                $response['message'] = 'تم تسجيل الدخول بنجاح!';
+                $response['message'] = '✅ تم تسجيل الدخول بنجاح!';
             } else {
-                $response['message'] = 'كلمة المرور غير صحيحة';
+                $response['message'] = '❌ كلمة المرور غير صحيحة';
             }
         } else {
-            $response['message'] = 'البريد الإلكتروني غير مسجل';
+            $response['message'] = '❌ المستخدم غير موجود';
         }
-        
-        $stmt->close();
     }
 }
 
-// إرسال الرد كـ JSON
 header('Content-Type: application/json');
 echo json_encode($response);
-
-// إغلاق الاتصال بقاعدة البيانات
 $conn->close();
 ?>

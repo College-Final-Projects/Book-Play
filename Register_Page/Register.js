@@ -1,86 +1,76 @@
-// Register.js
-
 document.addEventListener("DOMContentLoaded", function () {
   const registerForm = document.getElementById("registerForm");
   const codeSection = document.getElementById("codeVerification");
   const message = document.getElementById("verificationMessage");
 
-  const makeProfileBtn = document.querySelector(".make-profile-btn");
-  makeProfileBtn.addEventListener("click", function (e) {
-    e.preventDefault();
-    document.getElementById("leftSection").style.display = "none";
-    document.getElementById("rightSection").style.display = "none";
-    document.getElementById("profileFormContainer").style.display = "flex";
+  if (registerForm) {
+    registerForm.addEventListener("submit", function (e) {
+      e.preventDefault();
 
-    // Copy email and password to hidden inputs
-    document.getElementById("profileEmail").value = document.getElementById("email").value;
-    document.getElementById("profilePassword").value = document.getElementById("password").value;
-  });
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
 
-  registerForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
-    if (password !== confirmPassword) {
-      alert("❌ Passwords do not match, please double-check.");
-      return;
-    }
-    registerForm.style.display = "none";
-    codeSection.style.display = "block";
-  });
+      if (password !== confirmPassword) {
+        alert("❌ Passwords do not match.");
+        return;
+      }
 
+      fetch("register.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({ email, password }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "error") {
+            alert(data.message);
+          } else {
+            registerForm.style.display = "none";
+            codeSection.style.display = "block";
+          }
+        })
+        .catch((err) => {
+          alert("Something went wrong.");
+          console.error(err);
+        });
+    });
+  }
+
+  // ✅ دالة التحقق من الكود
   window.verifyCode = function () {
     const code = document.getElementById("codeInput").value;
-    if (code === "1234") {
-      document.getElementById("rightSection").classList.add("active");
-      document.querySelector(".make-profile-btn").style.display = "inline-block";
-      message.textContent = "✅ Code Verified!";
-      message.className = "verification-message success";
-    } else {
-      message.textContent = "❌ Incorrect Code!";
-      message.className = "verification-message error";
-    }
+
+    fetch("verify.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({ code }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "success") {
+          document.getElementById("profileFormContainer").style.display = "block";
+          document.getElementById("codeVerification").style.display = "none";
+          message.textContent = "✅ Code Verified!";
+          message.className = "verification-message success";
+
+          if (window.sessionUser?.email && window.sessionUser?.password) {
+            document.getElementById("profileEmail").value = window.sessionUser.email;
+            document.getElementById("profilePassword").value = window.sessionUser.password;
+          }
+        } else {
+          message.textContent = data.message;
+          message.className = "verification-message error";
+        }
+      })
+      .catch((err) => {
+        message.textContent = "❌ Something went wrong.";
+        message.className = "verification-message error";
+        console.error(err);
+      });
   };
-
-  window.previewImage = function () {
-    const input = document.getElementById("profileImage");
-    const preview = document.getElementById("profileImagePreview");
-    const removeBtn = document.getElementById("removeImageBtn");
-
-    const file = input.files[0];
-    if (file) {
-      preview.src = URL.createObjectURL(file);
-      preview.style.display = "block";
-      removeBtn.style.display = "inline-block";
-    }
-  };
-
-  window.removeImage = function () {
-    const input = document.getElementById("profileImage");
-    const preview = document.getElementById("profileImagePreview");
-    const removeBtn = document.getElementById("removeImageBtn");
-
-    input.value = "";
-    preview.src = "#";
-    preview.style.display = "none";
-    removeBtn.style.display = "none";
-  };
-
-  // Only numbers in phone input
-  const phoneInput = document.getElementById("phone");
-  phoneInput.addEventListener("input", function () {
-    this.value = this.value.replace(/[^\d]/g, "").slice(0, 10);
-  });
-
-  // Only letters in first and last name
-  const nameFields = [
-    document.getElementById("firstName"),
-    document.getElementById("lastName")
-  ];
-
-  nameFields.forEach(field => {
-    field.addEventListener("input", function () {
-      this.value = this.value.replace(/[^a-zA-Z]/g, "");
-    });
-  });
 });

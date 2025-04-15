@@ -1,34 +1,45 @@
 <?php
+session_start();
 require_once '../db.php';
+require_once '../mail/MailLink.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $username = $_POST['username'];
 
-    $check = $conn->prepare("SELECT username FROM Users WHERE username = ?");
-    $check->bind_param("s", $username);
-    $check->execute();
-    $check->store_result();
+    $checkEmail = $conn->prepare("SELECT email FROM users WHERE email = ?");
+    $checkEmail->bind_param("s", $email);
+    $checkEmail->execute();
+    $checkEmail->store_result();
 
-    if ($check->num_rows > 0) {
-        echo "<script>alert('Username already exists. Please choose another one.'); window.history.back();</script>";
+    if ($checkEmail->num_rows > 0) {
+        echo json_encode(["status" => "error", "message" => "❌ This email is already registered."]);
         exit();
     }
 
-    // Insert minimal info to Users table
-    $stmt = $conn->prepare("INSERT INTO Users (username, email, password) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $username, $email, $password);
+    $code = rand(100000, 999999);
+    $_SESSION['verification_code'] = $code;
+    $_SESSION['temp_email'] = $email;
+    $_SESSION['temp_password'] = $password;
 
-    if ($stmt->execute()) {
-        echo "<script>window.location.href = '../Profile/profile.html?username=$username';</script>";
-    } else {
-        echo "<script>alert('Error during registration.'); window.history.back();</script>";
+    if (!sendVerificationCode($email, $code)) {
+        echo json_encode(["status" => "error", "message" => "❌ Failed to send email."]);
+        exit();
     }
 
-    $stmt->close();
-    $check->close();
-    $conn->close();
+    echo json_encode(["status" => "success", "message" => "✅ Verification code sent."]);
+    exit();
 }
 
+// ✅ عرض واجهة التسجيل والحقن الذكي للمتغيرات
+include "register.html";
+if (isset($_SESSION['temp_email']) && isset($_SESSION['temp_password'])) {
+    echo "<script>
+      window.sessionUser = {
+        email: '" . $_SESSION['temp_email'] . "',
+        password: '" . $_SESSION['temp_password'] . "'
+      };
+    </script>";
+}
+exit();
 ?>
