@@ -7,63 +7,82 @@
   <link rel="stylesheet" href="MangeSports.css" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
   <script defer src="MangeSports.js"></script>
-
 </head>
 <body>
 
+  <!-- ✅ Navbar -->
+  <nav class="admin-navbar">
+    <div class="nav-container">
+      <h1 class="logo">Admin Panel</h1>
+      <ul class="nav-links">
+        <li><a href="../HomePage/HomePage.php">HomePage</a></li>
+        <li><a href="../ManageVenueRequests/ManageVenueRequests.php">Manage Venue Requests</a></li>
+        <li><a href="../MangeSports/MangeSports.php" class="active">Manage Sports</a></li>
+        <li><a href="../ReviewComplaints/ReviewComplaints.php">Review Complaints</a></li>
+        <li><a href="../../Login_Page/Login.php" class="logout">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ✅ Title -->
   <div class="admin-title">
     <h1 class="logo-title">Manage Sports</h1>
   </div>
 
-  <!-- Current Sports Section -->
+  <!-- ✅ Current Sports Section -->
   <section class="fresh-card">
     <h2>Current Sports</h2>
     <table class="fresh-table">
       <thead>
         <tr>
-          <th>#</th>
-          <th>Sport Name</th>
-          <th>Actions</th>
+     
+
+
         </tr>
       </thead>
       <tbody id="currentSports">
         <tr>
-          <td>1</td>
-          <td>Football</td>
-          <td><button class="btn delete">Delete</button></td>
+          
+
+
+
         </tr>
         <tr>
-          <td>2</td>
-          <td>Tennis</td>
-          <td><button class="btn delete">Delete</button></td>
+          
+
+
+
         </tr>
       </tbody>
     </table>
   </section>
 
-  <!-- Toggle Buttons -->
+  <!-- ✅ Toggle Buttons -->
   <div class="toggle-buttons">
     <button onclick="toggleSection('suggestedSection')" class="btn blue">View Suggested Sports</button>
     <button onclick="toggleSection('addSection')" class="btn green">+ Add New Sport</button>
   </div>
 
-  <!-- Suggested Sports Section -->
+  <!-- ✅ Suggested Sports Section -->
   <section class="fresh-card hidden" id="suggestedSection">
     <h2>Suggested Sports</h2>
     <table class="fresh-table">
       <thead>
         <tr>
           <th>#</th>
-          <th>Sport Name</th>
-          <th>Suggested By</th>
+          <th>Suggested Sport</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>1</td>
-          <td>Padel</td>
-          <td>user123</td>
+          <td>
+
+
+
+
+          </td>
           <td>
             <button class="btn accept">Accept</button>
             <button class="btn delete">Reject</button>
@@ -73,7 +92,7 @@
     </table>
   </section>
 
-  <!-- Add New Sport Section -->
+  <!-- ✅ Add New Sport Section -->
   <section class="fresh-card hidden" id="addSection">
     <h2>Add New Sport</h2>
     <form class="add-sport-form">
@@ -81,7 +100,6 @@
       <button type="submit" class="btn primary">Add Sport</button>
     </form>
   </section>
-
 
 </body>
 </html>

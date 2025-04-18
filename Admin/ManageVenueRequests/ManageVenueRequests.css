@@ -1,0 +1,191 @@
+/* GENERAL PAGE STYLES */
+body {
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(to bottom right, #e0f7fa, #d0f8ce);
+    margin: 0;
+    padding: 0;
+    color: #0f172a;
+  }
+  
+  /* NAVBAR */
+  .admin-navbar {
+    background: linear-gradient(to right, #e0f7fa, #d0f8ce);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  .nav-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+    background: linear-gradient(to right, #00bcd4, #4caf50);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .nav-links li a {
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 10px 18px;
+    border-radius: 12px;
+    transition: 0.3s;
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(6px);
+  }
+  
+  .nav-links li a:hover,
+  .nav-links li a.active {
+    background: linear-gradient(to right, #4fc3f7, #81c784);
+    color: white;
+  }
+  
+  .nav-links li a.logout {
+    background: rgba(244, 67, 54, 0.15);
+    color: #f44336;
+    font-weight: 600;
+  }
+  
+  /* VENUE CARDS */
+  .cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 40px 20px;
+  }
+  
+  .venue-card {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0, 150, 136, 0.15);
+    padding: 20px;
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: 0.3s ease;
+  }
+  
+  .venue-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 150, 136, 0.25);
+  }
+  
+  .venue-card h3 {
+    margin: 0;
+    font-size: 20px;
+  }
+  
+  /* ACTION BUTTONS */
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+  }
+  
+  .actions button {
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .approve {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .reject {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  /* MODAL */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  }
+  
+  .modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 700px;
+    width: 90%;
+    box-shadow: 0 0 30px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  
+  .modal-content h2 {
+    margin-top: 0;
+  }
+  
+  .modal-content .images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .modal-content .images img {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  
+  .long-description {
+    line-height: 1.6;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  
+  /* CLOSE BUTTON */
+  .close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+  }
+  
+  .close:hover {
+    color: #333;
+  }
+  
