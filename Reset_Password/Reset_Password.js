@@ -75,10 +75,10 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   });
 
-  window.resetPassword = function () {
+  document.getElementById("resetbtn").addEventListener("click", function () {
     const newPassword = newPasswordInput.value;
-    const confirmPassword = confirmPasswordInput.value;
-
+    const confirmPassword = confirmPasswordInput.value; 
+  
     fetch("send_code.php", {
       method: "POST",
       headers: {
@@ -90,19 +90,19 @@ document.addEventListener("DOMContentLoaded", function () {
         confirm_password: confirmPassword,
       }),
     })
-      .then((res) => res.json())
-      .then((data) => {
-        message.textContent = data.message;
-        if (data.success) {
-          message.textContent += " Redirecting to login...";
-          setTimeout(() => {
-            window.location.href = "../Login_Page/Login.php";
-          }, 2000);
-        }
-      })
-      .catch((err) => {
-        message.textContent = "❌ Failed to reset password.";
-        console.error(err);
-      });
-  };
+    .then((res) => res.json())
+    .then((data) => {
+      message.textContent = data.message;
+      if (data.success) {
+        message.textContent += " Redirecting to login...";
+        setTimeout(() => {
+          window.location.href = "../Login_Page/Login.php";
+        }, 2000);
+      }
+    })
+    .catch((err) => {
+      message.textContent = "❌ Failed to reset password.";
+      console.error(err);
+    });
+  });  
 });

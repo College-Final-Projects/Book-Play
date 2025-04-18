@@ -46,11 +46,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($role === 'admin') {
                     $_SESSION['user_id'] = $user['admin_email'];
                     $_SESSION['user_name'] = 'Administrator';
-                    $response['redirect'] = 'admin_dashboard.php';
+                    $response['redirect'] = '../Admin/HomePage/HomePage.php';
                 } else {
                     $_SESSION['user_id'] = $user['username'];
                     $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
-                    $response['redirect'] = 'user_dashboard.php';
+                    $response['redirect'] = '../User_Selection_Page/user-selection.php';
                 }
 
                 $response['success'] = true;

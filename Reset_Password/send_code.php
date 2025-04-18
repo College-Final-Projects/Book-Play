@@ -15,7 +15,7 @@ if ($action === 'send_code') {
         exit;
     }
 
-    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT username FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -24,7 +24,8 @@ if ($action === 'send_code') {
         echo json_encode(["success" => false, "message" => "❌ Email not registered."]);
         exit;
     }
-
+    $row = $result->fetch_assoc();
+    $_SESSION['username']=$row['username'];
     $code = rand(100000, 999999);
     $_SESSION['reset_code'] = $code;
     $_SESSION['reset_email'] = $email;
@@ -49,8 +50,8 @@ if ($action === 'verify_code') {
 }
 
 if ($action === 'reset_password') {
-    $newPassword = $_POST['new_password'] ?? '';
-    $confirmPassword = $_POST['confirm_password'] ?? '';
+    $newPassword = $_POST['password'] ?? '';
+    $confirmPassword = $_POST['confirmPassword'] ?? '';
 
     if ($newPassword !== $confirmPassword) {
         echo json_encode(["success" => false, "message" => "❌ Passwords do not match."]);

@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const registerForm = document.getElementById("registerForm");
   const codeSection = document.getElementById("codeVerification");
+  const profileForm = document.getElementById("profileForm");
   const message = document.getElementById("verificationMessage");
 
   if (registerForm) {
@@ -73,4 +74,38 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error(err);
       });
   };
+
+  // ✅ دالة حفظ البروفايل بعد التحقق
+  if (profileForm) {
+    profileForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(profileForm);
+      const code = document.getElementById("codeInput").value;
+      formData.append("code", code);
+
+      fetch("verify.php", {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "success") {
+            message.textContent = data.message;
+            message.className = "verification-message success";
+            setTimeout(() => {
+              window.location.href = data.redirect;
+            }, 1500);
+          } else {
+            message.textContent = data.message;
+            message.className = "verification-message error";
+          }
+        })
+        .catch((err) => {
+          message.textContent = "❌ Something went wrong.";
+          message.className = "verification-message error";
+          console.error(err);
+        });
+    });
+  }
 });

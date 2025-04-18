@@ -248,3 +248,9 @@ input[type="file"]::-webkit-file-upload-button:hover {
   text-align: center;
   overflow-y: auto;
 }
+.error-message {
+  color: red;
+  font-size: 0.85em;
+  margin-top: 5px;
+  display: block;
+}

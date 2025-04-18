@@ -48,7 +48,7 @@
 
   <!-- Profile Form Section (initially hidden) -->
   <div id="profileFormContainer" style="display: none;">
-    <form id="profileForm" class="profile-form" action="profile.php" method="POST" enctype="multipart/form-data">
+    <form id="profileForm" class="profile-form" method="POST" enctype="multipart/form-data">
       <h3>Create Your User Profile</h3>
       <div class="input-group" style="display: none;">
         <input type="email" id="profileEmail" name="email" />
@@ -67,6 +67,7 @@
       <div class="input-group">
         <label for="username">Username <span style="color:red">*</span></label>
         <input type="text" id="username" name="username" maxlength="25" required />
+        <div class="error-message" id="usernameError"></div>
       </div>
       <div class="input-group">
         <label for="age">Age <span style="color:red">*</span></label>
@@ -78,7 +79,6 @@
           <option value="" disabled selected>Select Gender</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
-          <option value="other">Other</option>
         </select>
       </div>
       <div class="input-group">
