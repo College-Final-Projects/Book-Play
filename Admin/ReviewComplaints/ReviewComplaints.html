@@ -1,89 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Review Complaints | Admin</title>
-  <link rel="stylesheet" href="ReviewComplaints.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Review Venue Complaints | Book&Play</title>
+  <link rel="stylesheet" href="ReviewComplaints.css">
 </head>
 <body>
-  <div class="admin-title">
-    <h1 class="logo-title">Review Complaints</h1>
+
+  <!-- Navbar في الأعلى -->
+  <nav class="admin-navbar">
+    <div class="nav-container">
+      <h1 class="logo">Admin Panel</h1>
+      <ul class="nav-links">
+        <li><a href="../HomePage/HomePage.php">HomePage</a></li>
+        <li><a href="../ManageVenueRequests/ManageVenueRequests.php">Manage Venue Requests</a></li>
+        <li><a href="../MangeSports/MangeSports.php">Manage Sports</a></li>
+        <li><a href="../ReviewComplaints/ReviewComplaints.php" class="active">Review Complaints</a></li>
+        <li><a href="../../Login_Page/Login.php" class="logout">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- جدول الشكاوى -->
+  <div class="card">
+    <h2>Review Venue Complaints</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Sender</th>
+          <th>Venue ID</th>
+          <th>Complaint Reason</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="complaintsTable">
+        <!-- Complaints will be inserted here -->
+      </tbody>
+    </table>
   </div>
 
-  <!-- 🧍 User Complaints Table -->
-  <section class="fresh-card">
-    <h2>User Complaints</h2>
-    <table class="fresh-table">
-      <thead>
-        <tr><th>From</th><th>Username</th><th>Message</th><th>Action</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>mohamad22</td><td>ahmadPlayer</td><td>Was rude during the match</td>
-          <td><button class="btn view" onclick="toggleDetails('user1')">Details</button></td>
-        </tr>
-        <tr id="user1" class="details-row hidden">
-          <td colspan="4">
-            <strong>User:</strong> ahmadPlayer<br>
-            <strong>Email:</strong> ahmad@gmail.com<br>
-            <strong>Registered Since:</strong> 2022<br>
-            <strong>Total Complaints:</strong> 2
-          </td>
-        </tr>
-        <tr>
-          <td>lana_90</td><td>zizoKing</td><td>Didn't show up to the game</td>
-          <td><button class="btn view" onclick="toggleDetails('user2')">Details</button></td>
-        </tr>
-        <tr id="user2" class="details-row hidden">
-          <td colspan="4">
-            <strong>User:</strong> zizoKing<br>
-            <strong>Email:</strong> zizo@gmail.com<br>
-            <strong>Registered Since:</strong> 2023<br>
-            <strong>Total Complaints:</strong> 1
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <!-- 🏟️ Venue Complaints Table -->
-  <section class="fresh-card">
-    <h2>Venue Complaints</h2>
-    <table class="fresh-table">
-      <thead>
-        <tr><th>From</th><th>Venue ID</th><th>Message</th><th>Action</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>kareem321</td><td>VN-102</td><td>Field was dirty and lights were off</td>
-          <td><button class="btn view" onclick="toggleDetails('venue1')">Details</button></td>
-        </tr>
-        <tr id="venue1" class="details-row hidden">
-          <td colspan="4">
-            <strong>Venue:</strong> VN-102<br>
-            <strong>Name:</strong> City Arena<br>
-            <strong>Location:</strong> Haifa<br>
-            <strong>Rating:</strong> 3.5/5
-          </td>
-        </tr>
-        <tr>
-          <td>sara23</td><td>VN-085</td><td>Venue manager was late</td>
-          <td><button class="btn view" onclick="toggleDetails('venue2')">Details</button></td>
-        </tr>
-        <tr id="venue2" class="details-row hidden">
-          <td colspan="4">
-            <strong>Venue:</strong> VN-085<br>
-            <strong>Name:</strong> Golden Field<br>
-            <strong>Location:</strong> Tel Aviv<br>
-            <strong>Rating:</strong> 4.2/5
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <script src="ReviewComplaints.js"></script>
 </body>
 </html>
