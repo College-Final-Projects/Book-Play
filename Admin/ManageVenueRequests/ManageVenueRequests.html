@@ -21,81 +21,15 @@
     </div>
   </nav>
 
-  <!-- Venue Request Cards -->
-  <div class="cards-container">
-    <!-- Sample 5 Cards -->
-    <div class="venue-card">
-      <h3>Elite Court</h3>
-      <p><strong>Location:</strong> Tel Aviv</p>
-      <p><strong>Sport:</strong> Tennis</p>
-      <p><strong>Owner:</strong> kareem99</p>
-      <div class="actions">
-        <button onclick="openModal(1)">View Details</button>
-        <button class="approve">Approve</button>
-        <button class="reject">Reject</button>
-      </div>
-    </div>
-    <div class="venue-card">
-      <h3>Al-Quds Arena</h3>
-      <p><strong>Location:</strong> Jerusalem</p>
-      <p><strong>Sport:</strong> Basketball</p>
-      <p><strong>Owner:</strong> lina88</p>
-      <div class="actions">
-        <button onclick="openModal(2)">View Details</button>
-        <button class="approve">Approve</button>
-        <button class="reject">Reject</button>
-      </div>
-    </div>
-    <div class="venue-card">
-      <h3>Future Field</h3>
-      <p><strong>Location:</strong> Haifa</p>
-      <p><strong>Sport:</strong> Football</p>
-      <p><strong>Owner:</strong> youssef10</p>
-      <div class="actions">
-        <button onclick="openModal(3)">View Details</button>
-        <button class="approve">Approve</button>
-        <button class="reject">Reject</button>
-      </div>
-    </div>
-    <div class="venue-card">
-      <h3>Golden Gym</h3>
-      <p><strong>Location:</strong> Nazareth</p>
-      <p><strong>Sport:</strong> Gym</p>
-      <p><strong>Owner:</strong> adam_fit</p>
-      <div class="actions">
-        <button onclick="openModal(4)">View Details</button>
-        <button class="approve">Approve</button>
-        <button class="reject">Reject</button>
-      </div>
-    </div>
-    <div class="venue-card">
-      <h3>Sun Arena</h3>
-      <p><strong>Location:</strong> Eilat</p>
-      <p><strong>Sport:</strong> Volleyball</p>
-      <p><strong>Owner:</strong> maya_sun</p>
-      <div class="actions">
-        <button onclick="openModal(5)">View Details</button>
-        <button class="approve">Approve</button>
-        <button class="reject">Reject</button>
-      </div>
-    </div>
-  </div>
+  <!-- Cards Container - ديناميكي -->
+  <div class="cards-container" id="venueContainer"></div>
 
   <!-- Modal Container -->
-  <div id="detailsModal" class="modal">
+  <div id="reportModal" class="modal" style="display: none;">
     <div class="modal-content">
       <span class="close" onclick="closeModal()">&times;</span>
-      <h2>Venue Details</h2>
-      <div class="images">
-        <img src="../../Images/horseRiding_court.png" alt="Venue Photo 1">
-        <img src="../../Images/horseRiding_court.png" alt="Venue Photo 2">
-        <img src="../../Images/horseRiding_court.png" alt="Venue Photo 3">
-        <img src="../../Images/horseRiding_court.png" alt="Venue Photo 4">
-        <img src="../../Images/horseRiding_court.png" alt="Venue Photo 5">
-      </div>
-      <p class="long-description">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vel tincidunt nulla. Proin dignissim, orci nec fermentum scelerisque, sem lorem aliquet erat, non blandit quam libero vel augue. Sed a malesuada est. Cras ac erat augue. Pellentesque id turpis ac metus elementum pretium.
-      </p>
+      <h2 id="modalTitle">Venue Details</h2>
+      <p id="modalMessage" class="long-description"></p>
       <div class="actions">
         <button class="approve">Approve</button>
         <button class="reject">Reject</button>

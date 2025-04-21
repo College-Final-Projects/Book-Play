@@ -41,5 +41,6 @@ if (isset($_SESSION['temp_email']) && isset($_SESSION['temp_password'])) {
       };
     </script>";
 }
+
 exit();
 ?>
