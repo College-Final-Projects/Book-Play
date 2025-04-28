@@ -28,38 +28,28 @@
   <div class="admin-title">
     <h1 class="logo-title">Manage Sports</h1>
   </div>
-
   <!-- ✅ Current Sports Section -->
   <section class="fresh-card">
     <h2>Current Sports</h2>
     <table class="fresh-table">
       <thead>
         <tr>
-     
-
-
+          <th>#</th>
+          <th>Sport Name</th>
+          <th>Action</th>
         </tr>
       </thead>
-      <tbody id="currentSports">
-        <tr>
-          
-
-
-
-        </tr>
-        <tr>
-          
-
-
-
-        </tr>
+      <tbody id="currentSportsTableBody">
+        <!-- سيتم ملؤه باستخدام JavaScript -->
       </tbody>
     </table>
   </section>
-
+  <div id="sportMessage" class="message-box"></div>
   <!-- ✅ Toggle Buttons -->
   <div class="toggle-buttons">
-    <button onclick="toggleSection('suggestedSection')" class="btn blue">View Suggested Sports</button>
+    <button onclick="toggleSection('suggestedSection'); loadSuggestedSports()" class="btn blue">
+      View Suggested Sports
+    </button>    
     <button onclick="toggleSection('addSection')" class="btn green">+ Add New Sport</button>
   </div>
 
@@ -74,30 +64,19 @@
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>
-
-
-
-
-          </td>
-          <td>
-            <button class="btn accept">Accept</button>
-            <button class="btn delete">Reject</button>
-          </td>
-        </tr>
+      <tbody id="suggestedSportsTableBody">
+        <!-- سيتم ملؤه باستخدام JavaScript -->
       </tbody>
     </table>
   </section>
+  
 
   <!-- ✅ Add New Sport Section -->
   <section class="fresh-card hidden" id="addSection">
     <h2>Add New Sport</h2>
     <form class="add-sport-form">
-      <input type="text" placeholder="Sport Name" required />
-      <button type="submit" class="btn primary">Add Sport</button>
+      <input type="text" placeholder="Sport Name" id="newSportName" required />
+      <button id="addSportBtn" class="btn primary">Add Sport</button>
     </form>
   </section>
 

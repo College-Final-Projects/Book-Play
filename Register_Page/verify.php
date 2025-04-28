@@ -2,9 +2,43 @@
 session_start();
 require_once '../db.php';
 
+// Function to get sports HTML
+function getSportsHTML() {
+    global $conn;
+    
+    $sportsHTML = '';
+    
+    // Get sports from database
+    $result = $conn->query("SELECT * FROM `sports` WHERE is_Accepted = 1");
+    
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $sportId = $row['sport_id'];
+            $sport = htmlspecialchars($row['sport_name']);
+            
+            $sportsHTML .= "<div class='sport-option'>";
+            // Use sport_id as the value
+            $sportsHTML .= "<input type='checkbox' id='sport-$sportId' name='favorite_sports[]' value='$sportId'>";
+            $sportsHTML .= "<label for='sport-$sportId' class='sport-label'>$sport</label>";
+            $sportsHTML .= "</div>";
+        }
+    } else {
+        $sportsHTML = "<p>No sports available</p>";
+    }
+    
+    return $sportsHTML;
+}
+
+// If it's just a request for sports HTML
+if (isset($_GET['get_sports']) && $_GET['get_sports'] == 1) {
+    echo getSportsHTML();
+    exit();
+}
+
+// For all other operations, set JSON header
 header('Content-Type: application/json');
 
-// 🧪 التحقق من الكود فقط (عند الضغط على زر Verify)
+// 🧪 Code verification (when Verify button is clicked)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['code']) && !isset($_POST['username'])) {
     $code = $_POST['code'];
 
@@ -16,12 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['code']) && !isset($_P
         exit();
     }
 
-    // ✅ الكود صحيح – أظهر فورم البروفايل
+    // ✅ Code is correct - show profile form
     echo json_encode(["status" => "success"]);
     exit();
 }
 
-// 📥 إدخال البيانات الكاملة
+// 📥 Complete data submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
     $username     = $_POST['username'] ?? '';
     $firstName    = $_POST['firstName'] ?? '';
@@ -31,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
     $phone        = $_POST['phone'] ?? '';
     $description  = $_POST['description'] ?? '';
     $userImage    = $_FILES['user_image'] ?? null;
+    $favoriteSports = isset($_POST['favorite_sports']) ? $_POST['favorite_sports'] : [];
 
     if (!isset($_SESSION['temp_email']) || !isset($_SESSION['temp_password'])) {
         echo json_encode(["status" => "error", "message" => "⏳ Session expired. Please try again."]);
@@ -40,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
     $email = $_SESSION['temp_email'];
     $password = $_SESSION['temp_password'];
 
-    // 🛡️ التحقق من أن اسم المستخدم غير مستخدم
+    // 🛡️ Check that username isn't already in use
     $checkUser = $conn->prepare("SELECT username FROM users WHERE username = ?");
     $checkUser->bind_param("s", $username);
     $checkUser->execute();
@@ -52,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
     }
     $checkUser->close();
 
-    // 📷 رفع الصورة إذا وُجدت
+    // 📷 Upload image if provided
     $userImagePath = null;
     if ($userImage && $userImage['tmp_name']) {
         $targetDir = "../uploads/";
@@ -67,13 +102,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
         }
     }
 
-    // 💾 إدخال المستخدم
-    $stmt = $conn->prepare("INSERT INTO users (username, email, password, first_name, last_name, age, gender, phone_number, description, user_image)
+    // 💾 Insert user
+    $stmt = $conn->prepare("INSERT INTO users (username, email, first_name, last_name, password, description, age, gender, phone_number, user_image)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssssssss", $username, $email, $password, $firstName, $lastName, $age, $gender, $phone, $description, $userImagePath);
+    $stmt->bind_param("ssssssisss", $username, $email, $firstName, $lastName, $password, $description, $age, $gender, $phone, $userImagePath);
 
     if ($stmt->execute()) {
-        // 🧹 تنظيف الجلسة
+        $userId = $conn->insert_id;
+        
+        // Insert favorite sports
+        if (!empty($favoriteSports)) {
+            $sportInsertStmt = $conn->prepare("INSERT INTO user_favorite_sports (username, sport_id) VALUES (?, ?)");
+            
+            foreach ($favoriteSports as $sportId) {
+                $sportInsertStmt->bind_param("si", $username, $sportId);
+                $sportInsertStmt->execute();
+            }
+            
+            $sportInsertStmt->close();
+        }
+        
+        // 🧹 Clean up session
         unset($_SESSION['temp_email'], $_SESSION['temp_password'], $_SESSION['verification_code']);
 
         echo json_encode([
@@ -82,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
             "redirect" => "../index.php"
         ]);
     } else {
-        echo json_encode(["status" => "error", "message" => "❌ Failed to save user."]);
+        echo json_encode(["status" => "error", "message" => "❌ Failed to save user: " . $conn->error]);
     }
 
     $stmt->close();
@@ -90,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
     exit();
 }
 
-// إذا لم يكن POST
+// If not a POST request
 echo json_encode(["status" => "error", "message" => "⛔ Invalid request method."]);
 exit();
 ?>

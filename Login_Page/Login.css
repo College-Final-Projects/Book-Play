@@ -1,13 +1,13 @@
 body {
   margin: 0;
   padding: 0;
-  height: 100vh;
+  min-height: 100vh;
   background: linear-gradient(135deg, #e0f7fa, #d0f8ce); /* Light gradient */
   font-family: 'Segoe UI', sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow-x: hidden;
   position: relative;
   color: #1e293b;
 }
@@ -15,18 +15,20 @@ body {
 .container {
   z-index: 2;
   background: rgba(255, 255, 255, 0.8);
-  padding: 50px 40px;
+  padding: 30px 25px;
   border-radius: 20px;
   box-shadow: 0 0 30px rgba(30, 144, 255, 0.15);
-  width: 420px;
+  width: 90%;
+  max-width: 420px;
   backdrop-filter: blur(15px);
   border: 1px solid #d1d5db;
   text-align: center;
   color: #1e293b;
+  margin: 20px;
 }
 
 .logo {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: bold;
   background: linear-gradient(to right, #1e90ff, #22c55e);
   -webkit-background-clip: text;
@@ -45,6 +47,7 @@ form input {
   color: #1e293b;
   font-size: 15px;
   transition: border 0.3s ease;
+  box-sizing: border-box;
 }
 
 form input:focus {
@@ -91,7 +94,8 @@ button:hover {
 /* Decorative Background Icons */
 .bg-icons img {
   position: absolute;
-  width: 260px;
+  width: 15%;
+  max-width: 260px;
   opacity: 0.15;
   pointer-events: none;
   animation: float 12s ease-in-out infinite;
@@ -108,4 +112,88 @@ button:hover {
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
+}
+
+/* Media Queries for Responsiveness */
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 25px 20px;
+  }
+  
+  .logo {
+    font-size: 24px;
+  }
+  
+  form input, button {
+    padding: 12px;
+  }
+  
+  .bg-icons img {
+    width: 20%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 20px 15px;
+    width: 95%;
+  }
+  
+  .logo {
+    font-size: 22px;
+  }
+  
+  form input, button {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .slogan {
+    font-size: 12px;
+  }
+  
+  /* Hide some background icons on very small screens */
+  .icon2, .icon5 {
+    display: none;
+  }
+  
+  .bg-icons img {
+    width: 25%;
+  }
+}
+
+/* Fix for very small screens */
+@media screen and (max-width: 320px) {
+  .container {
+    padding: 15px 10px;
+  }
+  
+  .icon1, .icon3, .icon4, .icon6 {
+    opacity: 0.1;
+  }
+}
+
+/* Fix for tall mobile screens */
+@media screen and (max-height: 600px) {
+  body {
+    align-items: flex-start;
+    padding: 20px 0;
+  }
+}
+
+/* Fix for landscape mode on mobile */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  body {
+    padding: 10px;
+  }
+  
+  .container {
+    padding: 15px;
+    margin: 10px;
+  }
+  
+  /* Hide all background icons in landscape mobile */
+  .bg-icons img {
+    display: none;
+  }
 }
