@@ -1,11 +1,57 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const registerForm = document.getElementById("registerForm");
-  const codeSection = document.getElementById("codeVerification");
-  const profileForm = document.getElementById("profileForm");
-  const message = document.getElementById("verificationMessage");
-  const makeProfileBtn = document.querySelector(".make-profile-btn");
-  const rightSection = document.getElementById("rightSection");
-  const favoriteSportsContainer = document.querySelector(".favorite-sports");
+// Define global back functions at the very top of the file
+// This ensures they're available regardless of when the button is clicked
+window.goBack = function() {
+  var codeVerification = document.getElementById('codeVerification');
+  var registerForm = document.getElementById('registerForm');
+  
+  if (codeVerification) codeVerification.style.display = 'none';
+  if (registerForm) registerForm.style.display = 'block';
+  
+  console.log('Verification back button clicked - returning to registration form');
+  return false; // Prevent any default action
+};
+
+// Use window.addEventListener('load') which fires after everything is loaded
+// This is more reliable than DOMContentLoaded for complex pages
+window.addEventListener('load', function() {
+  console.log("Window fully loaded, setting up all event handlers");
+  
+  // Set up the back button on the registration form
+  var backBtn = document.getElementById('backBtn');
+  if (backBtn) {
+    // Use direct onclick property for maximum compatibility
+    backBtn.onclick = function() {
+      console.log('Registration back button clicked');
+      window.location.href = 'login.html'; // Change to your desired destination
+      return false; // Prevent form submission
+    };
+  } else {
+    console.log("Warning: Back button element not found");
+  }
+  
+  // For the RTL Hebrew buttons
+  var rtlBackButtons = document.querySelectorAll('.rtl-secondary-btn');
+  rtlBackButtons.forEach(function(button) {
+    button.onclick = function() {
+      var container = this.closest('.rtl-buttons-container');
+      if (container) container.style.display = 'none';
+      
+      var registerContainer = document.querySelector('.register-container');
+      if (registerContainer) registerContainer.style.display = 'flex';
+      
+      console.log('RTL back button clicked - returning to previous section');
+      return false;
+    };
+  });
+  
+  // ====== Original code starts here ======
+  var registerForm = document.getElementById("registerForm");
+  var codeSection = document.getElementById("codeVerification");
+  var profileForm = document.getElementById("profileForm");
+  var message = document.getElementById("verificationMessage");
+  var makeProfileBtn = document.querySelector(".make-profile-btn");
+  var rightSection = document.getElementById("rightSection");
+  var favoriteSportsContainer = document.querySelector(".favorite-sports");
 
   // Fetch sports from the database and populate the options
   if (favoriteSportsContainer) {
@@ -27,24 +73,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add click event listener for the Make Profile button
   if (makeProfileBtn) {
-    makeProfileBtn.addEventListener("click", function(e) {
+    makeProfileBtn.onclick = function(e) {
       e.preventDefault();
-      document.getElementById("profileFormContainer").style.display = "flex";
-      document.getElementsByClassName("register-container")[0].style.display = "none";
-    });
+      var profileFormContainer = document.getElementById("profileFormContainer");
+      var registerContainer = document.getElementsByClassName("register-container")[0];
+      
+      if (profileFormContainer) profileFormContainer.style.display = "flex";
+      if (registerContainer) registerContainer.style.display = "none";
+    };
   }
 
   if (registerForm) {
-    registerForm.addEventListener("submit", function (e) {
+    registerForm.onsubmit = function(e) {
       e.preventDefault();
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
+      var email = document.getElementById("email").value.trim();
+      var password = document.getElementById("password").value;
+      var confirmPassword = document.getElementById("confirmPassword").value;
 
       if (password !== confirmPassword) {
         alert("❌ Passwords do not match.");
-        return;
+        return false;
       }
 
       fetch("register.php", {
@@ -59,29 +108,33 @@ document.addEventListener("DOMContentLoaded", function () {
           if (data.status === "error") {
             alert(data.message);
           } else {
-            registerForm.style.display = "none";
-            codeSection.style.display = "block";
+            if (registerForm) registerForm.style.display = "none";
+            if (codeSection) codeSection.style.display = "block";
           }
         })
         .catch((err) => {
           alert("Something went wrong.");
           console.error(err);
         });
-    });
+        
+      return false;
+    };
   }
 
   // ✅ Image preview function
   window.previewImage = function() {
-    const input = document.getElementById("profileImage");
-    const preview = document.getElementById("profileImagePreview");
-    const removeBtn = document.getElementById("removeImageBtn");
+    var input = document.getElementById("profileImage");
+    var preview = document.getElementById("profileImagePreview");
+    var removeBtn = document.getElementById("removeImageBtn");
     
-    if (input.files && input.files[0]) {
-      const reader = new FileReader();
+    if (input && input.files && input.files[0]) {
+      var reader = new FileReader();
       reader.onload = function(e) {
-        preview.src = e.target.result;
-        preview.style.display = "block";
-        removeBtn.style.display = "inline-block";
+        if (preview) {
+          preview.src = e.target.result;
+          preview.style.display = "block";
+        }
+        if (removeBtn) removeBtn.style.display = "inline-block";
       }
       reader.readAsDataURL(input.files[0]);
     }
@@ -89,26 +142,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // ✅ Remove image function
   window.removeImage = function() {
-    const input = document.getElementById("profileImage");
-    const preview = document.getElementById("profileImagePreview");
-    const removeBtn = document.getElementById("removeImageBtn");
+    var input = document.getElementById("profileImage");
+    var preview = document.getElementById("profileImagePreview");
+    var removeBtn = document.getElementById("removeImageBtn");
     
-    input.value = "";
-    preview.src = "#";
-    preview.style.display = "none";
-    removeBtn.style.display = "none";
+    if (input) input.value = "";
+    if (preview) {
+      preview.src = "#";
+      preview.style.display = "none";
+    }
+    if (removeBtn) removeBtn.style.display = "none";
   };
 
   // ✅ دالة التحقق من الكود
-  window.verifyCode = function () {
-    const code = document.getElementById("codeInput").value;
+  window.verifyCode = function() {
+    var code = document.getElementById("codeInput");
+    var codeValue = code ? code.value : "";
 
     fetch("verify.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: new URLSearchParams({ code }),
+      body: new URLSearchParams({ code: codeValue }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -118,41 +174,50 @@ document.addEventListener("DOMContentLoaded", function () {
             rightSection.classList.add("active");
           }
           
-          message.textContent = "✅ Code Verified! Now you can create your profile.";
-          message.className = "verification-message success";
+          if (message) {
+            message.textContent = "✅ Code Verified! Now you can create your profile.";
+            message.className = "verification-message success";
+          }
 
           // Add pulsing effect to the Make Profile button
           if (makeProfileBtn) {
             makeProfileBtn.classList.add("pulsing");
-            setTimeout(() => {
+            setTimeout(function() {
               makeProfileBtn.classList.remove("pulsing");
             }, 3000);
           }
 
-          if (window.sessionUser?.email && window.sessionUser?.password) {
-            document.getElementById("profileEmail").value = window.sessionUser.email;
-            document.getElementById("profilePassword").value = window.sessionUser.password;
+          if (window.sessionUser && window.sessionUser.email && window.sessionUser.password) {
+            var profileEmail = document.getElementById("profileEmail");
+            var profilePassword = document.getElementById("profilePassword");
+            
+            if (profileEmail) profileEmail.value = window.sessionUser.email;
+            if (profilePassword) profilePassword.value = window.sessionUser.password;
           }
-        } else {
+        } else if (message) {
           message.textContent = data.message;
           message.className = "verification-message error";
         }
       })
       .catch((err) => {
-        message.textContent = "❌ Something went wrong.";
-        message.className = "verification-message error";
+        if (message) {
+          message.textContent = "❌ Something went wrong.";
+          message.className = "verification-message error";
+        }
         console.error(err);
       });
   };
 
   // ✅ دالة حفظ البروفايل بعد التحقق
   if (profileForm) {
-    profileForm.addEventListener("submit", function (e) {
+    profileForm.onsubmit = function(e) {
       e.preventDefault();
 
-      const formData = new FormData(profileForm);
-      const code = document.getElementById("codeInput").value;
-      formData.append("code", code);
+      var formData = new FormData(profileForm);
+      var code = document.getElementById("codeInput");
+      var codeValue = code ? code.value : "";
+      
+      formData.append("code", codeValue);
 
       fetch("verify.php", {
         method: "POST",
@@ -161,21 +226,27 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((res) => res.json())
         .then((data) => {
           if (data.status === "success") {
-            message.textContent = data.message;
-            message.className = "verification-message success";
-            setTimeout(() => {
+            if (message) {
+              message.textContent = data.message;
+              message.className = "verification-message success";
+            }
+            setTimeout(function() {
               window.location.href = data.redirect;
             }, 1500);
-          } else {
+          } else if (message) {
             message.textContent = data.message;
             message.className = "verification-message error";
           }
         })
         .catch((err) => {
-          message.textContent = "❌ Something went wrong.";
-          message.className = "verification-message error";
+          if (message) {
+            message.textContent = "❌ Something went wrong.";
+            message.className = "verification-message error";
+          }
           console.error(err);
         });
-    });
+        
+      return false;
+    };
   }
 });
