@@ -14,14 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = null;
         $role = null;
 
-        // 🔎 أولًا نبحث في جدول admins بواسطة admin_email
-        $stmt = $conn->prepare("SELECT * FROM admins WHERE admin_email = ? LIMIT 1");
+        // 🔎 أولًا نبحث في جدول owner بواسطة owner_email
+        $stmt = $conn->prepare("SELECT * FROM owner WHERE owner_email = ? LIMIT 1");
         $stmt->bind_param("s", $identifier);
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
-            $role = 'admin';
+            $role = 'owner';
         }
         $stmt->close();
 
@@ -43,10 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['is_logged_in'] = true;
                 $_SESSION['role'] = $role;
 
-                if ($role === 'admin') {
-                    $_SESSION['user_id'] = $user['admin_email'];
+                if ($role === 'owner') {
+                    $_SESSION['user_id'] = $user['owner_email'];
                     $_SESSION['user_name'] = 'Administrator';
-                    $response['redirect'] = '../Admin/HomePage/HomePage.php';
+                    $response['redirect'] = '../Owner/Owner.php';
                 } else {
                     $_SESSION['user_id'] = $user['username'];
                     $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];

@@ -39,5 +39,19 @@
     </table>
   </div>
 
+  <!-- Modal for complaint details -->
+  <div id="complaintModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="document.getElementById('complaintModal').style.display='none'">&times;</span>
+      <h3>Complaint Details</h3>
+      <p id="modalMessage"></p>
+      <div class="modal-buttons">
+        <button class="btn btn-resolve" onclick="resolve()">Mark as Resolved</button>
+        <button class="btn btn-remove" onclick="removeVenue()">Remove Venue</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="ReviewComplaints.js"></script>
 </body>
 </html>
