@@ -27,12 +27,14 @@
           <input type="password" id="confirmPassword" name="confirmPassword" required />
         </div>
         <button type="submit" class="submit-btn">Send Me Code</button>
+        <button type="button" id="backBtn" class="back-btn "onclick">Back</button>
       </form>
 
       <div class="code-verification" id="codeVerification" style="display: none;">
         <h3>Enter the Code You Received</h3>
         <input type="text" id="codeInput" placeholder="Enter verification code" />
         <button class="verify-btn" onclick="verifyCode()">Verify</button>
+        <button type="button" class="back-btn" onclick="window.goBack">Back</button>
         <div id="verificationMessage" class="verification-message"></div>
       </div>
     </div>
@@ -57,12 +59,12 @@
         <input type="password" id="profilePassword" name="password" />
       </div>
       <div class="input-group">
-        <label for="firstName">First Name <span style="color:red">*</span></label>
-        <input type="text" id="firstName" name="firstName" maxlength="25" pattern="[A-Za-z]+" title="Only letters allowed" required />
+        <label for="firstName">First Name <span style="color:red" >*</span></label>
+        <input type="text" id="firstName" name="firstName" maxlength="25" pattern="[A-Za-z]+" title="Only letters allowed"  required  oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')" />
       </div>
       <div class="input-group">
         <label for="lastName">Last Name <span style="color:red">*</span></label>
-        <input type="text" id="lastName" name="lastName" maxlength="25" pattern="[A-Za-z]+" title="Only letters allowed" required />
+        <input type="text" id="lastName" name="lastName" maxlength="25" pattern="[A-Za-z]+" title="Only letters allowed" required  oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')" />
       </div>
       <div class="input-group">
         <label for="username">Username <span style="color:red">*</span></label>
@@ -103,8 +105,16 @@
           <button type="button" id="removeImageBtn" style="margin-top: 10px; display: none;" onclick="removeImage()">❌ Remove Image</button>
         </div>
       </div>
-      <button type="submit" class="submit-btn">Save Profile</button>
+      <button type="submit" class="submit-btn save-profile-btn">Save Profile</button>
+      <button type="button" class="back-btn" onclick="window.goBack">Back</button>
+
     </form>
   </div>
+  
+  <!-- Hebrew Button Layout Example (Initially Hidden) -->
+  <div class="rtl-buttons-container" style="display: none;" dir="rtl">
+    <button class="rtl-option-btn rtl-primary-btn">בחירת קובץ</button>
+    <button class="rtl-option-btn rtl-secondary-btn">לא נבחר קובץ</button>
+  </div>
 </body>
-</html>
+</html> 

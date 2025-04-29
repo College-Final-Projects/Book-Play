@@ -91,27 +91,75 @@ button:hover {
   text-decoration: underline;
 }
 
-/* Decorative Background Icons */
-.bg-icons img {
+/* Decorative Background Icons using Bootstrap Icons */
+.bg-icons i.bi {
   position: absolute;
-  width: 15%;
-  max-width: 260px;
-  opacity: 0.15;
+  font-size: 8rem; 
+  opacity: 0.3; /* Increased from 0.15 to make icons more visible */
   pointer-events: none;
   animation: float 12s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  z-index: 1;
+  color: #1e293b; /* Added a base color for all icons */
 }
 
-.icon1 { top: 5%; left: 2%; filter: drop-shadow(0 0 20px #38bdf8); }
-.icon2 { top: 35%; left: 2%; filter: drop-shadow(0 0 20px #22c55e); }
-.icon3 { bottom: 5%; left: 2%; filter: drop-shadow(0 0 20px #94a3b8); }
+/* Individual icon styling */
+.icon1 {
+  top: 5%;
+  left: 2%;
+  filter: drop-shadow(0 0 20px #38bdf8);
+  font-size: 9rem;
+  color: #166aa8; /* Basketball color */
+}
 
-.icon4 { top: 5%; right: 2%; filter: drop-shadow(0 0 20px #60a5fa); }
-.icon5 { top: 35%; right: 2%; filter: drop-shadow(0 0 20px #34d399); }
-.icon6 { bottom: 5%; right: 2%; filter: drop-shadow(0 0 20px #94a3b8); }
+.icon2 {
+  top: 35%;
+  left: 2%;
+  filter: drop-shadow(0 0 20px #22c55e);
+  font-size: 9.5rem;
+  color: #16803b; /* People color */
+}
+
+.icon3 {
+  bottom: 5%;
+  left: 2%;
+  filter: drop-shadow(0 0 20px #94a3b8);
+  font-size: 8.5rem;
+  color: #92d050; /* Tennis ball color */
+}
+
+.icon4 {
+  top: 5%;
+  right: 2%;
+  filter: drop-shadow(0 0 20px #60a5fa);
+  font-size: 9rem;
+  color: #3b4d61; /* Stadium color */
+}
+
+.icon5 {
+  top: 35%;
+  right: 2%;
+  filter: drop-shadow(0 0 20px #34d399);
+  font-size: 8.8rem;
+  color: #0077c2; /* Search color */
+}
+
+.icon6 {
+  bottom: 5%;
+  right: 2%;
+  filter: drop-shadow(0 0 20px #94a3b8);
+  font-size: 9rem;
+  color: #4b7a36; /* Group player color */
+}
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-10px); }
 }
 
 /* Media Queries for Responsiveness */
@@ -128,8 +176,10 @@ button:hover {
     padding: 12px;
   }
   
-  .bg-icons img {
-    width: 20%;
+  .bg-icons i.bi {
+    font-size: 7rem;
+    width: 160px;
+    height: 160px;
   }
 }
 
@@ -157,8 +207,10 @@ button:hover {
     display: none;
   }
   
-  .bg-icons img {
-    width: 25%;
+  .bg-icons i.bi {
+    font-size: 6rem;
+    width: 120px;
+    height: 120px;
   }
 }
 
@@ -169,7 +221,7 @@ button:hover {
   }
   
   .icon1, .icon3, .icon4, .icon6 {
-    opacity: 0.1;
+    opacity: 0.2;
   }
 }
 
@@ -193,7 +245,7 @@ button:hover {
   }
   
   /* Hide all background icons in landscape mobile */
-  .bg-icons img {
+  .bg-icons i.bi {
     display: none;
   }
 }

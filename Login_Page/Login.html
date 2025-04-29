@@ -2,22 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Book&Play</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <link rel="stylesheet" href="Login.css">
-  <script src="Login.js"></script>
+  <script src="Login.js" defer></script>
 </head>
 <body>
-<!-- الخلفية بالأيقونات -->
+<!-- Background with Bootstrap Icons -->
 <div class="bg-icons">
-  <img src="../Images/TennisPlayer_icon.png" class="icon1" alt="">
-  <img src="../Images/GroupPlayers_icon.png" class="icon2" alt="">
-  <img src="../Images/FootBallPlayer_icon.png" class="icon3" alt="">
-  <img src="../Images/Facility_icon.png" class="icon4" alt="">
-  <img src="../Images/SearchPlayer_icon.png" class="icon5" alt="">
-  <img src="../Images/Booking_icon.png" class="icon6" alt="">
+  <i class="bi bi-dribbble icon1" alt="Tennis"></i>
+  <i class="bi bi-people-fill icon2" alt="Group Players"></i>
+  <i class=" bi bi-record-circle icon3" alt="Football"></i>
+  <i class="bi bi-building icon4" alt="Facility"></i>
+  <i class="bi bi-search icon5" alt="Search Player"></i>
+  <i class="bi bi-calendar-check icon6" alt="Booking"></i>
 </div>
 
-<!-- نموذج تسجيل الدخول -->
+<!-- Login Form -->
 <div class="container">
   <h2 class="logo">BOOK&PLAY</h2>
 
@@ -33,8 +38,11 @@
   </div>
 
   <div class="slogan">
-    Forgot Your Password?? <a href="../Reset_Password/Reset_Password.php">Rest Paswword</a>
+    Forgot Your Password? <a href="../Reset_Password/Reset_Password.php">Reset Password</a>
   </div>
 </div>
+
+<!-- Bootstrap JS (optional, only needed if you want to use Bootstrap's JavaScript components) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

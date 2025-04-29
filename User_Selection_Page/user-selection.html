@@ -10,7 +10,7 @@
 
     <div class="container">
         <h1>Select Your User Type</h1>
-        <p>Choose whether you are a Player or a Facility Owner</p>
+        <p>Choose whether you are a Player, Facility Owner, or Admin</p>
 
         <div class="user-options">
             <div class="user-card player" id="player" onclick="window.location.href='../player/HomePage/HomePage.php'">
@@ -25,6 +25,11 @@
                 <p>Manage your sports facility, book reservations, and connect with players.</p>
             </div>
             
+            <div class="user-card admin" id="admin" onclick="window.location.href='../admin/Dashboard/dashboard.php'">
+                <img src="../Images/admin_icon.png" alt="Admin">
+                <h2>Admin</h2>
+                <p>Manage the platform, monitor activities, and ensure smooth operations.</p>
+            </div>
         </div>
     </div>
 </body>

@@ -11,6 +11,13 @@
   --radius: 12px;
 }
 
+/* Base reset for better responsiveness */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 /* General layout */
 body {
   margin: 0;
@@ -21,6 +28,8 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 40px 20px;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* Admin Navbar */
@@ -43,6 +52,7 @@ body {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  gap: 15px;
 }
 
 .logo {
@@ -50,6 +60,7 @@ body {
   font-weight: bold;
   background: linear-gradient(to right, var(--primary), var(--secondary));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -59,6 +70,8 @@ body {
   gap: 15px;
   margin: 0;
   padding: 0;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .nav-links li a {
@@ -71,6 +84,7 @@ body {
   color: #0f172a;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(6px);
+  display: block;
 }
 
 .nav-links li a:hover,
@@ -85,10 +99,30 @@ body {
   font-weight: 600;
 }
 
+/* Mobile menu toggle */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
+  cursor: pointer;
+}
+
+.menu-toggle span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background-color: #0f172a;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
 /* Title */
 .admin-title {
   text-align: center;
   margin: 40px 0 20px;
+  width: 100%;
 }
 
 .logo-title {
@@ -96,6 +130,7 @@ body {
   font-weight: bold;
   background: linear-gradient(to right, var(--primary), var(--secondary));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -108,7 +143,7 @@ body {
   box-shadow: var(--shadow);
   padding: 30px;
   margin-bottom: 40px;
-  width: 90%;
+  width: 95%;
   max-width: 1000px;
   animation: fadeInUp 0.4s ease;
 }
@@ -122,6 +157,13 @@ body {
   width: 100%;
   border-collapse: collapse;
   border: 1px solid #e2e8f0;
+  overflow-x: auto;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .fresh-table th, .fresh-table td {
@@ -154,6 +196,7 @@ body {
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   width: 250px;
+  max-width: 100%;
   background-color: #f8fafc;
   color: var(--text-main);
 }
@@ -166,6 +209,7 @@ body {
   cursor: pointer;
   font-size: 14px;
   transition: all 0.3s ease;
+  min-width: 100px;
 }
 
 .btn:hover {
@@ -201,24 +245,259 @@ body {
   display: none;
 }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 .message-box {
   margin: 10px 0;
   padding: 10px;
   font-weight: bold;
   border-radius: 5px;
   display: none;
+  width: 100%;
+  text-align: center;
 }
+
 .message-success {
   color: green;
   background-color: #e3f9e5;
   border: 1px solid #8bd48b;
 }
+
 .message-error {
   color: red;
   background-color: #fce4e4;
   border: 1px solid #f5a3a3;
 }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Media Queries */
+
+/* Large screens (desktops, up to 1200px) */
+@media screen and (max-width: 1200px) {
+  .fresh-card {
+    padding: 25px;
+  }
+  
+  .toggle-buttons {
+    gap: 15px;
+  }
+}
+
+/* Medium screens (tablets, up to 992px) */
+@media screen and (max-width: 992px) {
+  .nav-container {
+    padding: 0 15px;
+  }
+  
+  .logo-title {
+    font-size: 36px;
+  }
+  
+  .fresh-card {
+    padding: 20px;
+  }
+  
+  .fresh-table th, .fresh-table td {
+    padding: 12px 10px;
+    font-size: 14px;
+  }
+  
+  .btn {
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+  
+  .add-sport-form input {
+    width: 220px;
+  }
+}
+
+/* Small screens (landscape phones, up to 768px) */
+@media screen and (max-width: 768px) {
+  body {
+    padding: 30px 15px;
+  }
+  
+  .admin-navbar {
+    padding: 12px 0;
+  }
+  
+  .nav-container {
+    justify-content: center;
+  }
+  
+  .logo {
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .nav-links {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .nav-links li a {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+  
+  .logo-title {
+    font-size: 32px;
+  }
+  
+  .admin-title {
+    margin: 30px 0 15px;
+  }
+  
+  .fresh-card {
+    padding: 20px 15px;
+    width: 100%;
+  }
+  
+  .fresh-card h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .toggle-buttons {
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+  
+  .fresh-table th, .fresh-table td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+  
+  .add-sport-form {
+    gap: 10px;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .add-sport-form input {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .btn {
+    padding: 8px 12px;
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+/* Extra small screens (phones, up to 576px) */
+@media screen and (max-width: 576px) {
+  body {
+    padding: 20px 10px;
+  }
+  
+  /* Implement hamburger menu for mobile */
+  .menu-toggle {
+    display: flex;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+  
+  .nav-container {
+    flex-direction: column;
+    align-items: center;
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+  
+  .nav-links {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+  }
+  
+  .nav-links.active {
+    max-height: 500px;
+  }
+  
+  .nav-links li {
+    width: 100%;
+  }
+  
+  .nav-links li a {
+    text-align: center;
+    width: 100%;
+  }
+  
+  .logo-title {
+    font-size: 28px;
+  }
+  
+  .admin-title {
+    margin: 25px 0 15px;
+  }
+  
+  .fresh-card {
+    padding: 15px 10px;
+  }
+  
+  .fresh-card h2 {
+    font-size: 18px;
+  }
+  
+  .toggle-buttons {
+    flex-direction: column;
+    width: 100%;
+    max-width: 250px;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 8px;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+  
+  .fresh-table th, .fresh-table td {
+    padding: 8px 5px;
+    font-size: 12px;
+  }
+  
+  .message-box {
+    padding: 8px;
+    font-size: 13px;
+  }
+}
+
+/* Very small screens (small phones, up to 375px) */
+@media screen and (max-width: 375px) {
+  .logo-title {
+    font-size: 24px;
+  }
+  
+  .fresh-card {
+    padding: 12px 8px;
+  }
+  
+  .fresh-table th, .fresh-table td {
+    padding: 6px 4px;
+    font-size: 11px;
+  }
+}
+
+/* CSS for JavaScript-controlled mobile menu */
+/* Add this JavaScript to make the mobile menu work:
+document.addEventListener('DOMContentLoaded', function() {
+  const menuToggle = document.querySelector('.menu-toggle');
+  const navLinks = document.querySelector('.nav-links');
+  
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener('click', function() {
+      navLinks.classList.toggle('active');
+    });
+  }
+});
+*/
