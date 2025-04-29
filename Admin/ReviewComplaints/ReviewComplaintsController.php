@@ -72,9 +72,9 @@ switch ($action) {
         
         if ($stmt->execute()) {
             // Now delete related reports
-            $sql = "DELETE FROM reports WHERE facilities_id = ? AND type = 'report_place'";
+            $sql = "DELETE FROM reports WHERE report_id = ?";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $facility_id);
+            $stmt->bind_param("i", $report_id);
             $stmt->execute();
             
             echo json_encode(['success' => true]);
