@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Venues - SportSpot</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="ManageVenue.css">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBkI9vyPtSSY69Wctw-vuklJHDS24FKfs&libraries=places"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Book&play</div>
+            <div class="nav-links">
+                <a href="#" class="nav-link active">Manage Venue</a>
+                <a href="#" class="nav-link">Bookings</a>
+                <a href="#" class="nav-link">Analytics</a>
+                <a href="#" class="nav-link">Messages</a>
+            </div>
+            <div class="nav-profile">
+                <img src="https://via.placeholder.com/40" alt="Profile" class="profile-img">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="main-container">
+        <!-- Header with Add New Venue Button and Search/Sort -->
+        <div class="header-section">
+            <div class="header-left">
+                <h1>Manage Your Venues</h1>
+                <p class="slogan">Control and optimize your sports facilities with ease</p>
+            </div>
+            <div class="header-right">
+                <button id="addVenueBtn" class="add-venue-btn">
+                    <i class="bi bi-plus-circle-fill"></i> Add New Venue
+                </button>
+            </div>
+        </div>
+
+        <!-- Search and Sort Section -->
+        <div class="search-sort-section">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="venueSearch" placeholder="Search venues by name, sport, or location">
+            </div>
+            <div class="sort-dropdown">
+                <label for="sortBy">Sort By:</label>
+                <select id="sortBy">
+                    <option value="popularity">Popularity</option>
+                    <option value="rating">Rating</option>
+                    <option value="alphabetical">Alphabetical</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Venue Cards Container -->
+        <div class="venue-cards-container" id="venueCardsContainer">
+            <!-- Venue cards will be dynamically generated here -->
+        </div>
+    </div>
+
+    <!-- Edit Venue Modal -->
+    <div class="modal" id="editVenueModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Edit Venue</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="venueForm">
+                    <input type="hidden" id="venueId">
+                    
+                    <div class="form-group">
+                        <label for="venueName">Venue Name</label>
+                        <input type="text" id="venueName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sportType">Sport Type</label>
+                        <select id="sportType" required>
+                            <option value="football">Football</option>
+                            <option value="basketball">Basketball</option>
+                            <option value="tennis">Tennis</option>
+                            <option value="swimming">Swimming</option>
+                            <option value="volleyball">Volleyball</option>
+                            <option value="badminton">Badminton</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="venueImage">Venue Image</label>
+                        <div class="image-upload-container">
+                            <div class="image-preview" id="imagePreview">
+                                <i class="bi bi-image"></i>
+                                <span>No image selected</span>
+                            </div>
+                            <label for="venueImage" class="upload-btn">
+                                <i class="bi bi-upload"></i> Upload Image
+                            </label>
+                            <input type="file" id="venueImage" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="venueDescription">Description</label>
+                        <textarea id="venueDescription" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="hourlyPrice">Hourly Price ($)</label>
+                            <input type="number" id="hourlyPrice" min="0" step="0.01" required>
+                        </div>
+                        
+                        <div class="form-group half">
+                            <label for="availability">Availability</label>
+                            <div class="toggle-container">
+                                <input type="checkbox" id="availability" class="toggle-input">
+                                <label for="availability" class="toggle-label">
+                                    <span class="toggle-on">Available</span>
+                                    <span class="toggle-off">Unavailable</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" required>
+                        <div id="mapContainer" class="map-container">
+                            <!-- Map will be loaded here -->
+                            <div class="map-placeholder">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>Map will appear here</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Additional Facilities</label>
+                        <div class="facilities-container">
+                            <div class="facility-item">
+                                <input type="checkbox" id="facilityLights">
+                                <label for="facilityLights"><i class="bi bi-lightbulb"></i> Lights</label>
+                            </div>
+                            <div class="facility-item">
+                                <input type="checkbox" id="facilityParking">
+                                <label for="facilityParking"><i class="bi bi-p-square"></i> Parking</label>
+                            </div>
+                            <div class="facility-item">
+                                <input type="checkbox" id="facilityChangingRooms">
+                                <label for="facilityChangingRooms"><i class="bi bi-door-closed"></i> Changing Rooms</label>
+                            </div>
+                            <div class="facility-item">
+                                <input type="checkbox" id="facilityWater">
+                                <label for="facilityWater"><i class="bi bi-droplet"></i> Water</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="cancel-btn" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="save-btn" id="saveVenueBtn">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmationModal">
+        <div class="modal-content confirmation-content">
+            <div class="modal-header">
+                <h2>Confirm Deletion</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this venue? This action cannot be undone.</p>
+                <div class="confirmation-actions">
+                    <button class="cancel-btn" id="cancelDeleteBtn">Cancel</button>
+                    <button class="delete-btn" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Decorative Background Icons -->
+    <div class="bg-icons">
+        <i class="bi bi-dribbble icon1"></i>
+        <i class="bi bi-people icon2"></i>
+        <i class="bi bi-award icon3"></i>
+        <i class="bi bi-building icon4"></i>
+        <i class="bi bi-search icon5"></i>
+        <i class="bi bi-trophy icon6"></i>
+    </div>
+
+    <script src="ManageVenue.js"></script>
+</body>
+</html>
