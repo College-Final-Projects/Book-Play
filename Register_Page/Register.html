@@ -27,14 +27,14 @@
           <input type="password" id="confirmPassword" name="confirmPassword" required />
         </div>
         <button type="submit" class="submit-btn">Send Me Code</button>
-        <button type="button" id="backBtn" class="back-btn "onclick">Back</button>
+        <button type="button" id="backBtn" class="back-btn" onclick="window.location.href='../Login_Page/login.php'">Back</button>
       </form>
 
       <div class="code-verification" id="codeVerification" style="display: none;">
         <h3>Enter the Code You Received</h3>
         <input type="text" id="codeInput" placeholder="Enter verification code" />
         <button class="verify-btn" onclick="verifyCode()">Verify</button>
-        <button type="button" class="back-btn" onclick="window.goBack">Back</button>
+        <button type="button" class="back-btn" onclick="window.goBack()">Back</button>
         <div id="verificationMessage" class="verification-message"></div>
       </div>
     </div>
@@ -106,7 +106,7 @@
         </div>
       </div>
       <button type="submit" class="submit-btn save-profile-btn">Save Profile</button>
-      <button type="button" class="back-btn" onclick="window.goBack">Back</button>
+      <button type="button" class="back-btn" onclick="window.goBack()">Back</button>
 
     </form>
   </div>
@@ -117,4 +117,4 @@
     <button class="rtl-option-btn rtl-secondary-btn">לא נבחר קובץ</button>
   </div>
 </body>
-</html> 
+</html>

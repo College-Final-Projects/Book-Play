@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const step2 = document.getElementById("step2");
   const step3 = document.getElementById("step3");
 
-  function showStep(stepNumber) {
+  window.showStep = function(stepNumber){
     step1.style.display = stepNumber === 1 ? "block" : "none";
     step2.style.display = stepNumber === 2 ? "block" : "none";
     step3.style.display = stepNumber === 3 ? "block" : "none";
