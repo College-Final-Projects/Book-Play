@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book&Play - Bookings</title>
+  <link rel="stylesheet" href="Bookings.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+ 
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="fresh-navbar">
+    <div class="logo">Book&Play</div>
+    <button class="mobile-menu-btn">
+      <i class="fas fa-bars"></i>
+    </button>
+    <ul class="nav-links">
+        <li><a href="../HomePage/HomePage.php">HomePage</a></li>
+        <li><a href="../ManageVenue/ManageVenue.php" >Manage Venue</a></li>
+        <li><a href="../Bookings/Bookings.php" class="active">Bookings</a></li>
+        <li><a href="../Analytics/Analytics.php">Analytics</a></li>
+        <li><a href="../Messages/Messages.php">Messages</a></li>
+        <li><a href="../../Login_Page/Login.php" class="logout">Logout</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-left">
+        <h1 class="page-title">My Bookings</h1>
+        <p class="page-subtitle">View and manage all your venue bookings</p>
+      </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="search-filter-wrapper">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search bookings by name, sport, or location...">
+      </div>
+      <div class="sort-container">
+        <span class="sort-label">Sort by:</span>
+        <select class="sort-select">
+          <option value="date-desc">Date (Newest)</option>
+          <option value="date-asc">Date (Oldest)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Booking Cards -->
+    <div class="booking-card">
+      <h2 class="venue-name">Sunrise Conference Center</h2>
+      <div class="table-responsive">
+        <table class="booking-table">
+          <thead>
+            <tr>
+                <th>Username</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>chris</td>
+              <td>9:00 AM - 5:00 PM</td>
+              <td>basketball_court</td>
+              <td>
+                <button>View Details</button>
+                <button>Send Message</button>
+            </td>
+
+            </tr>
+            <tr>
+              <td>bakir</td>
+              <td>1:00 PM - 4:00 PM</td>
+              <td>football place</td>
+              <td>
+                <button>View Details</button>
+                <button>Send Message</button>
+            </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="booking-card">
+      <h2 class="venue-name">Downtown Event Space</h2>
+      <div class="table-responsive">
+        <table class="booking-table">
+          <thead>
+            <tr>
+                <th>Username</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ahmd</td>
+              <td>6:00 PM - 11:00 PM</td>
+              <td>Swimming</td>
+              <td>
+                <button>View Details</button>
+                <button>Send Message</button>
+            </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2>Send Message<h2>
+      <textarea placeholder="Enter your booking notes here..."></textarea>
+      <div class="modal-buttons">
+        <button class="cancel-btn">Cancel</button>
+        <button class="save-btn">Send Message</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="Bookings.js" defer></script>
+
+</body>
+</html>
