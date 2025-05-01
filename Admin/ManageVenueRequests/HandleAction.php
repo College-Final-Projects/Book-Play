@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'approve') {
         // ✅ تحديث is_Accepted وحذف التقرير
-        $update = $conn->prepare("UPDATE sportfacilities SET is_Accepted = 1 WHERE facilities_id = ?");
+        $update = $conn->prepare("UPDATE sportfacilities SET is_Accepted = 1, is_available = 1 WHERE facilities_id = ?");
         $update->bind_param("i", $facilitiesId);
         $update->execute();
         $update->close();
