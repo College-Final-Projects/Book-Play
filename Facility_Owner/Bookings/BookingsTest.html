@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venue Booking Management</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.21.3/babel.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --body-bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-sm: 0.125rem;
+            --radius: 0.25rem;
+            --radius-md: 0.375rem;
+            --radius-lg: 0.5rem;
+            --radius-xl: 1rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--body-bg);
+            color: var(--dark);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        #root {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header styles */
+        .header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .header h1 i {
+            margin-right: 0.75rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Main content styles */
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Venues grid styles */
+        .venues-grid {
+            padding: 1.5rem;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .venues-grid.collapsed {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .venues-grid.collapsed {
+                display: block;
+                width: 33.333%;
+            }
+        }
+
+        .venues-grid h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .venues-grid h2 i {
+            margin-right: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Venue card styles */
+        .venue-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .venue-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .venue-image {
+            width: 100%;
+            height: 12rem;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .venue-card:hover .venue-image {
+            filter: brightness(1.05);
+        }
+
+        .venue-details {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .venue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .venue-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .venue-rating {
+            display: flex;
+            align-items: center;
+            color: var(--warning);
+            font-weight: 500;
+        }
+
+        .venue-rating i {
+            margin-right: 0.25rem;
+        }
+
+        .venue-location {
+            color: var(--secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .venue-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .venue-sport {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+        }
+
+        .venue-sport i {
+            margin-right: 0.25rem;
+        }
+
+        .venue-players {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+        }
+
+        .venue-players i {
+            margin-right: 0.25rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: var(--radius);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-light);
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* Bookings panel styles */
+        .bookings-panel {
+            flex: 1;
+            display: flex;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 16rem;
+            background-color: var(--light);
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-title {
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .sidebar-close {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--secondary);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: var(--radius);
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-close:hover {
+            color: var(--danger);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .sidebar-content {
+            padding: 1rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .month-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .month-item button {
+            width: 100%;
+            text-align: left;
+            padding: 0.625rem 1rem;
+            border-radius: var(--radius);
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .month-item button i {
+            margin-right: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .month-item button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .month-item button.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Content area styles */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .days-selection {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: var(--light);
+        }
+
+        .days-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .days-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .day-btn {
+            padding: 0.375rem 0.875rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .day-btn:not(.active) {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: var(--dark);
+        }
+
+        .day-btn:not(.active):hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .day-btn.active {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Bookings table styles */
+        .bookings-content {
+            flex: 1;
+            overflow: auto;
+            padding: 1.5rem;
+        }
+
+        .bookings-title {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .bookings-title i {
+            margin-right: 0.5rem;
+            color: var(--primary);
+        }
+
+        .table-container {
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .bookings-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .bookings-table th {
+            background-color: var(--light);
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .bookings-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            vertical-align: middle;
+        }
+
+        .bookings-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .bookings-table tr:hover {
+            background-color: rgba(0, 0, 0, 0.01);
+        }
+
+        .username {
+            font-weight: 500;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .username i {
+            margin-right: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .player-count {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border-radius: var(--radius-xl);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .time-range {
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+        }
+
+        .time-range i {
+            margin-right: 0.5rem;
+        }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: var(--secondary);
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        /* Animation */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Toast notification */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+        }
+
+        .toast {
+            background-color: var(--card-bg);
+            border-left: 4px solid var(--primary);
+            box-shadow: var(--shadow-lg);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            min-width: 18rem;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            color: var(--primary);
+            font-size: 1.25rem;
+            margin-right: 0.75rem;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .toast-message {
+            font-size: 0.75rem;
+            color: var(--secondary);
+        }
+
+        .toast-close {
+            color: var(--secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            margin-left: 0.5rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                z-index: 100;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .mobile-back {
+                display: flex;
+                align-items: center;
+                margin-bottom: 1rem;
+                color: var(--primary);
+                font-weight: 500;
+                cursor: pointer;
+            }
+
+            .mobile-back i {
+                margin-right: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const sportIcons = {
+            "Soccer": "fas fa-futbol",
+            "Tennis": "fas fa-table-tennis",
+            "Basketball": "fas fa-basketball-ball",
+            "Volleyball": "fas fa-volleyball-ball",
+            "Swimming": "fas fa-swimming-pool",
+            "Golf": "fas fa-golf-ball"
+        };
+
+        const Toast = ({ title, message, onClose }) => {
+            const [visible, setVisible] = useState(false);
+            
+            useEffect(() => {
+                setVisible(true);
+                const timer = setTimeout(() => {
+                    setVisible(false);
+                    setTimeout(onClose, 300);
+                }, 3000);
+                
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className={`toast ${visible ? 'show' : ''}`}>
+                    <div className="toast-icon">
+                        <i className="fas fa-check-circle"></i>
+                    </div>
+                    <div className="toast-content">
+                        <div className="toast-title">{title}</div>
+                        <div className="toast-message">{message}</div>
+                    </div>
+                    <button className="toast-close" onClick={onClose}>
+                        <i className="fas fa-times"></i>
+                    </button>
+                </div>
+            );
+        };
+
+        const VenueBookingDisplay = () => {
+            const [selectedVenue, setSelectedVenue] = useState(null);
+            const [selectedMonth, setSelectedMonth] = useState(null);
+            const [selectedDay, setSelectedDay] = useState(null);
+            const [toasts, setToasts] = useState([]);
+            const [sidebarOpen, setSidebarOpen] = useState(false);
+
+            // Sample data for the demonstration
+            const venues = [
+                {
+                    id: 1,
+                    name: "Downtown Soccer Field",
+                    image: "https://via.placeholder.com/640x360?text=Soccer+Field",
+                    rating: 4,
+                    players: { current: 2, max: 10 },
+                    location: "Central District",
+                    sport: "Soccer",
+                    bookings: {
+                        "May 2025": {
+                            "01/05/2025": [
+                                {
+                                    username: "SoccerFan42",
+                                    players: { current: 8, max: 12 },
+                                    timeRange: "18:00-20:00"
+                                },
+                                {
+                                    username: "TeamSpirit",
+                                    players: { current: 10, max: 12 },
+                                    timeRange: "14:00-16:00"
+                                }
+                            ],
+                            "03/05/2025": [
+                                {
+                                    username: "SoccerFan42",
+                                    players: { current: 8, max: 12 },
+                                    timeRange: "18:00-20:00"
+                                },
+                                {
+                                    username: "TeamSpirit",
+                                    players: { current: 10, max: 12 },
+                                    timeRange: "14:00-16:00"
+                                }
+                            ],
+                            "4/05/2025": [
+                                {
+                                    username: "SoccerFan42",
+                                    players: { current: 8, max: 12 },
+                                    timeRange: "18:00-20:00"
+                                },
+                                {
+                                    username: "TeamSpirit",
+                                    players: { current: 10, max: 12 },
+                                    timeRange: "14:00-16:00"
+                                }
+                            ],
+                            "05/05/2025": [
+                                {
+                                    username: "SoccerFan42",
+                                    players: { current: 8, max: 12 },
+                                    timeRange: "18:00-20:00"
+                                },
+                                {
+                                    username: "TeamSpirit",
+                                    players: { current: 10, max: 12 },
+                                    timeRange: "14:00-16:00"
+                                }
+                            ],
+                            "08/05/2025": [
+                                {
+                                    username: "SoccerFan42",
+                                    players: { current: 8, max: 12 },
+                                    timeRange: "18:00-20:00"
+                                },
+                                {
+                                    username: "TeamSpirit",
+                                    players: { current: 10, max: 12 },
+                                    timeRange: "14:00-16:00"
+                                }
+                            ],
+                            "09/05/2025": [
+                                {
+                                    username: "SoccerFan42",
+                                    players: { current: 8, max: 12 },
+                                    timeRange: "18:00-20:00"
+                                },
+                                {
+                                    username: "TeamSpirit",
+                                    players: { current: 10, max: 12 },
+                                    timeRange: "14:00-16:00"
+                                }
+                            ],
+                            "11/05/2025": [
+                                {
+                                    username: "SoccerFan42",
+                                    players: { current: 8, max: 12 },
+                                    timeRange: "18:00-20:00"
+                                },
+                                {
+                                    username: "TeamSpirit",
+                                    players: { current: 10, max: 12 },
+                                    timeRange: "14:00-16:00"
+                                }
+                            ],
+                            "21/05/2025": [
+                                {
+                                    username: "SoccerFan42",
+                                    players: { current: 8, max: 12 },
+                                    timeRange: "18:00-20:00"
+                                },
+                                {
+                                    username: "TeamSpirit",
+                                    players: { current: 10, max: 12 },
+                                    timeRange: "14:00-16:00"
+                                }
+                            ],
+                            "22/05/2025": [
+                                {
+                                    username: "SoccerFan42",
+                                    players: { current: 8, max: 12 },
+                                    timeRange: "18:00-20:00"
+                                },
+                                {
+                                    username: "TeamSpirit",
+                                    players: { current: 10, max: 12 },
+                                    timeRange: "14:00-16:00"
+                                }
+                            ],
+                            "15/05/2025": [
+                                {
+                                    username: "SportsClub",
+                                    players: { current: 6, max: 10 },
+                                    timeRange: "17:00-19:00"
+                                }
+                            ]
+                        },
+                        "June 2025": {
+                            "05/06/2025": [
+                                {
+                                    username: "SummerLeague",
+                                    players: { current: 12, max: 12 },
+                                    timeRange: "16:00-18:00"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    id: 2,
+                    name: "Riverside Tennis Courts",
+                    image: "https://via.placeholder.com/640x360?text=Tennis+Courts",
+                    rating: 5,
+                    players: { current: 4, max: 8 },
+                    location: "East River Area",
+                    sport: "Tennis",
+                    bookings: {
+                        "May 2025": {
+                            "02/05/2025": [
+                                {
+                                    username: "TennisAce",
+                                    players: { current: 4, max: 4 },
+                                    timeRange: "09:00-11:00"
+                                }
+                            ]
+                        },
+                        "July 2025": {
+                            "10/07/2025": [
+                                {
+                                    username: "SummerMatch",
+                                    players: { current: 2, max: 4 },
+                                    timeRange: "16:00-18:00"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    id: 3,
+                    name: "Community Basketball Court",
+                    image: "https://via.placeholder.com/640x360?text=Basketball+Court",
+                    rating: 4.5,
+                    players: { current: 8, max: 15 },
+                    location: "West Town",
+                    sport: "Basketball",
+                    bookings: {
+                        "May 2025": {
+                            "05/05/2025": [
+                                {
+                                    username: "HoopDreams",
+                                    players: { current: 10, max: 10 },
+                                    timeRange: "17:00-19:00"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ];
+
+            const handleViewBookings = (venue) => {
+                setSelectedVenue(venue);
+                setSelectedMonth(null);
+                setSelectedDay(null);
+                setSidebarOpen(true);
+            };
+
+            const handleMonthClick = (month) => {
+                setSelectedMonth(month);
+                setSelectedDay(null);
+            };
+
+            const handleDayClick = (day) => {
+                setSelectedDay(day);
+            };
+
+            const getAvailableMonths = () => {
+                if (!selectedVenue) return [];
+                return Object.keys(selectedVenue.bookings);
+            };
+
+            const getAvailableDays = () => {
+                if (!selectedVenue || !selectedMonth) return [];
+                return Object.keys(selectedVenue.bookings[selectedMonth]);
+            };
+
+            const getDayBookings = () => {
+                if (!selectedVenue || !selectedMonth || !selectedDay) return [];
+                return selectedVenue.bookings[selectedMonth][selectedDay];
+            };
+
+            const handleSendMessage = (username) => {
+                const toastId = Date.now();
+                setToasts([
+                    ...toasts,
+                    {
+                        id: toastId,
+                        title: "Message Sent",
+                        message: `Your message to ${username} has been sent.`
+                    }
+                ]);
+            };
+
+            const handleCloseBookingsPanel = () => {
+                setSelectedVenue(null);
+                setSelectedMonth(null);
+                setSelectedDay(null);
+                setSidebarOpen(false);
+            };
+
+            const removeToast = (id) => {
+                setToasts(toasts.filter(toast => toast.id !== id));
+            };
+
+            return (
+                <div className="app-container">
+                    <header className="header">
+                        <h1><i className="fas fa-calendar-alt"></i> Venue Booking Management</h1>
+                        <div className="header-actions">
+                            <button className="btn btn-outline">
+                                <i className="fas fa-plus"></i> Add New Venue
+                            </button>
+                        </div>
+                    </header>
+
+                    <div className="main-content">
+                        {/* Venues Grid */}
+                        <div className={`venues-grid ${selectedVenue ? 'collapsed' : ''}`}>
+                            <h2><i className="fas fa-map-marker-alt"></i> Your Venues</h2>
+                            <div className="grid">
+                                {venues.map((venue) => (
+                                    <div key={venue.id} className="venue-card">
+                                        <img
+                                            src={venue.image}
+                                            alt={venue.name}
+                                            className="venue-image"
+                                        />
+                                        <div className="venue-details">
+                                            <div className="venue-header">
+                                                <h3 className="venue-name">{venue.name}</h3>
+                                                <div className="venue-rating">
+                                                    <i className="fas fa-star"></i>
+                                                    {venue.rating}
+                                                </div>
+                                            </div>
+                                            <p className="venue-location">
+                                                <i className="fas fa-map-pin"></i> {venue.location}
+                                            </p>
+                                            <div className="venue-info">
+                                                <span className="venue-sport">
+                                                    <i className={sportIcons[venue.sport] || "fas fa-running"}></i>
+                                                    {venue.sport}
+                                                </span>
+                                                <span className="venue-players">
+                                                    <i className="fas fa-users"></i>
+                                                    {venue.players.current}/{venue.players.max}
+                                                </span>
+                                            </div>
+                                            <button
+                                                onClick={() => handleViewBookings(venue)}
+                                                className="btn btn-primary btn-block"
+                                            >
+                                                <i className="fas fa-calendar-check"></i>
+                                                View Bookings
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Bookings Panel */}
+                        {selectedVenue && (
+                            <div className="bookings-panel">
+                                {/* Sidebar */}
+                                <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+                                    <div className="sidebar-header">
+                                        <h3 className="sidebar-title">{selectedVenue.name}</h3>
+                                        <button 
+                                            onClick={handleCloseBookingsPanel}
+                                            className="sidebar-close"
+                                        >
+                                            <i className="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div className="sidebar-content">
+                                        <div className="mobile-back" onClick={handleCloseBookingsPanel}>
+                                            <i className="fas fa-arrow-left"></i> Back to Venues
+                                        </div>
+                                        <h4 className="sidebar-label">BOOKING MONTHS</h4>
+                                        <ul className="month-list">
+                                            {getAvailableMonths().map((month) => (
+                                                <li key={month} className="month-item">
+                                                    <button
+                                                        onClick={() => handleMonthClick(month)}
+                                                        className={selectedMonth === month ? 'active' : ''}
+                                                    >
+                                                        <i className={selectedMonth === month ? 'fas fa-calendar-check' : 'far fa-calendar'}></i>
+                                                        {month}
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                {/* Content Area */}
+                                <div className="content-area">
+                                    {/* Days Selection */}
+                                    {selectedMonth && (
+                                        <div className="days-selection">
+                                            <h4 className="days-label">
+                                                DAYS WITH BOOKINGS - {selectedMonth}
+                                            </h4>
+                                            <div className="days-buttons">
+                                                {getAvailableDays().map((day) => (
+                                                    <button
+                                                        key={day}
+                                                        onClick={() => handleDayClick(day)}
+                                                        className={`day-btn ${selectedDay === day ? 'active' : ''}`}
+                                                    >
+                                                        {day}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Booking Details */}
+                                    {selectedDay ? (
+                                        <div className="bookings-content">
+                                            <h4 className="bookings-title">
+                                                <i className="fas fa-clipboard-list"></i>
+                                                Bookings for {selectedDay}
+                                            </h4>
+                                            <div className="table-container">
+                                                <table className="bookings-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Username</th>
+                                                            <th>Players</th>
+                                                            <th>Time Range</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {getDayBookings().map((booking, index) => (
+                                                            <tr key={index}>
+                                                                <td>
+                                                                    <div className="username">
+                                                                        <i className="fas fa-user"></i>
+                                                                        {booking.username}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <span className="player-count">
+                                                                        <i className="fas fa-users"></i> {booking.players.current}/{booking.players.max}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <div className="time-range">
+                                                                        <i className="far fa-clock"></i>
+                                                                        {booking.timeRange}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <button
+                                                                        onClick={() => handleSendMessage(booking.username)}
+                                                                        className="btn btn-outline"
+                                                                    >
+                                                                        <i className="fas fa-comment"></i>
+                                                                        Send Message
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="empty-state">
+                                            {selectedMonth ? (
+                                                <>
+                                                    <i className="far fa-calendar-alt pulse"></i>
+                                                    <p>Select a day to view bookings</p>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <i className="far fa-calendar pulse"></i>
+                                                    <p>Select a month to view available days</p>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Toast Notifications */}
+                    <div className="toast-container">
+                        {toasts.map(toast => (
+                            <Toast
+                                key={toast.id}
+                                title={toast.title}
+                                message={toast.message}
+                                onClose={() => removeToast(toast.id)}
+                            />
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // Render the app
+        ReactDOM.render(<VenueBookingDisplay />, document.getElementById('root'));
+    </script>
+</body>
+</html>
