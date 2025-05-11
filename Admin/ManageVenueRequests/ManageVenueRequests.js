@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function renderReports(reports) {
     venueContainer.innerHTML = "";
 
-    reports.forEach((report) => {
+    reports.forEach((report, index) => {
       const card = document.createElement("div");
       card.className = "venue-card";
       card.innerHTML = `
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <p><strong>Submitted by:</strong> ${report.username}</p>
         <p><strong>Created:</strong> ${report.created_at}</p>
         <div class="actions">
-          <button onclick="openVenue(${report.facilities_id})">View Details</button>
+          <button onclick="openModal(${index})">View Details</button>
           <button class="approve" onclick="handleAction('approve', ${report.report_id}, ${report.facilities_id})">Approve</button>
           <button class="reject" onclick="handleAction('reject', ${report.report_id}, ${report.facilities_id})">Reject</button>
         </div>
@@ -39,12 +39,16 @@ document.addEventListener("DOMContentLoaded", function () {
       venueContainer.appendChild(card);
     });
   }
-  window.openVenue = function (id) {
-    if (!id) {
-      alert("Venue ID not available");
-      return;
-    }
-    window.location.href = `../VenueDetails/VenueDetails.php?id=${id}`;
+
+  window.openModal = function (index) {
+    const report = reportsData[index];
+    modalTitle.textContent = report.suggested_place_name || "Suggested Place";
+    modalMessage.textContent = report.message;
+    modal.style.display = "block";
+  };
+
+  window.closeModal = function () {
+    modal.style.display = "none";
   };
 
   window.handleAction = function (action, reportId, facilitiesId) {
