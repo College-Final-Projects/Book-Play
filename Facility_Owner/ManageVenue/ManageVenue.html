@@ -29,266 +29,94 @@
         <div class="page-header">
             <h1 class="page-title">Manage Your Venues</h1>
             <p class="page-subtitle">Control and optimize your sports facilities with ease</p>
-            <button class="add-venue-btn">Add New Venue  + </button>
+            <button class="add-venue-btn">Add New Venue +</button>
         </div>
+
+        <?php if (!empty($message)): ?>
+        <div class="message"><?php echo $message; ?></div>
+        <?php endif; ?>
 
         <!-- Search and Sort -->
         <div class="search-sort-container">
             <div class="search-bar">
                 <span class="search-icon">🔍</span>
-                <input type="text" placeholder="Search venues by name, sport, or location...">
+                <input type="text" id="searchInput" placeholder="Search venues by name, sport, or location...">
             </div>
             <div class="sort-container">
                 <span class="sort-label">Sort By:</span>
-                <select class="sort-select">
-                    <option value="name">Deafult</option>
-
-                    <option value="rating">Rating</option>
-                    
+                <select class="sort-select" id="sortSelect">
+                    <option value="name">Name (A-Z)</option>
+                    <option value="name-desc">Name (Z-A)</option>
+                    <option value="price">Price (Low to High)</option>
+                    <option value="price-desc">Price (High to Low)</option>
                 </select>
             </div>
         </div>
 
         <!-- Venue Grid -->
-        <div class="venue-grid">
-            <!-- Venue Card 1 -->
-            <div class="venue-card">
-                <div class="venue-image">
-                    <img src="../../Images/basketball_court.jpeg" alt="Downtown Basketball Court">
-                </div>
-                <div class="venue-details">
-                    <div class="venue-name">
-                        Downtown Basketball Court
-                        <span class="venue-status status-available">Available</span>
-                    </div>
-                    <div class="venue-info">
-                        <p><i>🏀</i> Basketball</p>
-                        <p><i>📍</i> 123 Main St, Downtown</p>
-                        <div class="venue-rating">
-                            <span class="star">⭐</span> 4.8
-                        </div>
-                        <p class="venue-price">$65 Per Hour</p>
-                    </div>
-                    <div class="venue-actions">
-                        <div class="action-buttons">
-                            <button class="action-btn edit">✏️ Edit</button>
-                            <button class="action-btn delete">🗑️ Delete</button>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Venue Card 2 -->
-            <div class="venue-card">
-                <div class="venue-image">
-                    <img src="/api/placeholder/400/320" alt="Community Tennis Courts">
-                </div>
-                <div class="venue-details">
-                    <div class="venue-name">
-                        Community Tennis Courts
-                        <span class="venue-status status-available">Available</span>
-                    </div>
-                    <div class="venue-info">
-                        <p><i>🎾</i> Tennis</p>
-                        <p><i>📍</i> 45 Park Avenue, Westside</p>
-                        <div class="venue-rating">
-                            <span class="star">⭐</span> 4.5
-                        </div>
-                        <p class="venue-price">$40 Per Hour</p>
-                    </div>
-                    <div class="venue-actions">
-                        <div class="action-buttons">
-                            <button class="action-btn edit">Edit</button>
-                            <button class="action-btn delete">Delete</button>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Venue Card 3 -->
-            <div class="venue-card">
-                <div class="venue-image">
-                    <img src="/api/placeholder/400/320" alt="Indoor Soccer Arena">
-                </div>
-                <div class="venue-details">
-                    <div class="venue-name">
-                        Indoor Soccer Arena
-                        <span class="venue-status status-unavailable">Unavailable</span>
-                    </div>
-                    <div class="venue-info">
-                        <p><i>⚽</i> Soccer</p>
-                        <p><i>📍</i> 78 Industrial Way, North District</p>
-                        <div class="venue-rating">
-                            <span class="star">⭐</span> 4.7
-                        </div>
-                        <p class="venue-price">$95 Per Hour</p>
-                    </div>
-                    <div class="venue-actions">
-                        <div class="action-buttons">
-                            <button class="action-btn edit">Edit</button>
-                            <button class="action-btn delete">Delete</button>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Venue Card 4 -->
-            <div class="venue-card">
-                <div class="venue-image">
-                    <img src="/api/placeholder/400/320" alt="Olympic Swimming Pool">
-                </div>
-                <div class="venue-details">
-                    <div class="venue-name">
-                        Olympic Swimming Pool
-                        <span class="venue-status status-available">Available</span>
-                    </div>
-                    <div class="venue-info">
-                        <p><i>🏊</i> Swimming</p>
-                        <p><i>📍</i> 210 Aqua Lane, East End</p>
-                        <div class="venue-rating">
-                            <span class="star">⭐</span> 4.9
-                        </div>
-                        <p class="venue-price">$120 Per Hour</p>
-                    </div>
-                    <div class="venue-actions">
-                        <div class="action-buttons">
-                            <button class="action-btn edit">Edit</button>
-                            <button class="action-btn delete">Delete</button>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Venue Card 5 -->
-            <div class="venue-card">
-                <div class="venue-image">
-                    <img src="/api/placeholder/400/320" alt="Yoga & Fitness Studio">
-                </div>
-                <div class="venue-details">
-                    <div class="venue-name">
-                        Yoga & Fitness Studio
-                        <span class="venue-status status-available">Available</span>
-                    </div>
-                    <div class="venue-info">
-                        <p><i>🧘</i> Yoga</p>
-                        <p><i>📍</i> 88 Wellness Blvd, Central</p>
-                        <div class="venue-rating">
-                            <span class="star">⭐</span> 4.6
-                        </div>
-                        <p class="venue-price">$75 Per Hour</p>
-                    </div>
-                    <div class="venue-actions">
-                        <div class="action-buttons">
-                            <button class="action-btn edit">Edit</button>
-                            <button class="action-btn delete">Delete</button>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Venue Card 6 -->
-            <div class="venue-card">
-                <div class="venue-image">
-                    <img src="/api/placeholder/400/320" alt="Golf Practice Range">
-                </div>
-                <div class="venue-details">
-                    <div class="venue-name">
-                        Golf Practice Range
-                        <span class="venue-status status-available">Available</span>
-                    </div>
-                    <div class="venue-info">
-                        <p><i>⛳</i> Golf</p>
-                        <p><i>📍</i> 150 Green Valley Road, Suburbs</p>
-                        <div class="venue-rating">
-                            <span class="star">⭐</span> 4.4
-                        </div>
-                        <p class="venue-price">$55 Per Hour</p>
-                    </div>
-                    <div class="venue-actions">
-                        <div class="action-buttons">
-                            <button class="action-btn edit">Edit</button>
-                            <button class="action-btn delete">Delete</button>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
+        <div class="venue-grid" id="venueGrid">
+            <!-- Venues will be dynamically populated here via JavaScript -->
         </div>
     </div>
+
     <!-- Modal -->
     <div id="venueModal" class="modal-overlay">
         <div class="modal-content">
-          <span class="close-modal" id="closeModal">&times;</span>
-          <h2>Add New Venue</h2>
-          <form>
-            <label>Venue Name</label>
-            <input type="text" placeholder="Enter venue name" />
-      
-            <label>Sport Type</label>
-            <select>
-              <option>Football</option>
-              <option>Basketball</option>
-              <option>Tennis</option>
-              <option>Swimming</option>
-            </select>
-      
-            <label>Venue Images (Max 3)</label>
-    <input type="file" id="venueImages" accept="image/*" multiple onchange="previewImages(event)" />
-    <div id="imagePreview" class="image-preview-container"></div>
-
-      
-            <label>Description</label>
-            <textarea placeholder="Enter venue description"></textarea>
-      
-            <label>Hourly Price ($)</label>
-            <input type="number" placeholder="50" />
-      
-            <div class="form-group">
-              <label>Availability</label>
-              <label class="toggle-switch">
-                <input type="checkbox" />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-      
-            <div class="form-group">
-                <label for="locationInput">Location</label>
-                <input type="text" id="locationInput" placeholder="Location" />
-                <div id="map" style="height: 300px; border-radius: 12px; margin-top: 10px;"></div>
-              </div>
-              
-      
-            <div class="modal-buttons">
-              <button type="button" class="cancel-btn">Cancel</button>
-              <button type="submit" class="save-btn">Save</button>
-            </div>
-          </form>
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h2 id="modalTitle">Add New Venue</h2>
+            <form method="POST">
+                <input type="hidden" name="facility_id" id="facilityId" value="">
+                <input type="hidden" name="save_facility" value="1">
+                
+                <label>Venue Name</label>
+                <input type="text" name="place_name" id="placeName" placeholder="Enter venue name" required>
+          
+                <label>Sport Type</label>
+                <select name="sport_type" id="sportType" required>
+                    <!-- Sports will be populated via JavaScript -->
+                </select>
+          
+                <label>Venue Images (Max 3)</label>
+                <input type="file" id="venueImages" accept="image/*" multiple>
+                <div id="imagePreview" class="image-preview-container"></div>
+                <small>Image upload functionality coming soon!</small>
+          
+                <label>Description</label>
+                <textarea name="description" id="description" placeholder="Enter venue description"></textarea>
+          
+                <label>Hourly Price ($)</label>
+                <input type="number" name="price" id="price" placeholder="50" min="1" required>
+          
+                <div class="form-group">
+                    <label>Availability</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="is_available" id="isAvailable" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+          
+                <div class="form-group">
+                    <label for="locationInput">Location</label>
+                    <input type="text" id="locationInput" name="location" placeholder="Location">
+                    <div id="map" style="height: 300px; border-radius: 12px; margin-top: 10px;"></div>
+                </div>
+                  
+                <div class="modal-buttons">
+                    <button type="button" class="cancel-btn">Cancel</button>
+                    <button type="submit" class="save-btn">Save</button>
+                </div>
+            </form>
         </div>
-      </div>
-      
-  <script src="ManageVenue.js" defer></script>
+    </div>
+    
+    <!-- Pass data from PHP to JavaScript -->
+    <script>
+        // Data passed from PHP
+        const facilities = <?php echo $facilitiesJSON; ?>;
+        const sports = <?php echo $sportsJSON; ?>;
+    </script>
+    
+    <!-- Load the JavaScript file -->
+    <script src="ManageVenue.js"></script>
 </body>
 </html>

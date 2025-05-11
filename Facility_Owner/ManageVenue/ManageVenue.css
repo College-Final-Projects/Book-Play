@@ -541,3 +541,38 @@ input:checked + .toggle-slider:before {
   border-radius: 10px;
   border: 1px solid #ddd;
 }
+/* Add these new styles to your existing CSS file */
+
+.message {
+  background-color: #f8f9fa;
+  border-left: 4px solid #1e90ff;
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  border-radius: 0 5px 5px 0;
+  font-weight: 500;
+}
+
+.no-venues-message {
+  text-align: center;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  font-size: 18px;
+  color: #64748b;
+  grid-column: 1 / -1;
+}
+
+.image-preview-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.image-preview-container img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
