@@ -97,39 +97,6 @@ function resolve() {
     });
 }
 
-function removeVenue() {
-  if (!currentComplaint || !currentComplaint.facilities_id) {
-    alert("No venue to remove");
-    return;
-  }
-  
-  if (!confirm("Are you sure you want to remove this venue? This action cannot be undone.")) {
-    return;
-  }
-  
-  const formData = new FormData();
-  formData.append('action', 'remove_venue');
-  formData.append('facility_id', currentComplaint.facilities_id);
-  
-  fetch("ReviewComplaintsController.php", {
-    method: 'POST',
-    body: formData
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        alert("⚠ Venue has been removed");
-        document.getElementById("complaintModal").style.display = "none";
-        loadPlaceReports(); // Reload the table
-      } else {
-        alert("❌ Error: " + (data.message || "Failed to remove venue"));
-      }
-    })
-    .catch(err => {
-      console.error("❌ Failed to remove venue:", err);
-      alert("Failed to remove venue");
-    });
-}
 
 window.onclick = function(event) {
   const modal = document.getElementById("complaintModal");

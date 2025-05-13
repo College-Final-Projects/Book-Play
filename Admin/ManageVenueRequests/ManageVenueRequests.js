@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <p><strong>Submitted by:</strong> ${report.username}</p>
         <p><strong>Created:</strong> ${report.created_at}</p>
         <div class="actions">
-          <button onclick="openModal(${index})">View Details</button>
+          <button onclick="openVenue(${report.facilities_id})">View Details</button>
           <button class="approve" onclick="handleAction('approve', ${report.report_id}, ${report.facilities_id})">Approve</button>
           <button class="reject" onclick="handleAction('reject', ${report.report_id}, ${report.facilities_id})">Reject</button>
         </div>
@@ -40,12 +40,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  window.openModal = function (index) {
-    const report = reportsData[index];
-    modalTitle.textContent = report.suggested_place_name || "Suggested Place";
-    modalMessage.textContent = report.message;
-    modal.style.display = "block";
-  };
+  window.openVenue = function(id) {
+  if (!id) {
+    alert("Venue ID not available");
+    return;
+  }
+  window.location.href = `../VenueDetails/VenueDetails.php?id=${id}`;
+}
 
   window.closeModal = function () {
     modal.style.display = "none";

@@ -576,3 +576,69 @@ input:checked + .toggle-slider:before {
   border-radius: 10px;
   border: 1px solid #ddd;
 }
+/* Add these styles to your ManageVenue.css file */
+
+/* Modal scrolling fixes */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: flex-start; /* Align to top instead of center */
+  z-index: 9999;
+  overflow-y: auto; /* Allow vertical scrolling */
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: var(--radius);
+  width: 90%;
+  max-width: 650px;
+  max-height: 85vh; /* Set maximum height to 85% of viewport height */
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  overflow-y: auto; /* Allow the content to scroll */
+  margin: 30px auto; /* Center the modal with some top margin */
+}
+
+/* Make sure buttons stay visible at the bottom */
+.modal-buttons {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  padding-top: 15px;
+  margin-top: 15px;
+  border-top: 1px solid #f0f0f0;
+  z-index: 1;
+}
+
+/* Better spacing for form fields */
+.modal-content form input,
+.modal-content form select,
+.modal-content form textarea {
+  margin-bottom: 10px;
+}
+
+/* Label spacing */
+.modal-content form label {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+/* Add more bottom space to last form element before buttons */
+.form-group:last-of-type {
+  margin-bottom: 20px;
+}
+
+/* Responsive adjustment for smaller screens */
+@media (max-height: 700px) {
+  .modal-content {
+    max-height: 90vh;
+    margin-top: 10px;
+  }
+}

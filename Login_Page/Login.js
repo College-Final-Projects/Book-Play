@@ -2,12 +2,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('loginForm');
 
   form.addEventListener('submit', function (e) {
-    e.preventDefault(); // إلغاء إرسال النموذج الافتراضي
+    e.preventDefault(); // Prevent default form submission
 
     const identifier = form.querySelector('input[name="username"]').value;
     const password = form.querySelector('input[name="password"]').value;
     const errorMessage = document.getElementById('errorMessage');
-    errorMessage.textContent = '⏳ جاري التحقق...';
+    errorMessage.textContent = '⏳ Verifying...';
 
     const formData = new FormData();
     formData.append('username', identifier);
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       })
       .catch((err) => {
-        errorMessage.textContent = '❌ حدث خطأ أثناء تسجيل الدخول، حاول مجددًا.';
+        errorMessage.textContent = '❌ Login error occurred, please try again.';
         console.error(err);
       });
   });

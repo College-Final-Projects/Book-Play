@@ -32,10 +32,6 @@
             <button class="add-venue-btn">Add New Venue +</button>
         </div>
 
-        <?php if (!empty($message)): ?>
-        <div class="message"><?php echo $message; ?></div>
-        <?php endif; ?>
-
         <!-- Search and Sort -->
         <div class="search-sort-container">
             <div class="search-bar">
@@ -108,13 +104,6 @@
             </form>
         </div>
     </div>
-    
-    <!-- Pass data from PHP to JavaScript -->
-    <script>
-        // Data passed from PHP
-        const facilities = <?php echo $facilitiesJSON; ?>;
-        const sports = <?php echo $sportsJSON; ?>;
-    </script>
     
     <!-- Load the JavaScript file -->
     <script src="ManageVenue.js"></script>

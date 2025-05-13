@@ -1,5 +1,5 @@
 <?php
-$host = "127.0.0.1:3307";      // استخدم IP بدلاً من localhost
+$host = "127.0.0.1:3307";
 $db_user = "root";
 $db_pass = "";
 $db_name = "bookplay";

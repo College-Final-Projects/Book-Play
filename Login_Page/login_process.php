@@ -9,12 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     if (empty($identifier) || empty($password)) {
-        $response['message'] = 'يرجى ملء جميع الحقول المطلوبة';
+        $response['message'] = 'Please fill in all required fields';
     } else {
         $user = null;
         $role = null;
 
-        // 🔎 أولًا نبحث في جدول owner بواسطة owner_email
+        // 🔎 First check in the owner table by owner_email
         $stmt = $conn->prepare("SELECT * FROM owner WHERE owner_email = ? LIMIT 1");
         $stmt->bind_param("s", $identifier);
         $stmt->execute();
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $stmt->close();
 
-        // 🔎 إذا لم يوجد، نبحث في جدول users بواسطة username فقط
+        // 🔎 If not found, check in the users table by username only
         if (!$user) {
             $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? LIMIT 1");
             $stmt->bind_param("s", $identifier);
@@ -40,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user) {
             if (password_verify($password, $user['password'])) {
-                $_SESSION['is_logged_in'] = true;
                 $_SESSION['role'] = $role;
 
                 if ($role === 'owner') {
@@ -54,12 +53,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $response['success'] = true;
-                $response['message'] = '✅ تم تسجيل الدخول بنجاح!';
+                $response['message'] = '✅ Login successful!';
             } else {
-                $response['message'] = '❌ كلمة المرور غير صحيحة';
+                $response['message'] = '❌ Incorrect password';
             }
         } else {
-            $response['message'] = '❌ المستخدم غير موجود';
+            $response['message'] = '❌ User not found';
         }
     }
 }
