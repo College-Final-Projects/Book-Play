@@ -40,7 +40,6 @@ if (makeProfileBtn) {
 // Add the window.goBack function for the back buttons
 window.goBack = function(e) {
   if (e) e.preventDefault();
-  
   // Determine which stage we're at and go back accordingly
   if (profileFormContainer && profileFormContainer.style.display === "flex") {
     // Going back from profile form to verification code screen
