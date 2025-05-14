@@ -1,236 +1,229 @@
-// ====== Original code with back button functionality added ======
-var registerForm = document.getElementById("registerForm");
-var codeSection = document.getElementById("codeVerification");
-var profileForm = document.getElementById("profileForm");
-var message = document.getElementById("verificationMessage");
-var makeProfileBtn = document.querySelector(".make-profile-btn");
-var rightSection = document.getElementById("rightSection");
-var favoriteSportsContainer = document.querySelector(".favorite-sports");
-var registerContainer = document.getElementsByClassName("register-container")[0];
-var profileFormContainer = document.getElementById("profileFormContainer");
+// ✅ DOM elements used throughout the multi-step registration form
+var registerForm = document.getElementById("registerForm"); // Get the registration form element
+var codeSection = document.getElementById("codeVerification"); // Get the code verification section
+var profileForm = document.getElementById("profileForm"); // Get the profile creation form
+var message = document.getElementById("verificationMessage"); // Get the message element for status updates
+var makeProfileBtn = document.querySelector(".make-profile-btn"); // Select the "Make Profile" button
+var rightSection = document.getElementById("rightSection"); // Section for displaying the profile form
+var favoriteSportsContainer = document.querySelector(".favorite-sports"); // Container where sports will be injected
+var registerContainer = document.getElementsByClassName("register-container")[0]; // Get the registration container
+var profileFormContainer = document.getElementById("profileFormContainer"); // Get the container for profile form
 
-// Fetch sports from the database and populate the options
-if (favoriteSportsContainer) {
-  fetch("verify.php?get_sports=1")
-    .then(response => response.text())
+// ✅ Load sports dynamically from the server (only if the container exists)
+if (favoriteSportsContainer) { // Check if sports container exists
+  fetch("verify.php?get_sports=1") // Send GET request to fetch sports
+    .then(response => response.text()) // Convert response to text (HTML expected)
     .then(data => {
-      favoriteSportsContainer.innerHTML = data;
+      favoriteSportsContainer.innerHTML = data; // Insert the returned HTML into the container
     })
-    .catch(error => {
-      console.error("Error fetching sports:", error);
-      favoriteSportsContainer.innerHTML = "<p>Error loading sports options</p>";
+    .catch(error => { // Handle errors
+      console.error("Error fetching sports:", error); // Log error in console
+      favoriteSportsContainer.innerHTML = "<p>Error loading sports options</p>"; // Display fallback message
     });
 }
 
-// Initially keep the right section in disabled state
+// ✅ Hide the profile section initially
 if (rightSection) {
-  rightSection.classList.remove("active");
+  rightSection.classList.remove("active"); // Remove "active" class to hide the section initially
 }
 
-// Add click event listener for the Make Profile button
-if (makeProfileBtn) {
-  makeProfileBtn.onclick = function(e) {
-    e.preventDefault();
-    
-    if (profileFormContainer) profileFormContainer.style.display = "flex";
-    if (registerContainer) registerContainer.style.display = "none";
+// ✅ Switch to profile creation form when user clicks "Make Profile"
+if (makeProfileBtn) { // Check if the button exists
+  makeProfileBtn.onclick = function(e) { // Add click event
+    e.preventDefault(); // Prevent default form submission
+    if (profileFormContainer) profileFormContainer.style.display = "flex"; // Show profile form
+    if (registerContainer) registerContainer.style.display = "none"; // Hide registration form
   };
 }
 
-// Add the window.goBack function for the back buttons
+// ✅ Go back to the previous step or login page depending on where the user is
 window.goBack = function(e) {
   if (e) e.preventDefault();
+  
   // Determine which stage we're at and go back accordingly
   if (profileFormContainer && profileFormContainer.style.display === "flex") {
-    // Going back from profile form to verification code screen
-    profileFormContainer.style.display = "none";
-    registerContainer.style.display = "flex";
+    profileFormContainer.style.display = "none"; // Hide profile form
+    registerContainer.style.display = "flex"; // Show registration form
   } else if (codeSection && codeSection.style.display === "block") {
-    // Going back from verification code to registration form
-    codeSection.style.display = "none";
-    registerForm.style.display = "block";
+    codeSection.style.display = "none"; // Hide code verification
+    registerForm.style.display = "block"; // Show registration form
   } else {
-    // If we're on the initial registration page, go back to login
-    window.location.href = '../Login_Page/login.php';
+    window.location.href = '../Login_Page/login.php'; // Redirect to login page
   }
 };
 
-// Fix the onclick attributes for back buttons
-document.addEventListener("DOMContentLoaded", function() {
-  // Get all back buttons
-  var backButtons = document.querySelectorAll('.back-btn');
-  
-  // Assign the goBack function to all back buttons (except the initial one that has its own handler)
-  backButtons.forEach(function(btn) {
-    if (!btn.id || btn.id !== "backBtn") {
-      btn.onclick = window.goBack;
+// ✅ Attach "go back" logic to all back buttons
+document.addEventListener("DOMContentLoaded", function() { // Run after page loads
+  var backButtons = document.querySelectorAll('.back-btn'); // Get all back buttons
+  backButtons.forEach(function(btn) { // Loop through buttons
+    if (!btn.id || btn.id !== "backBtn") { // Exclude the main back button if needed
+      btn.onclick = window.goBack; // Assign goBack function
     }
   });
 });
 
-if (registerForm) {
+// ✅ Handle registration form submission (step 1)
+if (registerForm) { // Check if form exists
   registerForm.onsubmit = function(e) {
-    e.preventDefault();
+    e.preventDefault(); // Prevent page reload
 
-    var email = document.getElementById("email").value.trim();
-    var password = document.getElementById("password").value;
-    var confirmPassword = document.getElementById("confirmPassword").value;
+    var email = document.getElementById("email").value.trim(); // Get and trim email input
+    var password = document.getElementById("password").value; // Get password
+    var confirmPassword = document.getElementById("confirmPassword").value; // Get confirmation password
 
-    if (password !== confirmPassword) {
-      alert("❌ Passwords do not match.");
-      return false;
+    if (password !== confirmPassword) { // Check if passwords match
+      alert("❌ Passwords do not match."); // Show error
+      return false; // Stop form submission
     }
 
+    // Send data to backend for registration
     fetch("register.php", {
-      method: "POST",
+      method: "POST", // Use POST method
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/x-www-form-urlencoded", // Send data as form-encoded
       },
-      body: new URLSearchParams({ email, password }),
+      body: new URLSearchParams({ email, password }), // Convert data to URL-encoded string
     })
-      .then((res) => res.json())
+      .then((res) => res.json()) // Parse response as JSON
       .then((data) => {
         if (data.status === "error") {
-          alert(data.message);
+          alert(data.message); // Show error from backend
         } else {
-          if (registerForm) registerForm.style.display = "none";
-          if (codeSection) codeSection.style.display = "block";
+          if (registerForm) registerForm.style.display = "none"; // Hide registration form
+          if (codeSection) codeSection.style.display = "block"; // Show code verification form
         }
       })
       .catch((err) => {
-        alert("Something went wrong.");
-        console.error(err);
+        alert("Something went wrong."); // General error
+        console.error(err); // Log error to console
       });
-      
-    return false;
+
+    return false; // Prevent default behavior
   };
 }
 
-// ✅ Image preview function
+// ✅ Show selected profile image before upload
 window.previewImage = function() {
-  var input = document.getElementById("profileImage");
-  var preview = document.getElementById("profileImagePreview");
-  var removeBtn = document.getElementById("removeImageBtn");
-  
-  if (input && input.files && input.files[0]) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
+  var input = document.getElementById("profileImage"); // File input element
+  var preview = document.getElementById("profileImagePreview"); // Image element to show preview
+  var removeBtn = document.getElementById("removeImageBtn"); // Button to remove selected image
+
+  if (input && input.files && input.files[0]) { // Check if file is selected
+    var reader = new FileReader(); // Create a new file reader
+    reader.onload = function(e) { // When file is loaded
       if (preview) {
-        preview.src = e.target.result;
-        preview.style.display = "block";
+        preview.src = e.target.result; // Set preview image source
+        preview.style.display = "block"; // Show the preview image
       }
-      if (removeBtn) removeBtn.style.display = "inline-block";
+      if (removeBtn) removeBtn.style.display = "inline-block"; // Show the remove button
     }
-    reader.readAsDataURL(input.files[0]);
+    reader.readAsDataURL(input.files[0]); // Convert file to base64 string
   }
 };
 
-// ✅ Remove image function
+// ✅ Remove profile image preview and reset file input
 window.removeImage = function() {
-  var input = document.getElementById("profileImage");
-  var preview = document.getElementById("profileImagePreview");
-  var removeBtn = document.getElementById("removeImageBtn");
-  
-  if (input) input.value = "";
+  var input = document.getElementById("profileImage"); // File input
+  var preview = document.getElementById("profileImagePreview"); // Image preview
+  var removeBtn = document.getElementById("removeImageBtn"); // Remove button
+
+  if (input) input.value = ""; // Clear file input
   if (preview) {
-    preview.src = "#";
-    preview.style.display = "none";
+    preview.src = "#"; // Reset image source
+    preview.style.display = "none"; // Hide preview
   }
-  if (removeBtn) removeBtn.style.display = "none";
+  if (removeBtn) removeBtn.style.display = "none"; // Hide remove button
 };
 
-// ✅ دالة التحقق من الكود
+// ✅ Send verification code to backend and show result (step 2)
 window.verifyCode = function() {
-  var code = document.getElementById("codeInput");
-  var codeValue = code ? code.value : "";
+  var code = document.getElementById("codeInput"); // Input field for the verification code
+  var codeValue = code ? code.value : ""; // Get code value
 
   fetch("verify.php", {
-    method: "POST",
+    method: "POST", // POST method
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type": "application/x-www-form-urlencoded", // URL encoded
     },
-    body: new URLSearchParams({ code: codeValue }),
+    body: new URLSearchParams({ code: codeValue }), // Attach code
   })
-    .then((res) => res.json())
+    .then((res) => res.json()) // Convert response to JSON
     .then((data) => {
       if (data.status === "success") {
-        // Enable the right section and make the profile button
         if (rightSection) {
-          rightSection.classList.add("active");
-        }
-        
-        if (message) {
-          message.textContent = "✅ Code Verified! Now you can create your profile.";
-          message.className = "verification-message success";
+          rightSection.classList.add("active"); // Make profile section visible
         }
 
-        // Add pulsing effect to the Make Profile button
+        if (message) {
+          message.textContent = "✅ Code Verified! Now you can create your profile."; // Show success message
+          message.className = "verification-message success"; // Style success
+        }
+
         if (makeProfileBtn) {
-          makeProfileBtn.classList.add("pulsing");
+          makeProfileBtn.classList.add("pulsing"); // Add animation
           setTimeout(function() {
-            makeProfileBtn.classList.remove("pulsing");
+            makeProfileBtn.classList.remove("pulsing"); // Remove animation after delay
           }, 3000);
         }
 
         if (window.sessionUser && window.sessionUser.email && window.sessionUser.password) {
-          var profileEmail = document.getElementById("profileEmail");
-          var profilePassword = document.getElementById("profilePassword");
-          
-          if (profileEmail) profileEmail.value = window.sessionUser.email;
-          if (profilePassword) profilePassword.value = window.sessionUser.password;
+          var profileEmail = document.getElementById("profileEmail"); // Email field
+          var profilePassword = document.getElementById("profilePassword"); // Password field
+          if (profileEmail) profileEmail.value = window.sessionUser.email; // Autofill email
+          if (profilePassword) profilePassword.value = window.sessionUser.password; // Autofill password
         }
       } else if (message) {
-        message.textContent = data.message;
-        message.className = "verification-message error";
+        message.textContent = data.message; // Show backend error message
+        message.className = "verification-message error"; // Style error
       }
     })
     .catch((err) => {
       if (message) {
-        message.textContent = "❌ Something went wrong.";
-        message.className = "verification-message error";
+        message.textContent = "❌ Something went wrong."; // General error message
+        message.className = "verification-message error"; // Style error
       }
-      console.error(err);
+      console.error(err); // Log error
     });
 };
 
-// ✅ دالة حفظ البروفايل بعد التحقق
-if (profileForm) {
+// ✅ Final profile submission after verification (step 3)
+if (profileForm) { // If profile form exists
   profileForm.onsubmit = function(e) {
-    e.preventDefault();
+    e.preventDefault(); // Prevent form reload
 
-    var formData = new FormData(profileForm);
-    var code = document.getElementById("codeInput");
-    var codeValue = code ? code.value : "";
-    
-    formData.append("code", codeValue);
+    var formData = new FormData(profileForm); // Collect all form data
+    var code = document.getElementById("codeInput"); // Get verification code input
+    var codeValue = code ? code.value : ""; // Get code value
+
+    formData.append("code", codeValue); // Add verification code to form data
 
     fetch("verify.php", {
-      method: "POST",
+      method: "POST", // Send form data via POST
       body: formData,
     })
-      .then((res) => res.json())
+      .then((res) => res.json()) // Convert response to JSON
       .then((data) => {
         if (data.status === "success") {
           if (message) {
-            message.textContent = data.message;
-            message.className = "verification-message success";
+            message.textContent = data.message; // Show success message
+            message.className = "verification-message success"; // Style success
           }
           setTimeout(function() {
-            window.location.href = data.redirect;
+            window.location.href = data.redirect; // Redirect to final destination
           }, 1500);
         } else if (message) {
-          message.textContent = data.message;
-          message.className = "verification-message error";
+          message.textContent = data.message; // Show error message
+          message.className = "verification-message error"; // Style error
         }
       })
       .catch((err) => {
         if (message) {
-          message.textContent = "❌ Something went wrong.";
-          message.className = "verification-message error";
+          message.textContent = "❌ Something went wrong."; // General error
+          message.className = "verification-message error"; // Style error
         }
-        console.error(err);
+        console.error(err); // Log error
       });
-      
-    return false;
+
+    return false; // Prevent default form behavior
   };
 }

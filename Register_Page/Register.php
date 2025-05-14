@@ -1,68 +1,64 @@
 <?php
-session_start();
-require_once '../db.php';
-require_once '../mail/MailLink.php';
+session_start(); // Start the session to track user data between requests
+require_once '../db.php'; // Include the database connection file
+require_once '../mail/MailLink.php'; // Include the mail utility to send verification emails
 
 /**
-* User Registration System
-* 
-* This script handles the first step of the user registration process:
-* 1. Validates that the email is not already registered
-* 2. Generates a verification code
-* 3. Sends the code to the user's email
-* 4. Stores temporary registration data in the session
-*/
+ * User Registration System
+ *
+ * This script performs the following:
+ * 1. Validates the submitted email isn't already registered
+ * 2. Generates a random verification code
+ * 3. Sends the code to the user's email
+ * 4. Stores the email and password temporarily in the session
+ */
 
-// Process form submission
+// Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-   // Get and validate email, hash password for security
-   $email = $_POST['email'];
-   $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+   $email = $_POST['email']; // Get the email from the submitted form
+   $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password securely for storage
 
-   // Check if email already exists in database
+   // Prepare a SQL query to check if the email already exists
    $checkEmail = $conn->prepare("SELECT email FROM users WHERE email = ?");
-   $checkEmail->bind_param("s", $email);
-   $checkEmail->execute();
-   $checkEmail->store_result();
+   $checkEmail->bind_param("s", $email); // Bind the email to the SQL statement
+   $checkEmail->execute(); // Execute the query
+   $checkEmail->store_result(); // Store the result to check the row count
 
-   // Return error if email already registered
+   // If the email already exists, return an error
    if ($checkEmail->num_rows > 0) {
-       echo json_encode(["status" => "error", "message" => "❌ This email is already registered."]);
-       exit();
+       echo json_encode(["status" => "error", "message" => "❌ This email is already registered."]); // Email in use
+       exit(); // Terminate the script
    }
 
-   // Generate 6-digit verification code
-   $code = rand(100000, 999999);
-   
-   // Store temporary registration data in session
-   $_SESSION['verification_code'] = $code;
-   $_SESSION['temp_email'] = $email;
-   $_SESSION['temp_password'] = $password;
+   $code = rand(100000, 999999); // Generate a 6-digit random verification code
 
-   // Send verification code to user's email
+   // Store the verification code and user credentials in the session
+   $_SESSION['verification_code'] = $code; // Save the verification code in session
+   $_SESSION['temp_email'] = $email; // Temporarily save the email
+   $_SESSION['temp_password'] = $password; // Temporarily save the hashed password
+
+   // Attempt to send the verification code to the email address
    if (!sendVerificationCode($email, $code)) {
-       echo json_encode(["status" => "error", "message" => "❌ Failed to send email."]);
-       exit();
+       echo json_encode(["status" => "error", "message" => "❌ Failed to send email."]); // Email sending failed
+       exit(); // Terminate the script
    }
 
-   // Return success response
-   echo json_encode(["status" => "success", "message" => "✅ Verification code sent."]);
-   exit();
+   echo json_encode(["status" => "success", "message" => "✅ Verification code sent."]); // Return success message
+   exit(); // End the script
 }
 
-// Display registration interface
-include "register.html";
+// If the request is not POST, include the registration form
+include "register.html"; // Load the HTML form for registration
 
-// If user has started the registration process, inject their data into page
-// This allows the form to remember user data between page loads
+// If temporary user data exists in session, inject it into the page using JavaScript
 if (isset($_SESSION['temp_email']) && isset($_SESSION['temp_password'])) {
    echo "<script>
      window.sessionUser = {
-       email: '" . $_SESSION['temp_email'] . "',
-       password: '" . $_SESSION['temp_password'] . "'
+       email: '" . $_SESSION['temp_email'] . "', // Assign session email to JS
+       password: '" . $_SESSION['temp_password'] . "' // Assign session password to JS
      };
    </script>";
 }
 
-exit();
+exit(); // Final exit to prevent further execution
 ?>
