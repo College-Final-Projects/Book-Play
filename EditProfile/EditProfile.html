@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create Profile | Book&Play</title>
-  <link rel="stylesheet" href="EditProfile.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
-  <script src="EditProfile.js" defer></script>
+  <meta charset="UTF-8" /> <!-- Character encoding -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Responsive design -->
+  <title>Create Profile | Book&Play</title> <!-- Page title -->
+
+  <!-- CSS and Font -->
+  <link rel="stylesheet" href="EditProfile.css" /> <!-- Profile form styling -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet"> <!-- Outfit font -->
+  <script src="EditProfile.js" defer></script> <!-- Script with defer -->
 </head>
 <body>
+  <!-- ========== START: Profile Form ========== -->
   <form id="profileForm" class="profile-form" action="profile.php" method="POST" enctype="multipart/form-data">
-    <h3>Edit Your User Profile</h3>
+    <h3>Edit Your User Profile</h3> <!-- Form title -->
 
+    <!-- Hidden email and password fields (already known from DB) -->
     <div class="input-group" style="display: none;">
       <input type="email" id="profileEmail" name="email" />
     </div>
@@ -19,6 +23,7 @@
       <input type="password" id="profilePassword" name="password" />
     </div>
 
+    <!-- First name input -->
     <div class="input-group">
       <label for="firstName">First Name <span style="color:red">*</span></label>
       <input 
@@ -29,10 +34,10 @@
         pattern="[A-Za-z]+" 
         title="Only letters allowed" 
         required 
-        oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')"
-      />
+        oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')" /> <!-- Only letters allowed on input -->
     </div>
-    
+
+    <!-- Last name input -->
     <div class="input-group">
       <label for="lastName">Last Name <span style="color:red">*</span></label>
       <input 
@@ -43,9 +48,10 @@
         pattern="[A-Za-z]+" 
         title="Only letters allowed" 
         required 
-        oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')"
-      />
+        oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')" /> <!-- Filter only letters -->
     </div>
+
+    <!-- Username (readonly) -->
     <div class="input-group">
       <label for="username">
         Username <span style="color:red">*</span>
@@ -59,14 +65,16 @@
         required 
         readonly 
         style="background-color: #f1f5f9; cursor: not-allowed;" 
-        placeholder="You Can't Change Your Username!" 
-      />
+        placeholder="You Can't Change Your Username!" />
     </div>
-    
+
+    <!-- Age input: number between 10 and 99 -->
     <div class="input-group">
       <label for="age">Age <span style="color:red">*</span></label>
-      <input type="number" id="age" name="age" min="10" max="99" required oninput="this.value = this.value.slice(0,2)" />
+      <input type="number" id="age" name="age" min="10" max="99" required oninput="this.value = this.value.slice(0,2)" /> <!-- Max 2 digits -->
     </div>
+
+    <!-- Gender selection dropdown -->
     <div class="input-group">
       <label for="gender">Gender <span style="color:red">*</span></label>
       <select id="gender" name="gender" required>
@@ -76,23 +84,37 @@
         <option value="other">Other</option>
       </select>
     </div>
+
+    <!-- Phone number input: 10 digits only -->
     <div class="input-group">
       <label for="phone">Phone Number</label>
-      <input type="tel" id="phone" name="phone" pattern="^\d{10}$" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10);" placeholder="1234567890" title="Enter exactly 10 digits" />
+      <input 
+        type="tel" 
+        id="phone" 
+        name="phone" 
+        pattern="^\d{10}$" 
+        maxlength="10" 
+        inputmode="numeric" 
+        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10);" 
+        placeholder="1234567890" 
+        title="Enter exactly 10 digits" />
     </div>
 
+    <!-- Favorite sports (dynamically included via PHP) -->
     <div class="input-group">
       <label for="favoriteSport">Favorite Sports</label>
       <div class="favorite-sports" id="favoriteSportsContainer">
-        <?php include 'EdProfile.php';?>
+        <?php include 'EdProfile.php';?> <!-- Load sport checkboxes from backend -->
       </div>
     </div>
 
-
+    <!-- Personal description -->
     <div class="input-group">
       <label for="description">Personal Description</label>
       <textarea id="description" name="description" rows="4" placeholder="Tell us about yourself..."></textarea>
     </div>
+
+    <!-- Profile image upload with preview -->
     <div class="input-group">
       <label for="profileImage">Profile Picture</label>
       <input type="file" id="profileImage" name="user_image" accept="image/*" onchange="previewImage()" />
@@ -102,10 +124,11 @@
         <button type="button" id="removeImageBtn" style="margin-top: 10px; display: none;" onclick="removeImage()">❌ Remove Image</button>
       </div>
     </div>
-    </div>
 
+    <!-- Submit and back buttons -->
     <button type="submit" class="submit-btn">Save Profile</button>
     <button type="button" id="backBtn" class="back-btn">← Back</button>
   </form>
+  <!-- ========== END: Profile Form ========== -->
 </body>
 </html>

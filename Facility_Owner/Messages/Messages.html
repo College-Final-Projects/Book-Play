@@ -1,0 +1,110 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Messages | Book&Play</title>
+  <link rel="stylesheet" href="Messages.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome for WhatsApp-style icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<!-- Navbar -->
+<nav class="fresh-navbar">
+  <div class="logo">Book<span>&</span>Play</div>
+  <ul class="nav-links">
+    <li><a href="../HomePage/HomePage.php">HomePage</a></li>
+    <li><a href="../ManageVenue/ManageVenue.php">Manage Venue</a></li>
+    <li><a href="../Bookings/Bookings.php">Bookings</a></li>
+    <li><a href="../Analytics/Analytics.php">Analytics</a></li>
+    <li><a href="../Messages/Messages.php" class="active">Messages</a></li>
+    <li><a href="../../Login_Page/Login.php" class="logout">Logout</a></li>
+  </ul>
+</nav>
+
+<!-- Top Buttons -->
+<div class="top-buttons">
+  <button onclick="showSection('chats')" id="chatsBtn" class="active">
+    <i class="fas fa-comments"></i> My Chats
+  </button>
+  <button onclick="showSection('friends')" id="friendsBtn">
+    <i class="fas fa-user-friends"></i> My Friends
+  </button>
+</div>
+
+<!-- Chat Section Container -->
+<div class="main-container" id="chatSection">
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="user-entry" onclick="loadChat('John Doe')">
+      <i class="fas fa-user-circle"></i> John Doe
+    </div>
+    <div class="user-entry" onclick="loadChat('Emma Smith')">
+      <i class="fas fa-user-circle"></i> Emma Smith
+    </div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="chat-section">
+    <div class="chat-header" id="chatHeader">
+      <i class="fas fa-arrow-left" style="margin-right: 10px; cursor: pointer; display: none;"></i>
+      Select a user
+    </div>
+    <div class="chat-body" id="chatBody">
+      <p class="message left">Hello!</p>
+      <p class="message right">Hi there!</p>
+    </div>
+    <div class="chat-input">
+      <input type="text" placeholder="Type a message...">
+      <button>
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Friends Section -->
+<div id="friendsSection" style="display: none;">
+  <!-- Search Bar -->
+  <div class="friend-search">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Search friends..." onkeyup="filterFriends()">
+    </div>
+  </div>
+
+  <!-- Friends List -->
+  <div class="friends-table" id="friendsList">
+    <div class="friend-row">
+      <img src="https://via.placeholder.com/50" alt="Friend" class="friend-img">
+      <span class="friend-name">John Doe</span>
+      <div class="friend-actions">
+        <button onclick="viewProfile('John Doe')">Show Profile</button>
+        <button onclick="messageUser('John Doe')">Message</button>
+      </div>
+    </div>
+    <div class="friend-row">
+      <img src="https://via.placeholder.com/50" alt="Friend" class="friend-img">
+      <span class="friend-name">Emma Smith</span>
+      <div class="friend-actions">
+        <button onclick="viewProfile('Emma Smith')">Show Profile</button>
+        <button onclick="messageUser('Emma Smith')">Message</button>
+      </div>
+    </div>
+    <div class="friend-row">
+      <img src="https://via.placeholder.com/50" alt="Friend" class="friend-img">
+      <span class="friend-name">Liam Brown</span>
+      <div class="friend-actions">
+        <button onclick="viewProfile('Liam Brown')">Show Profile</button>
+        <button onclick="messageUser('Liam Brown')">Message</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="Messages.js" defer></script>
+
+</body>
+</html>
