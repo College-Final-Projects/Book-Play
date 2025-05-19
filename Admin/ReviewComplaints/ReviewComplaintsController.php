@@ -6,20 +6,23 @@ header('Content-Type: application/json');
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
 switch ($action) {
-    case 'get_place_reports':
-        $reports = [];
-        // Get all data including the message field for report details
-        $sql = "SELECT * FROM reports WHERE type = 'report_place' ORDER BY created_at DESC";
-        $result = $conn->query($sql);
-    
-        if ($result && $result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $reports[] = $row;
-            }
+   case 'get_place_reports':
+    $reports = [];
+    // Get all data including the message field for report details
+    $sql = "SELECT * FROM reports WHERE username != ? ORDER BY created_at DESC";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $_SESSION['user_id']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $reports[] = $row;
         }
-    
-        echo json_encode($reports);
-        break;
+    }
+
+    echo json_encode($reports);
+    break;
     
     case 'mark_resolved':
         $report_id = isset($_POST['id']) ? intval($_POST['id']) : 0;

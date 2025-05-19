@@ -1,9 +1,16 @@
+
 // Global variables for the map
 let map;
 let marker;
 let facilities = []; // Global variable to store facilities
 
 document.addEventListener('DOMContentLoaded', function() {
+     // Find and remove the "Image upload functionality coming soon!" notice
+    const smallNotice = document.querySelector('#venueImages + small');
+    if (smallNotice) {
+        smallNotice.remove();
+    }
+    
     // Load facilities when the page loads
     loadFacilities();
     
@@ -319,8 +326,27 @@ function saveVenueChanges(form) {
         formData.append('is_available', '0');
     }
     
-    // Send data to the server
-    fetch('update_facility.php', {
+    // Get the file input element for venue images
+    const fileInput = document.getElementById('venueImages');
+    
+    // Check if file input exists and has files selected
+    if (fileInput && fileInput.files.length > 0) {
+        // Clear any existing files in the formData with the same field name
+        if (formData.has('venueImages')) {
+            formData.delete('venueImages');
+        }
+        
+        // Calculate how many files to upload (maximum 3)
+        const maxFiles = Math.min(fileInput.files.length, 3);
+        
+        // Add each file to the form data with array notation for PHP
+        for (let i = 0; i < maxFiles; i++) {
+            formData.append('venueImages[]', fileInput.files[i]);
+        }
+    }
+    
+    // Send data to the server - use update_availability.php which handles both editing and toggling
+    fetch('update_availability.php', {
         method: 'POST',
         body: formData
     })
@@ -349,128 +375,6 @@ function saveVenueChanges(form) {
     });
 }
 
-// Setup modal close and cancel buttons
-function setupModal() {
-    const modal = document.getElementById('venueModal');
-    const closeBtn = document.getElementById('closeModal');
-    const cancelBtn = modal.querySelector('.cancel-btn');
-    
-    // Setup sport type options if not already populated
-    const sportTypeSelect = document.getElementById('sportType');
-    if (sportTypeSelect && sportTypeSelect.options.length <= 1) {
-        const sportOptions = ['Football', 'Basketball', 'Tennis', 'Swimming', 'Volleyball', 'Badminton', 'Table Tennis', 'Other'];
-        sportOptions.forEach(sport => {
-            const option = document.createElement('option');
-            option.value = sport.toLowerCase();
-            option.textContent = sport;
-            sportTypeSelect.appendChild(option);
-        });
-    }
-    
-    // Close modal functions with improved scrolling management
-    const closeModal = () => {
-        modal.style.display = 'none';
-        document.body.style.overflow = ''; // Restore body scrolling
-    };
-    
-    // Add event listeners to close button and cancel button
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-    
-    // Close modal if user clicks outside of it
-    window.addEventListener('click', event => {
-        if (event.target === modal) {
-            closeModal();
-        }
-    });
-    
-    // Setup add new venue button
-    const addBtn = document.querySelector('.add-venue-btn');
-    if (addBtn) {
-        addBtn.addEventListener('click', () => {
-            // Clear the form
-            const form = modal.querySelector('form');
-            form.reset();
-            
-            // Reset hidden facility ID
-            document.getElementById('facilityId').value = '';
-            
-            // Clear image previews
-            const imagePreview = document.getElementById('imagePreview');
-            if (imagePreview) {
-                imagePreview.innerHTML = '';
-            }
-            
-            // Set modal title to Add mode
-            document.getElementById('modalTitle').textContent = 'Add New Venue';
-            
-            // Show the modal
-            modal.style.display = 'flex';
-            
-            // Reset scroll position to top
-            setTimeout(() => {
-                const modalContent = modal.querySelector('.modal-content');
-                if (modalContent) {
-                    modalContent.scrollTop = 0;
-                }
-            }, 10);
-            
-            // Prevent body scrolling
-            document.body.style.overflow = 'hidden';
-            
-            // Set form submission handler for adding new venue
-            form.onsubmit = function(e) {
-                e.preventDefault();
-                // Different submission handler for new venues
-                addNewVenue(form);
-            };
-        });
-    }
-}
-
-// Function to add a new venue (separate from edit functionality)
-function addNewVenue(form) {
-    // Create FormData object
-    const formData = new FormData(form);
-    
-    // Add add_facility flag
-    formData.append('add_facility', '1');
-    
-    // Handle checkbox state for is_available
-    if (!formData.has('is_available')) {
-        formData.append('is_available', '0');
-    }
-    
-    // Send data to server
-    fetch('add_facility.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Close the modal
-            const modal = document.getElementById('venueModal');
-            modal.style.display = 'none';
-            
-            // Restore body scrolling
-            document.body.style.overflow = '';
-            
-            // Reload facilities
-            loadFacilities();
-            
-            // Show success message
-            alert('New venue added successfully!');
-        } else {
-            alert('Error: ' + (data.message || 'Failed to add venue'));
-        }
-    })
-    .catch(error => {
-        console.error('Error adding new venue:', error);
-        alert('An error occurred while adding the venue. Please try again.');
-    });
-}
-
 // Function to enhance modal scrolling
 function enhanceModalScrolling() {
     // This function makes the modal scrollable and manages body scrolling
@@ -483,4 +387,263 @@ function enhanceModalScrolling() {
         modalContent.style.maxHeight = modalContent.style.maxHeight || '85vh';
         modalContent.style.overflowY = modalContent.style.overflowY || 'auto';
     }
+}
+
+/**
+ * Function to handle adding a new venue with image upload support
+ * This function sends the form data to the server using fetch API
+ * @param {HTMLFormElement} form - The form element containing the venue data
+ */
+function addNewVenue(form) {
+    // Create a new FormData object from the form
+    const formData = new FormData(form);
+    
+    // Add the add_facility flag to indicate this is a new facility
+    formData.append('add_facility', '1');
+    
+    // Handle checkbox state for is_available (checkboxes aren't included in FormData when unchecked)
+    if (!formData.has('is_available')) {
+        // Add is_available as 0 (false) if the checkbox wasn't checked
+        formData.append('is_available', '0');
+    }
+    
+    // Get the file input element for venue images
+    const fileInput = document.getElementById('venueImages');
+    
+    // Check if file input exists and has files selected
+    if (fileInput && fileInput.files.length > 0) {
+        // Clear any existing files in the formData with the same field name
+        if (formData.has('venueImages')) {
+            formData.delete('venueImages');
+        }
+        
+        // Calculate how many files to upload (maximum 3)
+        const maxFiles = Math.min(fileInput.files.length, 3);
+        
+        // Add each file to the form data with array notation for PHP
+        for (let i = 0; i < maxFiles; i++) {
+            formData.append('venueImages[]', fileInput.files[i]);
+        }
+    }
+    
+    // Send data to server using the fetch API
+    fetch('add_facility.php', {
+        method: 'POST',        // Use POST method
+        body: formData         // Send the form data
+    })
+    .then(response => response.json())  // Parse the JSON response
+    .then(data => {
+        // Check if the operation was successful
+        if (data.success) {
+            // Get the modal element
+            const modal = document.getElementById('venueModal');
+            
+            // Hide the modal
+            modal.style.display = 'none';
+            
+            // Restore body scrolling (which was disabled when modal was shown)
+            document.body.style.overflow = '';
+            
+            // Show a success message to the user
+            alert(data.message || 'New venue suggested successfully! An admin will review it.');
+            
+            // Reload facilities (note: new suggestions won't appear until approved by admin)
+            loadFacilities();
+        } else {
+            // If operation failed, show error message
+            alert('Error: ' + (data.message || 'Failed to add venue'));
+        }
+    })
+    .catch(error => {
+        // Log any errors to console for debugging
+        console.error('Error adding new venue:', error);
+        
+        // Show a user-friendly error message
+        alert('An error occurred while adding the venue. Please try again.');
+    });
+}
+
+/**
+ * Function to handle image preview functionality
+ * Shows image previews when files are selected
+ */
+function setupImagePreview() {
+    // Get the file input element
+    const imageInput = document.getElementById('venueImages');
+    
+    // Get the container for image previews
+    const imagePreview = document.getElementById('imagePreview');
+    
+    // If either element doesn't exist, exit the function
+    if (!imageInput || !imagePreview) return;
+    
+    // Add an event listener for when files are selected
+    imageInput.addEventListener('change', function() {
+        // Clear any existing previews
+        imagePreview.innerHTML = '';
+        
+        // Calculate how many files to preview (maximum 3)
+        const maxFiles = Math.min(this.files.length, 3);
+        
+        // Loop through each selected file
+        for (let i = 0; i < maxFiles; i++) {
+            // Get the current file
+            const file = this.files[i];
+            
+            // Only process image files (skip other file types)
+            if (!file.type.startsWith('image/')) continue;
+            
+            // Create a new FileReader to read the image file
+            const reader = new FileReader();
+            
+            // Define what happens when the file is loaded
+            reader.onload = function(e) {
+                // Create an image element
+                const img = document.createElement('img');
+                
+                // Set the image source to the loaded file data
+                img.src = e.target.result;
+                
+                // Set alt text for accessibility
+                img.alt = 'Image Preview';
+                
+                // Add the image to the preview container
+                imagePreview.appendChild(img);
+            };
+            
+            // Start reading the file as a data URL
+            reader.readAsDataURL(file);
+        }
+        
+        // If user selected more than 3 files, show a warning
+        if (this.files.length > 3) {
+            // Create a paragraph element for the warning
+            const warning = document.createElement('p');
+            
+            // Set the warning text
+            warning.textContent = 'Note: Only the first 3 images will be uploaded.';
+            
+            // Style the warning
+            warning.style.color = '#e74c3c';
+            warning.style.fontSize = '12px';
+            warning.style.marginTop = '5px';
+            
+            // Add the warning to the preview container
+            imagePreview.appendChild(warning);
+        }
+    });
+}
+
+/**
+ * Function to set up the modal and its functionality
+ * Should be called when the page loads
+ */
+function setupModal() {
+    // Get the modal element
+    const modal = document.getElementById('venueModal');
+    
+    // Get the close button element
+    const closeBtn = document.getElementById('closeModal');
+    
+    // Get the cancel button element
+    const cancelBtn = modal.querySelector('.cancel-btn');
+    
+    // Setup sport type options if not already populated
+    const sportTypeSelect = document.getElementById('sportType');
+    
+    // Check if the select element exists and has fewer than 2 options (including the default)
+    if (sportTypeSelect && sportTypeSelect.options.length <= 1) {
+        // Define common sport options
+        const sportOptions = ['Football', 'Basketball', 'Tennis', 'Swimming', 'Volleyball', 'Badminton', 'Table Tennis', 'Other'];
+        
+        // Loop through each sport and add it as an option
+        sportOptions.forEach(sport => {
+            // Create a new option element
+            const option = document.createElement('option');
+            
+            // Set the option's value to lowercase sport name
+            option.value = sport.toLowerCase();
+            
+            // Set the option's displayed text
+            option.textContent = sport;
+            
+            // Add the option to the select element
+            sportTypeSelect.appendChild(option);
+        });
+    }
+    
+    // Define a function to close the modal
+    const closeModal = () => {
+        // Hide the modal
+        modal.style.display = 'none';
+        
+        // Restore body scrolling
+        document.body.style.overflow = '';
+    };
+    
+    // Add event listener to close button
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    
+    // Add event listener to cancel button
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+    
+    // Close modal if user clicks outside of it (on the overlay)
+    window.addEventListener('click', event => {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // Set up the "Add New Venue" button
+    const addBtn = document.querySelector('.add-venue-btn');
+    
+    // Check if the button exists
+    if (addBtn) {
+        // Add click event listener
+        addBtn.addEventListener('click', () => {
+            // Get the form element
+            const form = modal.querySelector('form');
+            
+            // Reset the form to clear all fields
+            form.reset();
+            
+            // Reset the hidden facility ID field
+            document.getElementById('facilityId').value = '';
+            
+            // Clear image previews
+            const imagePreview = document.getElementById('imagePreview');
+            if (imagePreview) {
+                imagePreview.innerHTML = '';
+            }
+            
+            // Set modal title to "Add New Venue"
+            document.getElementById('modalTitle').textContent = 'Add New Venue';
+            
+            // Display the modal
+            modal.style.display = 'flex';
+            
+            // Reset scroll position to top (after a short delay)
+            setTimeout(() => {
+                const modalContent = modal.querySelector('.modal-content');
+                if (modalContent) {
+                    modalContent.scrollTop = 0;
+                }
+            }, 10);
+            
+            // Prevent body scrolling while modal is open
+            document.body.style.overflow = 'hidden';
+            
+            // Set form submission handler for adding a new venue
+            form.onsubmit = function(e) {
+                // Prevent the default form submission
+                e.preventDefault();
+                
+                // Use our custom addNewVenue function
+                addNewVenue(form);
+            };
+        });
+    }
+    
+    // Setup image preview functionality
+    setupImagePreview();
 }

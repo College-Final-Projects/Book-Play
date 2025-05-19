@@ -1,18 +1,13 @@
 // ManageVenueRequests.js
 
-// بعد جلب التقارير كما في السابق...
 document.addEventListener("DOMContentLoaded", function () {
   const venueContainer = document.getElementById("venueContainer");
   const modal = document.getElementById("reportModal");
-  const modalTitle = document.getElementById("modalTitle");
-  const modalMessage = document.getElementById("modalMessage");
-
-  let reportsData = [];
-
-  fetch("Get_Reports.php")
+  
+  // Use the consolidated API endpoint with the 'get_reports' action
+  fetch("VenueAPI.php?action=get_reports")
     .then(res => res.json())
     .then(data => {
-      reportsData = data;
       renderReports(data);
     })
     .catch(err => {
@@ -22,6 +17,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function renderReports(reports) {
     venueContainer.innerHTML = "";
+
+    if (reports.length === 0) {
+      venueContainer.innerHTML = "<p>No venue requests found.</p>";
+      return;
+    }
 
     reports.forEach((report, index) => {
       const card = document.createElement("div");
@@ -41,25 +41,27 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   window.openVenue = function(id) {
-  if (!id) {
-    alert("Venue ID not available");
-    return;
-  }
-  window.location.href = `../VenueDetails/VenueDetails.php?id=${id}`;
-}
+    if (!id) {
+      alert("Venue ID not available");
+      return;
+    }
+    window.location.href = `../VenueDetails/VenueDetails.php?id=${id}`;
+  };
 
   window.closeModal = function () {
     modal.style.display = "none";
   };
 
-  window.handleAction = function (action, reportId, facilitiesId) {
-    fetch("HandleAction.php", {
+  window.handleAction = function (subaction, reportId, facilitiesId) {
+    // Updated to use the consolidated API with action=handle_action
+    fetch("VenueAPI.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
       body: new URLSearchParams({
-        action,
+        action: "handle_action",
+        subaction: subaction,
         report_id: reportId,
         facilities_id: facilitiesId
       })
@@ -75,5 +77,31 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("❌ Something went wrong");
         console.error(err);
       });
+  };
+
+  // Add a function to update report status (previously in UpdateReportStatus.php)
+  window.updateReportStatus = function(reportId, status) {
+    fetch("VenueAPI.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        action: "update_status",
+        report_id: reportId,
+        status: status
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message);
+      if (data.success) {
+        location.reload();
+      }
+    })
+    .catch(err => {
+      alert("❌ Something went wrong");
+      console.error(err);
+    });
   };
 });
