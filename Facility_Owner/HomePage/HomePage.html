@@ -15,12 +15,13 @@
   <!-- Header -->
   <div class="header-bar">
     <div class="logo-title">BOOK&PLAY</div>
-    <div class="profile-container">
+
+  <div class="profile-container" onclick="toggleProfileMenu()">
       <div class="profile-icon">P</div>
-      <div class="profile-menu" id="profileMenu">
-        <a href="#">Edit Profile</a>
-        <a href="#">Logout</a>
-      </div>
+     <div class="profile-menu" id="profileMenu">
+  <a href="../../EditProfile/EditProfile.php">Edit Profile</a>
+  <a href="../../Login_Page/Login.php">Logout</a>
+  </div>
     </div>
   </div>
 
@@ -65,13 +66,13 @@
       <span>Messages</span>
     </div>
 
-    <div class="glow-card btn-switch" onclick="window.location.href='../../player/HomePage/HomePage.php'">
+    <div class="glow-card btn-switch" onclick="window.location.href='../../User_Selection_Page/user-selection.php'">
       <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#22c55e">
         <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
         <circle cx="8.5" cy="7" r="4"></circle>
         <polyline points="17 11 19 13 23 9"></polyline>
       </svg>
-      <span>Switch To Player</span>
+      <span>Back To User Selction Page</span>
     </div>
   </div>
 
@@ -82,6 +83,9 @@
     </div>
   </footer>
 
-  
+    <script src="HomePage.js"></script>
+<button class="floating-admin-btn" onclick="handleAdminRequest()">
+  Request Admin Access
+</button>
 </body>
 </html>

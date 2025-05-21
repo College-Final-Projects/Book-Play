@@ -43,45 +43,122 @@
   }
   /* Profile dropdown */
   .profile-container {
-    position: relative;
-    cursor: pointer;
+  position: relative;
+  cursor: pointer;
+  z-index: 100;
+}
+.profile-container {
+     position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
   }
+
+.admin-request-icon {
+  width: 30px;
+  height: 30px;
+  background-color: #facc15;
+  color: black;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 6px #facc15;
+  transition: all 0.3s ease;
+}
+
+.admin-request-icon:hover {
+  transform: scale(1.1);
+}
+
+.admin-banner {
+  width: 100%;
+  background: linear-gradient(90deg, #fff8e1, #fef3c7);
+  color: var(--text-main);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  border-bottom: 1px solid #fcd34d;
+  box-shadow: 0 2px 8px rgba(252, 211, 77, 0.2);
+  z-index: 99;
+  position: relative;
+}
+
+.floating-admin-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #facc15, #fef08a);
+  color: #1e293b;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(250, 204, 21, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+.floating-admin-btn:hover {
+  background: linear-gradient(135deg, #eab308, #fde047);
+  box-shadow: 0 6px 16px rgba(250, 204, 21, 0.6);
+}
+
+
   .profile-icon {
-    width: 40px;
-    height: 40px;
-    background-color: var(--primary);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    box-shadow: 0 0 6px var(--accent-glow);
-  }
-  .profile-menu {
-    position: absolute;
-    top: 50px;
-    right: 0;
-    background-color: white;
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-    overflow: hidden;
-    display: none;
-    flex-direction: column;
-    z-index: 100;
-  }
-  .profile-menu a {
-    padding: 12px 18px;
-    text-decoration: none;
-    color: var(--text-main);
-    font-size: 14px;
-  }
-  .profile-menu a:hover {
-    background-color: #f3f4f6;
-  }
-  .profile-menu.active {
-    display: flex;
+  width: 40px;
+  height: 40px;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 0 6px var(--accent-glow);
+}
+
+.profile-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: white;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+  min-width: 180px;
+  z-index: 101;
+}
+
+.profile-menu a {
+  padding: 12px 18px;
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+.profile-menu a:hover {
+  background-color: #f3f4f6;
+}
+
+.profile-menu.active {
+  display: flex;
+}
+ .profile-menu {
+    min-width: 160px;
+    right: -10px;
   }
   /* Main Buttons */
   .main-buttons {

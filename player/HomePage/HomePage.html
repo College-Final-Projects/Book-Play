@@ -11,16 +11,17 @@
 
   <div class="bg-shapes"></div>
 
-  <header class="header-bar">
-    <h1 class="logo-title">BOOK<span>&</span>PLAY</h1>
-    <div class="profile-container" onclick="toggleProfileMenu()">
+   <div class="header-bar">
+    <div class="logo-title">BOOK&PLAY</div>
+  <div class="profile-container" onclick="toggleProfileMenu()">
       <div class="profile-icon">P</div>
       <div class="profile-menu" id="profileMenu">
         <a href="../../EditProfile/EditProfile.php">Edit Profile</a>
         <a href="../../Login_Page/Login.php">Logout</a>
       </div>
     </div>
-  </header>
+    
+  </div>
 
   <div class="main-buttons">
     <div class="glow-card btn-find" onclick="window.location.href='../FindPlayer/find-player.php'">
@@ -51,10 +52,9 @@
     <img src="../../Images/myBooking_icon.png" class="icon" alt="My Bookings">
     <span>My Bookings</span>
   </div>
-  <div class="glow-card btn-switch" onclick="window.location.href='../../Facility_Owner/HomePage/HomePage.php'">
-    <img src="../../Images/SwitchToManger_icon.png" class="icon" alt="Switch to Facility Owner">
-    <span>Swtich To Facility Owner</span>
-  </div>
+  <div class="glow-card btn-switch" onclick="window.location.href='../../User_Selection_Page/user-selection.php'">
+    <img src="../../Images/back_icon.png" class="icon" alt="Switch to Facility Owner">
+<span>Back To User Selction Page</span>  </div>
 </div>
 
 
@@ -65,5 +65,8 @@
   </footer>
 
   <script src="HomePage.js"></script>
+  <button class="floating-admin-btn" onclick="handleAdminRequest()">
+  Request Admin Access
+</button>
 </body>
 </html>

@@ -33,7 +33,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 14px 30px;
-  background: linear-gradient(to right, #e0f7fa, #d0f8ce);
+  background: linear-gradient(to right, #e47c05, #d0f8ce);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
@@ -103,6 +103,7 @@ body {
 .page-header {
   margin-bottom: 30px;
   position: relative;
+  
 }
 
 .page-title {

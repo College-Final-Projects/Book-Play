@@ -1,113 +1,188 @@
-// Minimal JavaScript - only toggle between views and handle simple UI interactions
 document.addEventListener('DOMContentLoaded', function() {
-    // DOM elements
-    const venueCardsView = document.getElementById('venue-cards-view');
-    const bookingDetailView = document.getElementById('booking-detail-view');
-    const viewBookingButtons = document.querySelectorAll('.btn-view-bookings');
-    const backToVenuesButton = document.querySelector('.btn-back-to-venues');
-    const venueListItems = document.querySelectorAll('.venues-list li');
-    const dateBtns = document.querySelectorAll('.date-btn');
-    const venueTitle = document.querySelector('.booking-content .venue-details h2');
-    const venueLocation = document.querySelector('.location-badge');
-    const venueRating = document.querySelector('.rating-badge');
-    const monthNavBtns = document.querySelectorAll('.month-nav');
-    const currentMonth = document.querySelector('.current-month');
-
-
-    // Toggle between views - from venue cards to booking details
-    viewBookingButtons.forEach((button, index) => {
-        button.addEventListener('click', () => {
-            venueCardsView.classList.add('hidden');
-            bookingDetailView.classList.remove('hidden');
+    console.log('DOM fully loaded');
+    
+    // Get all "View Bookings" buttons
+    var viewBookingButtons = document.querySelectorAll('.btn-view-bookings');
+    console.log('Found ' + viewBookingButtons.length + ' view booking buttons');
+    
+    // Get the views that need to be toggled
+    var venuesContainer = document.querySelector('.venues-container');
+    var bookingDetailView = document.getElementById('booking-detail-view');
+    
+    if (!venuesContainer) {
+        console.error('Venues container not found!');
+    }
+    
+    if (!bookingDetailView) {
+        console.error('Booking detail view not found!');
+    }
+    
+    // Add click event to each View Bookings button
+    viewBookingButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            console.log('View Bookings button clicked');
             
-            // Set active venue in sidebar
-            venueListItems.forEach(item => item.classList.remove('active'));
-            venueListItems[index].classList.add('active');
+            // Hide the venues container
+            if (venuesContainer) {
+                venuesContainer.style.display = 'none';
+            }
+            
+            // Show the booking detail view
+            if (bookingDetailView) {
+                bookingDetailView.style.display = 'block';
+                bookingDetailView.classList.remove('hidden');
+            }
+        });
+    });
+    
+    // Back to Venues button
+    var backButton = document.querySelector('.btn-back-to-venues');
+    if (backButton) {
+        backButton.addEventListener('click', function() {
+            console.log('Back to venues button clicked');
+            
+            // Show the venues container
+            if (venuesContainer) {
+                venuesContainer.style.display = 'flex';
+            }
+            
+            // Hide the booking detail view
+            if (bookingDetailView) {
+                bookingDetailView.style.display = 'none';
+                bookingDetailView.classList.add('hidden');
+            }
+        });
+    } else {
+        console.error('Back button not found!');
+    }
+    
+    // Modal functionality
+    var addBookingBtn = document.querySelector('.btn-add-booking');
+    var addBookingModal = document.getElementById('addBookingModal');
+    var cancelBtn = document.querySelector('.btn-cancel');
+    
+    console.log('Add Booking Button:', addBookingBtn);
+    console.log('Modal:', addBookingModal);
+    console.log('Cancel Button:', cancelBtn);
+    
+    // Function to open modal
+    function openModal() {
+        console.log('Opening modal');
+        if (addBookingModal) {
+            addBookingModal.style.display = 'flex';
+        }
+    }
+    
+    // Function to close modal
+    function closeModal() {
+        console.log('Closing modal');
+        if (addBookingModal) {
+            addBookingModal.style.display = 'none';
+        }
+    }
+    
+    // Add booking button click
+    if (addBookingBtn) {
+        addBookingBtn.onclick = function() {
+            openModal();
+        };
+    }
+    
+    // Cancel button click
+    if (cancelBtn) {
+        cancelBtn.onclick = function() {
+            closeModal();
+        };
+    }
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target === addBookingModal) {
+            closeModal();
+        }
+    };
+    
+    // Form submission handling
+    var bookingForm = document.getElementById('bookingForm');
+    if (bookingForm) {
+        bookingForm.onsubmit = function(e) {
+            e.preventDefault();
+            alert('Booking added successfully!');
+            closeModal();
+        };
+    }
+    
+    // Venue sidebar functionality
+    var venueListItems = document.querySelectorAll('.venues-list li');
+    var venueTitle = document.querySelector('.booking-content .venue-details h2');
+    var venueLocation = document.querySelector('.location-badge');
+    var venueRating = document.querySelector('.rating-badge');
+    
+    // Venue details data
+    var venues = [
+        { name: 'Downtown Soccer Field', location: 'Central District', rating: '★ 4.8' },
+        { name: 'Riverside Tennis Court', location: 'North District', rating: '★ 4.5' },
+        { name: 'Lakeside Basketball Court', location: 'South District', rating: '★ 4.2' }
+    ];
+    
+    // Add click handlers to venue list items
+    venueListItems.forEach(function(item, index) {
+        item.addEventListener('click', function() {
+            // Update active state
+            venueListItems.forEach(function(li) {
+                li.classList.remove('active');
+            });
+            item.classList.add('active');
             
             // Update venue details
-            updateVenueDetails(index);
+            if (venues[index]) {
+                var venue = venues[index];
+                if (venueTitle) venueTitle.textContent = venue.name;
+                if (venueLocation) venueLocation.textContent = venue.location;
+                if (venueRating) venueRating.textContent = venue.rating;
+            }
         });
     });
-
-    // Back to venues view
-    backToVenuesButton.addEventListener('click', () => {
-        bookingDetailView.classList.add('hidden');
-        venueCardsView.classList.remove('hidden');
-    });
-
-    // Switch between venues in sidebar
-    venueListItems.forEach((item, index) => {
-        item.addEventListener('click', () => {
-            venueListItems.forEach(li => li.classList.remove('active'));
-            item.classList.add('active');
-            updateVenueDetails(index);
-        });
-    });
-
-    // Toggle between dates
-    dateBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            dateBtns.forEach(b => b.classList.remove('active'));
+    
+    // Date buttons
+    var dateBtns = document.querySelectorAll('.date-btn');
+    dateBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            dateBtns.forEach(function(b) {
+                b.classList.remove('active');
+            });
             btn.classList.add('active');
-            // In a real application, this would fetch bookings for the selected date
         });
     });
-
+    
     // Month navigation
-    let currentMonthIndex = 4; // May (0-indexed)
-    const months = [
-        'January', 'February', 'March', 'April', 'May', 
-        'June', 'July', 'August', 'September', 'October', 
+    var monthNavBtns = document.querySelectorAll('.month-nav');
+    var currentMonth = document.querySelector('.current-month');
+    var monthIndex = 4; // May
+    var months = [
+        'January', 'February', 'March', 'April', 'May',
+        'June', 'July', 'August', 'September', 'October',
         'November', 'December'
     ];
-
-    monthNavBtns.forEach((btn, index) => {
-        btn.addEventListener('click', () => {
-            // Previous month button
-            if (index === 0 && currentMonthIndex > 0) {
-                currentMonthIndex--;
+    
+    monthNavBtns.forEach(function(btn, index) {
+        btn.addEventListener('click', function() {
+            if (index === 0 && monthIndex > 0) {
+                monthIndex--;
+            } else if (index === 1 && monthIndex < 11) {
+                monthIndex++;
             }
-            // Next month button
-            else if (index === 1 && currentMonthIndex < 11) {
-                currentMonthIndex++;
+            if (currentMonth) {
+                currentMonth.textContent = months[monthIndex] + ' 2025';
             }
-            
-            currentMonth.textContent = `${months[currentMonthIndex]} 2025`;
         });
     });
-
-    // Update venue details in booking view
-    function updateVenueDetails(index) {
-        const venue = venues[index];
-        venueTitle.textContent = venue.name;
-        venueLocation.textContent = venue.location;
-        venueRating.textContent = venue.rating;
-    }
-
-    // Message button functionality
-    const messageButtons = document.querySelectorAll('.btn-send-message');
-    messageButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // In a real application, this would open a message dialog
+    
+    // Send message buttons
+    var messageButtons = document.querySelectorAll('.btn-send-message');
+    messageButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
             alert('Message feature would open here');
         });
     });
 });
-const modal = document.getElementById('addBookingModal');
-
-  // When user clicks Add Booking button
-  document.querySelector('.btn-add-booking').addEventListener('click', () => {
-    modal.style.display = 'flex';
-  });
-
-  // Close modal
-  function closeModal() {
-    modal.style.display = 'none';
-  }
-
-  // Optional: Prevent form from reloading page
-  document.getElementById('bookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    alert('Booking added (mock only)');
-    closeModal();
-  });

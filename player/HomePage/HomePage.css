@@ -75,9 +75,9 @@ body {
 }
 
 .profile-menu {
-  position: absolute;
-  top: 50px;
-  right: 0;
+  position: fixed; /* بدلاً من absolute */
+  top: 70px;
+  right: 30px; /* يمكنك تعديل الرقم حسب التباعد */
   background-color: white;
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
@@ -87,7 +87,9 @@ body {
   flex-direction: column;
   min-width: 180px;
   z-index: 101;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
+
 
 .profile-menu a {
   padding: 12px 18px;
@@ -185,6 +187,27 @@ footer {
   max-width: 1200px;
   margin: auto;
   padding: 0 20px;
+}
+.floating-admin-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #facc15, #fef08a);
+  color: #1e293b;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(250, 204, 21, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+.floating-admin-btn:hover {
+  background: linear-gradient(135deg, #eab308, #fde047);
+  box-shadow: 0 6px 16px rgba(250, 204, 21, 0.6);
 }
 
 @keyframes fadeInUp {

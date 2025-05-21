@@ -8,11 +8,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-
-  <!-- عنوان الصفحة -->
-  <div class="admin-title">
-    <h1 class="logo-title">BOOK<span>&</span>PLAY <small>Admin</small></h1>
+  <div class="header-bar">
+    <div class="logo-title">BOOK&PLAY</div>
+  <div class="profile-container" onclick="toggleProfileMenu()">
+      <div class="profile-icon">P</div>
+      <div class="profile-menu" id="profileMenu">
+        <a href="../../EditProfile/EditProfile.php">Edit Profile</a>
+        <a href="../../Login_Page/Login.php">Logout</a>
+      </div>
+    </div>
+    
   </div>
+
 
   <!-- بطاقات المدير -->
   <div class="admin-buttons">
@@ -32,10 +39,12 @@
       <img src="../../Images/MangeSport_icon.png" class="icon" alt="Edit Sports">
       <span>Manage Sports</span>
     </a>
+ </div>
 
-    <a href="../../Login_Page/Login.php" class="glow-card btn-logout">
-      <img src="../../Images/Logout_icon.png" class="icon" alt="Logout">
-      <span>Logout</span>
+ <div class="admin-buttons">
+    <a href="../../User_Selection_Page/user-selection.php" class="glow-card btn-logout">
+      <img src="../../Images/back_icon.png" class="icon" alt="back to user selection">
+      <span>Back To User Selction Page</span>
     </a>
   </div>
 
@@ -44,6 +53,7 @@
       © 2025 Book&Play. All rights reserved.
     </div>
   </footer>
+    <script src="HomePage.js"></script>
 
 </body>
 </html>

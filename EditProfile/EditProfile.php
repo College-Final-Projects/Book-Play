@@ -52,5 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "<script>alert('Profile created successfully!'); window.location.href = '../HomePage/HomePage.html';</script>";
     $conn->close();
 }
+include 'EditProfile.html';
 
 ?>
