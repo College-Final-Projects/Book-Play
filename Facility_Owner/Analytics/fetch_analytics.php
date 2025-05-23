@@ -4,15 +4,18 @@ require_once '../../db.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['username'])) {
-    header('Location: ../../login.php');
+    header('HTTP/1.1 401 Unauthorized');
+    echo json_encode(['error' => 'Unauthorized access']);
     exit;
-} 
+}
+
+header('Content-Type: application/json'); 
  
 $venueName = $_GET['venue'] ?? null; 
 $year = $_GET['year'] ?? date("Y"); 
  
-if (!$venueName) { 
-    echo json_encode(['error' => 'Missing venue parameter']); 
+if (!$venueName || trim($venueName) === '') { 
+    echo json_encode(['error' => 'Missing venue parameter', 'debug' => $_GET]); 
     exit; 
 } 
 
@@ -40,6 +43,7 @@ $facilityId = $rowFacility['facilities_id'];
 $sql = " 
     SELECT  
         MONTH(booking_date) AS month, 
+        MONTHNAME(booking_date) AS month_name,
         COUNT(*) AS total_bookings, 
         SUM(f.price) AS total_revenue 
     FROM bookings b 
@@ -47,7 +51,7 @@ $sql = "
     WHERE b.facilities_id = ? 
       AND YEAR(booking_date) = ? 
       AND b.status = 'confirmed'
-    GROUP BY MONTH(booking_date) 
+    GROUP BY MONTH(booking_date), MONTHNAME(booking_date)
     ORDER BY MONTH(booking_date)
 "; 
  
@@ -56,42 +60,20 @@ $stmt->bind_param("ii", $facilityId, $year);
 $stmt->execute(); 
 $result = $stmt->get_result(); 
  
-$data = []; 
+$monthlyData = []; 
 while ($row = $result->fetch_assoc()) { 
     $monthNumber = (int)$row['month']; 
-    $monthName = date('F', mktime(0, 0, 0, $monthNumber, 10)); 
-    $data[] = [ 
-        'month' => $monthName,
-        'monthNumber' => $monthNumber, 
+    $monthName = $row['month_name']; 
+    $monthlyData[$monthName][] = [ 
+        'date' => $monthName, 
         'bookings' => (int)$row['total_bookings'], 
-        'revenue' => (float)$row['total_revenue'] 
+        'total' => (float)$row['total_revenue'] 
     ]; 
 } 
 
 // Close statements
 $stmtFacility->close();
 $stmt->close();
- 
-// Check if this is an AJAX request
-if (isset($_GET['ajax']) && $_GET['ajax'] === 'true') {
-    header('Content-Type: application/json');
-    echo json_encode([
-        'success' => true,
-        'venue' => $venueName,
-        'year' => (int)$year,
-        'data' => $data
-    ]); 
-    exit;
-}
 
-// If not AJAX, make data available to HTML and include it
-$analyticsData = [
-    'success' => true,
-    'venue' => $venueName,
-    'year' => (int)$year,
-    'data' => $data
-];
-
-include 'Analytics.html';
- 
+echo json_encode($monthlyData);
 ?>

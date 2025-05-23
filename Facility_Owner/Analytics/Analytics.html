@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Venue Analytics | Book&Play</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="Analytics.css">
-
 </head>
 <body>
+
 <!-- Navbar -->
 <nav class="fresh-navbar">
   <div class="logo">Book<span>&</span>Play</div>
@@ -25,120 +24,91 @@
     <li><a href="../../Login_Page/Login.php" class="logout">Logout</a></li>
   </ul>
 </nav>
-   <!-- Main Content -->
-        <div class="container">
-            <div class="page-header">
-                <h1 class="page-title">Analytics My Venues</h1>
-                <p class="page-subtitle">View and control all your venue reservations with clarity and ease</p>
-            </div>
 
-            <!-- Search and Sort -->
-            <div class="search-sort-container">
-                <div class="search-bar">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="searchInput" placeholder="Search venues by name">
-                </div>
-                <div class="sort-container">
-                    <span class="sort-label">Sort By:</span>
-                    <select class="sort-select" id="sortSelect">
-                        <option value="name">Name (A-Z)</option>
-                        <option value="name-desc">Name (Z-A)</option>
-                    </select>
-                </div>
-                <div class="sort-container">
-                    <select class="sort-select" id="sortSelect">
-                        <option value="name">All Sport</option>
-                        <option value="name">Football</option>
-                        <option value="name">Tennis</option>
-                        <option value="name">basketball</option>
-                    </select>
-                </div>
-            </div>
+<!-- Page Content -->
+<div class="container">
+  <div class="page-header">
+    <h1 class="page-title">Analytics My Venues</h1>
+    <p class="page-subtitle">View and control all your venue reservations with clarity and ease</p>
+  </div>
 
-<!-- Main Cards Section -->
-<div id="cardSection" class="main-content">
-  <div class="card-grid">
-    <div class="venue-card">
-      <img src="https://cardiffcitystadium.co.uk/wp-content/uploads/2022/12/1947558.jpg" class="venue-image" />
-      <div class="venue-name">Green Court</div>
-      <div class="venue-rating">
-        <span class="star"> 4⭐</span> 
-
-      </div>
-      <button class="view-button" onclick="openBookings('Green Court')">View Analytics</button>
+  <!-- Search and Sort -->
+  <div class="search-sort-container">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search venues by name">
     </div>
-    <div class="venue-card">
-      <img src="https://media.gettyimages.com/id/158934054/photo/general-view-of-hard-tennis-court.jpg?s=612x612&w=gi&k=20&c=HDSL8wtI1x6YeGi4gMLiMUv53T0-uG4PdpWDTpv7xpY=" class="venue-image" />
-      <div class="venue-name">Blue Arena</div>
-      <div class="venue-rating">
-        <span class="star"> 5⭐</span> 
-
-      </div>
-      <button class="view-button" onclick="openBookings('Blue Arena')">View Analytics</button>
+    <div class="sort-container">
+      <span class="sort-label">Sort By:</span>
+      <select class="sort-select">
+        <option value="name">Name (A-Z)</option>
+        <option value="name-desc">Name (Z-A)</option>
+      </select>
     </div>
-    <div class="venue-card">
-      <img src="https://m.media-amazon.com/images/I/713xdIBfgZL._AC_UF894,1000_QL80_.jpg" class="venue-image" />
-      <div class="venue-name">Sunlight Field</div>
-      <div class="venue-rating">
-        <span class="star"> 3⭐</span> 
+    <div class="sort-container">
+      <select class="sort-select">
+        <option value="all">All Sport</option>
+        <option value="football">Football</option>
+        <option value="tennis">Tennis</option>
+        <option value="basketball">Basketball</option>
+      </select>
+    </div>
+  </div>
 
+  <!-- Venue Cards -->
+  <div id="cardSection" class="main-content">
+    <div class="card-grid" id="venueCards">
+      <!-- Venue cards will be injected here by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Booking Details -->
+  <div id="bookingPage" class="container booking-page" style="display:none;">
+    <div class="sidebar">
+      <h3>🗓 Months</h3>
+      <button class="month-btn" onclick="showMonth('January')">January</button>
+      <button class="month-btn" onclick="showMonth('February')">February</button>
+      <button class="month-btn" onclick="showMonth('March')">March</button>
+      <button class="month-btn" onclick="showMonth('April')">April</button>
+      <button class="month-btn" onclick="showMonth('May')">May</button>
+      <button class="month-btn" onclick="showMonth('June')">June</button>
+      <button class="month-btn" onclick="showMonth('July')">July</button>
+      <button class="month-btn" onclick="showMonth('August')">August</button>
+      <button class="month-btn" onclick="showMonth('September')">September</button>
+      <button class="month-btn" onclick="showMonth('October')">October</button>
+      <button class="month-btn" onclick="showMonth('November')">November</button>
+      <button class="month-btn" onclick="showMonth('December')">December</button>
+      <button class="month-btn" onclick="showMonth('All')">All</button>
+      <select id="yearSelect" onchange="showMonth(currentMonth)">
+        <option>2025</option>
+        <option>2024</option>
+        <option>2023</option>
+      </select>
+    </div>
+
+    <div class="main-content">
+      <button class="back-btn" onclick="goBack()">← Back to Venues</button>
+      <h2 id="venueTitle" style="margin-top: 30px;">Bookings for ...</h2>
+      <div id="pdfContent">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Bookings</th>
+              <th>Total (₪)</th>
+            </tr>
+          </thead>
+          <tbody id="bookingTable"></tbody>
+        </table>
+        <div class="summary" id="summaryRow"></div>
       </div>
-      <button class="view-button" onclick="openBookings('Sunlight Field')">View Analytics</button>
+      <button class="view-button" onclick="downloadPDF()" style="margin-top: 20px;">📄 Download as PDF</button>
     </div>
   </div>
 </div>
 
-<!-- Booking Page -->
-<div id="bookingPage" class="container booking-page">
-  <div class="sidebar">
-    <h3> 📅 Months</h3>
-    <button class="month-btn active" onclick="showMonth('January')">January</button>
-    <button class="month-btn" onclick="showMonth('February')">February</button>
-    <button class="month-btn" onclick="showMonth('March')">March</button>
-    <button class="month-btn" onclick="showMonth('April')">April</button>
-    <button class="month-btn" onclick="showMonth('May')">May</button>
-    <button class="month-btn" onclick="showMonth('June')">June</button>
-    <button class="month-btn" onclick="showMonth('July')">July</button>
-    <button class="month-btn" onclick="showMonth('August')">August</button>
-    <button class="month-btn" onclick="showMonth('September')">September</button>
-    <button class="month-btn" onclick="showMonth('October')">October</button>
-    <button class="month-btn" onclick="showMonth('November')">November</button>
-    <button class="month-btn" onclick="showMonth('December')">December</button>
-    <button class="month-btn" onclick="showMonth('All')">All</button>
-
-    <select id="yearSelect" onchange="showMonth(currentMonth)">
-      <option>2025</option>
-      <option>2024</option>
-      <option>2023</option>
-    </select>
-  </div>
-
-  <div class="main-content">
-    
-    <button class="back-btn " onclick="goBack()" >← Back to Venues</button>
-    <h2 id="venueTitle" style="margin-top: 30px; margin-left: 200px;">Bookings for Green Court</h2>
-    <div id="pdfContent">
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Bookings</th>
-          <th>Total (₪)</th>
-        </tr>
-      </thead>
-      <tbody id="bookingTable">
-        <!-- يتم تعبئته من الجافاسكربت -->
-      </tbody>
-    </table>
-    <div class="summary" id="summaryRow"></div>
-
-  </div>
-  <button class="view-button" onclick="downloadPDF()" style="margin-top: 20px;">📄 Download as PDF</button>
-
-</div>
-
+<!-- JS -->
 <script src="Analytics.js" defer></script>
-
 
 </body>
 </html>
