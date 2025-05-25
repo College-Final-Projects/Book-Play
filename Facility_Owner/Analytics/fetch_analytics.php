@@ -2,13 +2,6 @@
 session_start(); 
 require_once '../../db.php'; 
 
-// Check if user is logged in
-if (!isset($_SESSION['username'])) {
-    header('HTTP/1.1 401 Unauthorized');
-    echo json_encode(['error' => 'Unauthorized access']);
-    exit;
-}
-
 header('Content-Type: application/json'); 
  
 $venueName = $_GET['venue'] ?? null; 
