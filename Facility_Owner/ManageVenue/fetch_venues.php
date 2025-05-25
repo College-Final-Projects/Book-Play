@@ -109,19 +109,33 @@ function addFacility() {
     $description = $_POST['description'] ?? '';
     $price = intval($_POST['price'] ?? 0);
     $location = $_POST['location'] ?? '';
+    $latitude = $_POST['latitude'] ?? null;  // استقبال خط العرض
+    $longitude = $_POST['longitude'] ?? null;  // استقبال خط الطول
     $is_available = isset($_POST['is_available']) ? 1 : 0;
     $image_urls = [];
 
-    if (isset($_FILES['venueImages']) && $_FILES['venueImages']['error'][0] !== UPLOAD_ERR_NO_FILE) {
+    // التحقق من تحميل الصور
+    if (isset($_FILES['venueImages']) && is_array($_FILES['venueImages']['name']) && $_FILES['venueImages']['error'][0] !== UPLOAD_ERR_NO_FILE) {
         $image_urls = upload_images($_FILES['venueImages']);
     }
 
+    // تحويل مصفوفة روابط الصور إلى نص مفصول بفواصل
     $image_url_string = implode(',', $image_urls);
+    
+    // إضافة الإحداثيات إلى الموقع إذا كانت متوفرة
+    if ($latitude && $longitude) {
+        // إضافة الإحداثيات إلى الموقع (يمكن استخدام صيغة JSON أو أي صيغة أخرى)
+        $coordinates = json_encode(['lat' => $latitude, 'lng' => $longitude]);
+    } else {
+        $coordinates = null;
+    }
+    
     $conn->begin_transaction();
 
     try {
-        $stmt = $conn->prepare("INSERT INTO sportfacilities (place_name, location, description, image_url, owner_username, SportCategory, price, is_Accepted, is_available) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)");
-        $stmt->bind_param("ssssssii", $place_name, $location, $description, $image_url_string, $username, $sport_type, $price, $is_available);
+        // تعديل الاستعلام لإضافة حقل الإحداثيات
+        $stmt = $conn->prepare("INSERT INTO sportfacilities (place_name, location, description, image_url, owner_username, SportCategory, price, coordinates, is_Accepted, is_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?)");
+        $stmt->bind_param("ssssssiis", $place_name, $location, $description, $image_url_string, $username, $sport_type, $price, $coordinates, $is_available);
 
         if (!$stmt->execute()) {
             throw new Exception("Failed to add facility: " . $conn->error);
@@ -129,7 +143,7 @@ function addFacility() {
 
         $facility_id = $conn->insert_id;
         $report_stmt = $conn->prepare("INSERT INTO reports (username, type, suggested_place_name, facilities_id, message, created_at) VALUES (?, 'suggest_place', ?, ?, ?, NOW())");
-        $report_msg = "Sport type: $sport_type\nLocation: $location\nPrice: $price\nDescription: $description\nImages: $image_url_string";
+        $report_msg = "Sport type: $sport_type\nLocation: $location\nPrice: $price\nDescription: $description\nImages: $image_url_string\nCoordinates: $coordinates";
         $report_stmt->bind_param("ssis", $username, $place_name, $facility_id, $report_msg);
 
         if (!$report_stmt->execute()) {
@@ -137,7 +151,7 @@ function addFacility() {
         }
 
         $conn->commit();
-        echo json_encode(["success" => true, "message" => "Facility added", "facility_id" => $facility_id]);
+        echo json_encode(["success" => true, "message" => "Facility added successfully", "facility_id" => $facility_id]);
 
     } catch (Exception $e) {
         $conn->rollback();

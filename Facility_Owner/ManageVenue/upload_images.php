@@ -8,7 +8,7 @@ function upload_images($files) {
     $upload_dir = '../../uploads/venues/';
 
     // Public URL path to return (relative to web root)
-    $public_path = '../uploads/venues/';
+    $public_path = '../../uploads/venues/';
 
     // Create the uploads directory if it doesn't exist
     if (!file_exists($upload_dir)) {

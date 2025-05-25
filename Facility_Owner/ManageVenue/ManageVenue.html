@@ -67,9 +67,12 @@
         <div class="modal-content">
             <span class="close-modal" id="closeModal">&times;</span>
             <h2 id="modalTitle">Add New Venue</h2>
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="facility_id" id="facilityId" value="">
                 <input type="hidden" name="save_facility" value="1">
+                <!-- حقول مخفية لتخزين الإحداثيات -->
+                <input type="hidden" name="latitude" id="latitude" value="">
+                <input type="hidden" name="longitude" id="longitude" value="">
                 
                 <label>Venue Name</label>
                 <input type="text" name="place_name" id="placeName" placeholder="Enter venue name" required>
@@ -80,7 +83,7 @@
                 </select>
           
                 <label>Venue Images (Max 3)</label>
-                <input type="file" id="venueImages" accept="image/*" multiple>
+                <input type="file" id="venueImages" name="venueImages[]" accept="image/*" multiple>
                 <div id="imagePreview" class="image-preview-container"></div>
           
                 <label>Description</label>
@@ -99,8 +102,9 @@
           
                 <div class="form-group">
                     <label for="locationInput">Location</label>
-                    <input type="text" id="locationInput" name="location" placeholder="Location">
+                    <input type="text" id="locationInput" name="location" placeholder="Enter address or select on map">
                     <div id="map" style="height: 300px; border-radius: 12px; margin-top: 10px;"></div>
+                    <p class="map-help">You can click on the map to set location or drag the marker for precise positioning</p>
                 </div>
                   
                 <div class="modal-buttons">

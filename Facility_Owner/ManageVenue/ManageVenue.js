@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 let facilities = []; // Global array to hold facilities
+let map;
+let marker;
+let geocoder;
 
 function loadFacilities() {
   fetch('fetch_venues.php?action=get_facilities')
@@ -41,14 +44,17 @@ function displayVenues() {
     venueCard.dataset.location = (facility.location || '').toLowerCase();
     venueCard.dataset.price = facility.price || 0;
 
-    const imageUrl = facility.image_url?.split(',')[0] || '/api/placeholder/400/320';
+    // Handle multiple images
+    const imageUrls = facility.image_url ? facility.image_url.split(',') : [];
+    const mainImageUrl = imageUrls[0] || '/api/placeholder/400/320';
+    
     const isAvailable = facility.is_available == 1;
     const statusClass = isAvailable ? 'status-available' : 'status-unavailable';
     const statusText = isAvailable ? 'Available' : 'Unavailable';
 
     venueCard.innerHTML = `
       <div class="venue-image">
-        <img src="${imageUrl}" alt="${facility.place_name || 'Venue'}">
+        <img src="${mainImageUrl}" alt="${facility.place_name || 'Venue'}">
       </div>
       <div class="venue-details">
         <div class="venue-name">
@@ -89,7 +95,105 @@ function setupModal() {
   const sportTypeSelect = document.getElementById('sportType');
   const imageInput = document.getElementById('venueImages');
   const preview = document.getElementById('imagePreview');
+  const locationInput = document.getElementById('locationInput');
 
+  // تهيئة جوجل مابس
+  function initMap() {
+    // تعريف خريطة افتراضية (تل أبيب)
+    const defaultLocation = { lat: 32.0853, lng: 34.7818 };
+    
+    // إنشاء كائن الخريطة
+    map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 13,
+      center: defaultLocation,
+      mapTypeControl: true,
+      fullscreenControl: true,
+      streetViewControl: false
+    });
+    
+    // إنشاء كائن لتحويل الإحداثيات إلى عناوين والعكس
+    geocoder = new google.maps.Geocoder();
+    
+    // إنشاء علامة (Marker) افتراضية
+    marker = new google.maps.Marker({
+      position: defaultLocation,
+      map: map,
+      draggable: true, // يمكن سحب العلامة
+      animation: google.maps.Animation.DROP
+    });
+    
+    // الحصول على الموقع الحالي للمستخدم
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          
+          // تحديث موقع الخريطة والعلامة
+          map.setCenter(userLocation);
+          marker.setPosition(userLocation);
+          
+          // الحصول على العنوان من الإحداثيات
+          geocodePosition(userLocation);
+        },
+        () => {
+          alert('Could not get your location. Please select location manually on the map.');
+        }
+      );
+    }
+    
+    // تحديث الموقع عند النقر على الخريطة
+    map.addListener('click', (event) => {
+      marker.setPosition(event.latLng);
+      geocodePosition(event.latLng);
+    });
+    
+    // تحديث الموقع عند سحب العلامة
+    marker.addListener('dragend', () => {
+      geocodePosition(marker.getPosition());
+    });
+    
+    // البحث عن العنوان عند كتابته في حقل العنوان
+    locationInput.addEventListener('change', () => {
+      geocodeAddress(locationInput.value);
+    });
+  }
+  
+  // تحويل الإحداثيات إلى عنوان
+  function geocodePosition(position) {
+    geocoder.geocode({ location: position }, (results, status) => {
+      if (status === 'OK' && results[0]) {
+        locationInput.value = results[0].formatted_address;
+        
+        // تخزين الإحداثيات في حقول مخفية
+        document.getElementById('latitude').value = position.lat();
+        document.getElementById('longitude').value = position.lng();
+      } else {
+        console.error('Geocode failed: ' + status);
+      }
+    });
+  }
+  
+  // تحويل العنوان إلى إحداثيات
+  function geocodeAddress(address) {
+    geocoder.geocode({ address: address }, (results, status) => {
+      if (status === 'OK' && results[0]) {
+        const position = results[0].geometry.location;
+        map.setCenter(position);
+        marker.setPosition(position);
+        
+        // تخزين الإحداثيات في حقول مخفية
+        document.getElementById('latitude').value = position.lat();
+        document.getElementById('longitude').value = position.lng();
+      } else {
+        console.error('Geocode failed: ' + status);
+      }
+    });
+  }
+
+  // Load sports for dropdown
   fetch('fetch_venues.php?action=get_sports')
     .then(res => res.json())
     .then(sports => {
@@ -102,26 +206,44 @@ function setupModal() {
       });
     });
 
+  // Image preview functionality
   imageInput.addEventListener('change', () => {
     preview.innerHTML = '';
     const files = imageInput.files;
-    for (let i = 0; i < Math.min(3, files.length); i++) {
+    const maxFiles = Math.min(3, files.length);
+
+    for (let i = 0; i < maxFiles; i++) {
       const reader = new FileReader();
       reader.onload = e => {
         const img = document.createElement('img');
         img.src = e.target.result;
         img.alt = 'Preview';
+        img.style.maxWidth = '100px';
+        img.style.margin = '5px';
         preview.appendChild(img);
       };
       reader.readAsDataURL(files[i]);
     }
+
+    if (files.length > 3) {
+      const warning = document.createElement('p');
+      warning.textContent = '⚠️ Only the first 3 images will be uploaded.';
+      warning.style.color = '#e67e22';
+      preview.appendChild(warning);
+    }
   });
 
+  // Modal open/close functionality
   openBtn.addEventListener('click', () => {
     form.reset();
     preview.innerHTML = '';
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+    
+    // تنفيذ دالة تهيئة الخريطة بعد ظهور النموذج
+    setTimeout(() => {
+      initMap();
+    }, 100);
   });
 
   const closeModal = () => {
@@ -135,27 +257,49 @@ function setupModal() {
     if (e.target === modal) closeModal();
   });
 
+  // Form submission
   form.addEventListener('submit', e => {
     e.preventDefault();
+    
+    // Create a new FormData object from the form
     const formData = new FormData(form);
+    
+    // Add files to formData
+    const files = imageInput.files;
+    const maxFiles = Math.min(3, files.length);
+    
+    // Clear any existing image fields to avoid duplicates
+    formData.delete('venueImages[]');
+    
+    // Add each file individually with the correct field name
+    for (let i = 0; i < maxFiles; i++) {
+      formData.append('venueImages[]', files[i]);
+    }
+    
     formData.append('action', 'add_facility');
-
+    
     fetch('fetch_venues.php', {
       method: 'POST',
       body: formData
     })
-      .then(res => res.json())
-      .then(data => {
-        alert(data.message);
-        if (data.success) {
-          closeModal();
-          loadFacilities();
-        }
-      })
-      .catch(err => {
-        console.error('Error submitting facility:', err);
-        alert('An error occurred while submitting the facility.');
-      });
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok: ' + response.statusText);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Server response:', data);
+      alert(data.message);
+      if (data.success) {
+        closeModal();
+        loadFacilities();
+      }
+    })
+    .catch(error => {
+      console.error('Error submitting facility:', error);
+      alert('An error occurred while submitting the facility: ' + error.message);
+    });
   });
 }
 

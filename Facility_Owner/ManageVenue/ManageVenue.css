@@ -33,7 +33,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 14px 30px;
-  background: linear-gradient(to right, #e47c05, #d0f8ce);
+  background: linear-gradient(to right, #e0f7fa, #d0f8ce);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
@@ -641,5 +641,36 @@ input:checked + .toggle-slider:before {
   .modal-content {
     max-height: 90vh;
     margin-top: 10px;
+  }
+}
+#map {
+  height: 300px;
+  border-radius: var(--radius);
+  margin-top: 10px;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.map-help {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 5px;
+  text-align: center;
+  font-style: italic;
+}
+
+#locationInput {
+  margin-bottom: 10px;
+}
+
+/* تنسيق للأزرار في الخريطة */
+.gm-style .gm-style-iw {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* تحسين التموضع على الشاشات الصغيرة */
+@media (max-width: 768px) {
+  #map {
+    height: 250px;
   }
 }
