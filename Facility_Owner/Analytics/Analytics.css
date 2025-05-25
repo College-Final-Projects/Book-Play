@@ -146,6 +146,7 @@ h3 {
 }
 
 .page-subtitle {
+  
   font-size: 16px;
   color: #475569;
   font-weight: 400;
@@ -159,13 +160,14 @@ h3 {
   justify-content: space-between;
   align-items: center;
   gap: 15px;
-  margin-bottom: 20px;
+  margin-top: -40px;
 }
 
 /* Search Bar - UPDATED */
 .search-bar {
   flex: 1;
   position: relative;
+  
 }
 
 .search-bar input {
@@ -176,6 +178,7 @@ h3 {
   background-color: white;
   font-size: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  
 }
 
 .search-icon {
@@ -184,6 +187,7 @@ h3 {
   top: 50%;
   transform: translateY(-50%);
   color: #64748b;
+  
 }
 
 /* Sort Controls - UPDATED to match first image */

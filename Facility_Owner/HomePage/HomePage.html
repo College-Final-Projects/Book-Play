@@ -1,78 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Book&Play - Facility Owner</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="HomePage.css">
-
-  <style>
- 
-  </style>
 </head>
 <body>
+
   <!-- Header -->
   <div class="header-bar">
     <div class="logo-title">BOOK&PLAY</div>
-
-  <div class="profile-container" onclick="toggleProfileMenu()">
+    <div class="profile-container" onclick="toggleProfileMenu()">
       <div class="profile-icon">P</div>
-     <div class="profile-menu" id="profileMenu">
-  <a href="../../EditProfile/EditProfile.php">Edit Profile</a>
-  <a href="../../Login_Page/Login.php">Logout</a>
-  </div>
+      <div class="profile-menu" id="profileMenu">
+        <a href="../../EditProfile/EditProfile.php">Edit Profile</a>
+        <a href="../../Login_Page/Login.php">Logout</a>
+      </div>
     </div>
   </div>
 
   <!-- Main Buttons (Top Row - 3 cards) -->
   <div class="main-buttons">
-    <div class="glow-card btn-venue"  onclick="window.location.href='../ManageVenue/ManageVenue.php'" >
-      <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#38bdf8">
-        <rect x="3" y="4" width="18" height="16" rx="2"></rect>
-        <path d="M12 4v16"></path>
-        <path d="M3 10h18"></path>
-        <path d="M3 16h18"></path>
-      </svg>
+    <div class="glow-card btn-venue" onclick="window.location.href='../ManageVenue/ManageVenue.php'">
+      <img src="https://www.svgrepo.com/show/530470/building.svg" alt="Venue Icon" class="icon" width="32" height="32">
       <span>Manage Venue</span>
     </div>
     <div class="glow-card btn-bookings" onclick="window.location.href='../Bookings/Bookings.php'">
-      <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#fb923c">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-        <line x1="16" y1="2" x2="16" y2="6"></line>
-        <line x1="8" y1="2" x2="8" y2="6"></line>
-        <line x1="3" y1="10" x2="21" y2="10"></line>
-        <path d="M9 16l2 2 4-4"></path>
-      </svg>
+      <img src="https://www.svgrepo.com/show/532732/calendar-check.svg" alt="Bookings Icon" class="icon" width="32" height="32">
       <span>Bookings</span>
     </div>
     <div class="glow-card btn-analytics" onclick="window.location.href='../Analytics/Analytics.php'">
-      <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f43f5e">
-        <path d="M18 20V10"></path>
-        <path d="M12 20V4"></path>
-        <path d="M6 20v-6"></path>
-      </svg>
+      <img src="https://www.svgrepo.com/show/530426/chart-bar.svg" alt="Analytics Icon" class="icon" width="32" height="32">
       <span>Analytics</span>
-    </div>
     </div>
   </div>
 
   <!-- Secondary Buttons (Bottom Row - 2 cards) -->
   <div class="secondary-buttons">
-    <div class="glow-card btn-messages"onclick=" window.location.href='../Messages/Messages.php'">
-      <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#3b82f6"onclick="">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-      </svg>
+    <div class="glow-card btn-messages" onclick="window.location.href='../Messages/Messages.php'">
+      <img src="https://www.svgrepo.com/show/530414/message.svg" alt="Messages Icon" class="icon" width="32" height="32">
       <span>Messages</span>
     </div>
 
     <div class="glow-card btn-switch" onclick="window.location.href='../../User_Selection_Page/user-selection.php'">
-      <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#22c55e">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-        <circle cx="8.5" cy="7" r="4"></circle>
-        <polyline points="17 11 19 13 23 9"></polyline>
-      </svg>
-      <span>Back To User Selction Page</span>
+      <img src="https://www.svgrepo.com/show/530448/log-in.svg" alt="Enter Icon" class="icon" width="32" height="32">
+      <span>Back To User Selection Page</span>
     </div>
   </div>
 
@@ -83,9 +57,11 @@
     </div>
   </footer>
 
-    <script src="HomePage.js"></script>
-<button class="floating-admin-btn" onclick="handleAdminRequest()">
-  Request Admin Access
-</button>
+  <!-- Floating Admin Button -->
+  <button class="floating-admin-btn" onclick="handleAdminRequest()">
+    Request Admin Access
+  </button>
+
+  <script src="HomePage.js"></script>
 </body>
 </html>

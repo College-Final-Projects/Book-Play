@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,8 +5,6 @@
   <title>Messages | Book&Play</title>
   <link rel="stylesheet" href="Messages.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Font Awesome for WhatsApp-style icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <!-- Navbar -->
@@ -25,32 +20,25 @@
   </ul>
 </nav>
 
-<!-- Top Buttons -->
-<div class="top-buttons">
-  <button onclick="showSection('chats')" id="chatsBtn" class="active">
-    <i class="fas fa-comments"></i> My Chats
-  </button>
-  <button onclick="showSection('friends')" id="friendsBtn">
-    <i class="fas fa-user-friends"></i> My Friends
-  </button>
+<div>
+  <h1 class="my-friends-title">My Friends :</h1>
 </div>
 
-<!-- Chat Section Container -->
 <div class="main-container" id="chatSection">
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="user-entry" onclick="loadChat('John Doe')">
-      <i class="fas fa-user-circle"></i> John Doe
+      John Doe
     </div>
     <div class="user-entry" onclick="loadChat('Emma Smith')">
-      <i class="fas fa-user-circle"></i> Emma Smith
+      Emma Smith
     </div>
   </div>
 
   <!-- Chat Area -->
   <div class="chat-section">
     <div class="chat-header" id="chatHeader">
-      <i class="fas fa-arrow-left" style="margin-right: 10px; cursor: pointer; display: none;"></i>
+      <!-- Removed back arrow icon -->
       Select a user
     </div>
     <div class="chat-body" id="chatBody">
@@ -59,9 +47,7 @@
     </div>
     <div class="chat-input">
       <input type="text" placeholder="Type a message...">
-      <button>
-        <i class="fas fa-paper-plane"></i>
-      </button>
+      <button>Send</button> <!-- Removed paper plane icon -->
     </div>
   </div>
 </div>
@@ -71,7 +57,7 @@
   <!-- Search Bar -->
   <div class="friend-search">
     <div class="search-box">
-      <i class="fas fa-search"></i>
+      <!-- Removed search icon -->
       <input type="text" id="searchInput" placeholder="Search friends..." onkeyup="filterFriends()">
     </div>
   </div>
@@ -104,7 +90,7 @@
     </div>
   </div>
 </div>
-<script src="Messages.js" defer></script>
 
+<script src="Messages.js" defer></script>
 </body>
 </html>
