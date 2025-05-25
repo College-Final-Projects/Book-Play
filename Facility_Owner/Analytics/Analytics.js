@@ -1,85 +1,194 @@
+// Global variables
+let facilities = [];
+let currentSearch = '';
+let currentSort = 'name';
+let currentSport = 'all';
+let currentVenue = '';
 let currentMonth = 'January';
 let venueAnalyticsData = {};
-let currentVenue = '';
+
+function loadFacilities() {
+  fetch('fetch_venues.php?action=get_facilities')
+    .then(response => response.json())
+    .then(data => {
+      if (!Array.isArray(data)) {
+        console.error('Invalid data:', data);
+        return;
+      }
+      facilities = data;
+      applyFilters();
+    })
+    .catch(error => {
+      console.error('Error loading facilities:', error);
+      const venueGrid = document.getElementById('venueCards');
+      if (venueGrid) {
+        venueGrid.innerHTML = '<div class="no-venues-message">Failed to load venues.</div>';
+      }
+    });
+}
+
+function displayVenues(data) {
+  const grid = document.getElementById('venueCards');
+  grid.innerHTML = '';
+
+  if (data.length === 0) {
+    grid.innerHTML = '<div class="no-venues-message">No venues match your filters.</div>';
+    return;
+  }
+
+  data.forEach(facility => {
+    const card = document.createElement('div');
+    card.className = 'venue-card';
+    card.innerHTML = `
+      <img src="${facility.image_url || 'default.jpg'}" class="venue-image" />
+      <div class="venue-name">${facility.place_name}</div>
+      <div class="venue-sport"> ${facility.SportCategory}</div>
+      <div class="venue-rating">📍 ${facility.location || 'Unknown location'}</div>
+      <button class="view-button" onclick="openBookings('${facility.place_name}')">View Analytics</button>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function applyFilters() {
+  let result = facilities;
+  if (currentSearch.trim()) {
+    result = result.filter(f => f.place_name.toLowerCase().startsWith(currentSearch.toLowerCase()));
+  }
+  if (currentSport !== 'all') {
+    result = result.filter(f => f.SportCategory.toLowerCase() === currentSport.toLowerCase());
+  }
+  if (currentSort === 'name') {
+    result.sort((a, b) => a.place_name.localeCompare(b.place_name));
+  } else if (currentSort === 'name-desc') {
+    result.sort((a, b) => b.place_name.localeCompare(a.place_name));
+  }
+  displayVenues(result);
+}
 
 window.onload = () => {
-  console.log("✅ Analytics.js loaded");
-  fetchVenues();
+  loadFacilities();
+  loadSports();
+  document.getElementById('searchInput').addEventListener('input', e => {
+    currentSearch = e.target.value;
+    applyFilters();
+  });
+  document.getElementById('sortSelect').addEventListener('change', e => {
+    currentSort = e.target.value;
+    applyFilters();
+  });
+  document.getElementById('sportSelect').addEventListener('change', e => {
+    currentSport = e.target.value;
+    applyFilters();
+  });
 };
 
-function fetchVenues() {
-  fetch("get_facilities.php")
-    .then(res => res.json())
+function loadSports() {
+  fetch('fetch_sports.php')
+    .then(response => response.json())
     .then(data => {
-      const grid = document.getElementById("venueCards");
-      grid.innerHTML = '';
-
-      data.forEach(venue => {
-        const card = document.createElement("div");
-        card.className = "venue-card";
-        card.innerHTML = `
-          <img src="${venue.image}" class="venue-image" />
-          <div class="venue-name">${venue.name}</div>
-          <div class="venue-rating"><span class="star">📅 ${venue.bookings} bookings</span></div>
-          <button class="view-button" onclick="openBookings('${venue.name}')">View Analytics</button>
-        `;
-        grid.appendChild(card);
+      const sportSelect = document.getElementById('sportSelect');
+      data.forEach(sport => {
+        const option = document.createElement('option');
+        option.value = sport.toLowerCase();
+        option.textContent = sport;
+        sportSelect.appendChild(option);
       });
     })
-    .catch(err => {
-      console.error("Error fetching venues:", err);
-    });
+    .catch(error => console.error('Error loading sports:', error));
 }
 
 function openBookings(venueName) {
-  console.log("🧠 openBookings CALLED with:", venueName);
-  const selectedYear = document.getElementById("yearSelect").value;
-  const url = `fetch_analytics.php?venue=${encodeURIComponent(venueName)}&year=${selectedYear}`;
-
-  console.log("🎯 Sending request to:", url);
-
+  const year = document.getElementById("yearSelect").value;
   currentVenue = venueName;
-  document.getElementById("cardSection").style.display = "none";
+  currentMonth = 'January';
+  document.getElementById("venueTitle").textContent = `Bookings for ${venueName}`;
   document.getElementById("bookingPage").style.display = "flex";
-  document.getElementById("venueTitle").textContent = "Bookings for " + venueName;
+  document.getElementById("cardSection").style.display = "none";
+  fetchMonthlyData(venueName, year);
+}
 
+function fetchMonthlyData(venueName, year) {
+  const url = `fetch_monthly_analytics.php?venue=${encodeURIComponent(venueName)}&year=${year}`;
   fetch(url)
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
-      console.log("📊 Received data:", data);
       venueAnalyticsData = data;
+      populateMonthButtons(Object.keys(data));
       showMonth("January");
     })
     .catch(err => {
-      console.error("❌ Fetch error:", err);
+      console.error("❌ Error fetching monthly data:", err);
     });
 }
-window.openBookings = openBookings;
+
+function populateMonthButtons(months) {
+  document.querySelectorAll('.month-btn').forEach(btn => {
+    if (btn.textContent !== 'All') {
+      btn.style.display = months.includes(btn.textContent) ? 'block' : 'none';
+    }
+  });
+}
 
 function showMonth(month) {
   currentMonth = month;
-  let table = document.getElementById("bookingTable");
-  let summary = document.getElementById("summaryRow");
-  table.innerHTML = '';
-  let data = venueAnalyticsData[month] || [];
-  let totalBookings = 0, totalMoney = 0;
+  const tableBody = document.getElementById("dailyBookingTable");
+  const summaryRow = document.getElementById("summaryRow");
+  tableBody.innerHTML = '';
 
-  data.forEach(entry => {
-    table.innerHTML += `
-      <tr>
-        <td>${entry.date}</td>
-        <td>${entry.bookings}</td>
-        <td>${entry.total}₪</td>
-      </tr>
+  if (month === 'All') {
+    let monthTotals = {};
+
+    Object.entries(venueAnalyticsData).forEach(([monthName, entries]) => {
+      let monthlyBookings = 0;
+      let monthlyRevenue = 0;
+      entries.forEach(entry => {
+        monthlyBookings += entry.bookings;
+        monthlyRevenue += entry.total;
+      });
+      monthTotals[monthName] = {
+        bookings: monthlyBookings,
+        total: monthlyRevenue
+      };
+    });
+
+    Object.entries(monthTotals).forEach(([monthName, summary]) => {
+      tableBody.innerHTML += `
+        <tr>
+          <td>${monthName}</td>
+          <td>${summary.bookings}</td>
+          <td>${summary.total.toFixed(2)} ₪</td>
+        </tr>`;
+    });
+
+    const totalBookings = Object.values(monthTotals).reduce((sum, m) => sum + m.bookings, 0);
+    const totalRevenue = Object.values(monthTotals).reduce((sum, m) => sum + m.total, 0);
+
+    summaryRow.innerHTML = `
+      <span>Total Bookings: ${totalBookings}</span>
+      <span>Total Revenue: ₪${totalRevenue.toFixed(2)}</span>
     `;
-    totalBookings += entry.bookings;
-    totalMoney += entry.total;
-  });
+  } else {
+    const data = venueAnalyticsData[month] || [];
+    let totalBookings = 0;
+    let totalRevenue = 0;
 
-  summary.innerHTML = `
-    <span>Total Bookings: ${totalBookings}</span>
-    <span>Total Revenue: ₪${totalMoney}</span>
-  `;
+    data.forEach(entry => {
+      tableBody.innerHTML += `
+        <tr>
+          <td>${entry.date}</td>
+          <td>${entry.bookings}</td>
+          <td>${entry.total} ₪</td>
+        </tr>`;
+      totalBookings += entry.bookings;
+      totalRevenue += entry.total;
+    });
+
+    summaryRow.innerHTML = `
+      <span>Total Bookings: ${totalBookings}</span>
+      <span>Total Revenue: ₪${totalRevenue.toFixed(2)}</span>
+    `;
+  }
 
   document.querySelectorAll('.month-btn').forEach(btn => btn.classList.remove('active'));
   const activeBtn = Array.from(document.querySelectorAll('.month-btn')).find(b => b.textContent === month);
@@ -102,3 +211,5 @@ function downloadPDF() {
   };
   html2pdf().set(opt).from(element).save();
 }
+
+window.openBookings = openBookings;

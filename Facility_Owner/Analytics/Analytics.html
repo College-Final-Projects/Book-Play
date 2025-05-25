@@ -27,43 +27,41 @@
 
 <!-- Page Content -->
 <div class="container">
+  <!-- Page Header Section -->
   <div class="page-header">
     <h1 class="page-title">Analytics My Venues</h1>
     <p class="page-subtitle">View and control all your venue reservations with clarity and ease</p>
   </div>
 
-  <!-- Search and Sort -->
+  <!-- Search and Sort Section -->
   <div class="search-sort-container">
     <div class="search-bar">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search venues by name">
     </div>
+    
     <div class="sort-container">
       <span class="sort-label">Sort By:</span>
-      <select class="sort-select">
+      <select class="sort-select" id="sortSelect">
         <option value="name">Name (A-Z)</option>
         <option value="name-desc">Name (Z-A)</option>
       </select>
-    </div>
-    <div class="sort-container">
-      <select class="sort-select">
+      <select class="sort-select" id="sportSelect">
         <option value="all">All Sport</option>
-        <option value="football">Football</option>
-        <option value="tennis">Tennis</option>
-        <option value="basketball">Basketball</option>
       </select>
     </div>
   </div>
 
-  <!-- Venue Cards -->
+  <!-- Venue Cards Section -->
   <div id="cardSection" class="main-content">
     <div class="card-grid" id="venueCards">
       <!-- Venue cards will be injected here by JavaScript -->
     </div>
   </div>
 
-  <!-- Booking Details -->
+  <!-- Booking Details Section -->
   <div id="bookingPage" class="container booking-page" style="display:none;">
+    <!-- Sidebar Navigation -->
     <div class="sidebar">
       <h3>🗓 Months</h3>
       <button class="month-btn" onclick="showMonth('January')">January</button>
@@ -79,6 +77,7 @@
       <button class="month-btn" onclick="showMonth('November')">November</button>
       <button class="month-btn" onclick="showMonth('December')">December</button>
       <button class="month-btn" onclick="showMonth('All')">All</button>
+      
       <select id="yearSelect" onchange="showMonth(currentMonth)">
         <option>2025</option>
         <option>2024</option>
@@ -86,22 +85,30 @@
       </select>
     </div>
 
+    <!-- Main Content Area -->
     <div class="main-content">
       <button class="back-btn" onclick="goBack()">← Back to Venues</button>
+      
       <h2 id="venueTitle" style="margin-top: 30px;">Bookings for ...</h2>
+      
+      <div id="dayButtons" class="day-button-group" style="margin-top: 20px;"></div>
+
+      <!-- Data Table Container -->
       <div id="pdfContent">
         <table>
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Bookings</th>
-              <th>Total (₪)</th>
+              <th>Date 📅</th>
+              <th>Bookings 👥</th>
+              <th>Total (₪) 💰</th>
             </tr>
           </thead>
-          <tbody id="bookingTable"></tbody>
+          <tbody id="dailyBookingTable"></tbody>
         </table>
+        
         <div class="summary" id="summaryRow"></div>
       </div>
+      
       <button class="view-button" onclick="downloadPDF()" style="margin-top: 20px;">📄 Download as PDF</button>
     </div>
   </div>

@@ -273,6 +273,8 @@ select:hover, select:focus {
   font-weight: 600;
   color: var(--text-main);
   margin-bottom: 5px;
+      text-transform: capitalize;
+
 }
 .venue-location {
   font-size: 0.95rem;
@@ -284,6 +286,8 @@ select:hover, select:focus {
   font-weight: 600;
   color: var(--text-main);
   margin-bottom: 20px;
+      text-transform: capitalize;
+
 }
 .venue-stats {
     display: grid;
