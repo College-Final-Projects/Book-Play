@@ -46,66 +46,14 @@
                     </select>
                 </div>
                 <div class="sort-container">
-                    <select class="sort-select" id="sortSelect">
-                        <option value="name">All Sport</option>
-                        <option value="name">Football</option>
-                        <option value="name">Tennis</option>
-                        <option value="name">basketball</option>
+                    <select class="sort-select" id="sortSelectSport">
+                        <option value="">All Sports</option>
                     </select>
                 </div>
             </div>
 
             <div class="venues-container" id="venue-cards-view">
-                <!-- Venue Card 1 -->
-                <div class="venue-card">
-                    <div class="venue-header">
-                        <div class="venue-rating">★ 4.8</div>
-                    </div>
-                    <img src="https://cardiffcitystadium.co.uk/wp-content/uploads/2022/12/1947558.jpg" class="venue-image" />
-                    <h2 class="venue-name">Downtown Soccer Field</h2>
-                    <p class="venue-location">Central District</p>
-                    <div class="venue-stats">
-                        <div class="stat">
-                            <span class="stat-label">Sport</span>
-                            <span class="stat-value">Soccer</span>
-                        </div>
-                    </div>
-                    <button class="btn-view-bookings">View Bookings</button>
-                </div>
-
-                <!-- Venue Card 2 -->
-                <div class="venue-card">
-                    <div class="venue-header">
-                        <div class="venue-rating">★ 4.5</div>
-                    </div>
-                    <img src="https://cardiffcitystadium.co.uk/wp-content/uploads/2022/12/1947558.jpg" class="venue-image" />
-                    <h2 class="venue-name">Riverside Tennis Court</h2>
-                    <p class="venue-location">North District</p>
-                    <div class="venue-stats">
-                        <div class="stat">
-                            <span class="stat-label">Sport</span>
-                            <span class="stat-value">Tennis</span>
-                        </div>
-                    </div>
-                    <button class="btn-view-bookings">View Bookings</button>
-                </div>
-
-                <!-- Venue Card 3 -->
-                <div class="venue-card">
-                    <div class="venue-header">
-                        <div class="venue-rating">★ 4.5</div>
-                    </div>
-                    <img src="https://cardiffcitystadium.co.uk/wp-content/uploads/2022/12/1947558.jpg" class="venue-image" />
-                    <h2 class="venue-name">Riverside Tennis Court</h2>
-                    <p class="venue-location">North District</p>
-                    <div class="venue-stats">
-                        <div class="stat">
-                            <span class="stat-label">Sport</span>
-                            <span class="stat-value">Tennis</span>
-                        </div>
-                    </div>
-                    <button class="btn-view-bookings">View Bookings</button>
-                </div>
+                
             </div>
 
             <!-- Detailed Booking View (initially hidden) -->
@@ -115,15 +63,7 @@
                     <div class="venues-sidebar">
                         <h3>Your Venues</h3>
                         <ul class="venues-list">
-                            <li class="active" data-venue-id="1">
-                                Downtown Soccer Field
-                            </li>
-                            <li data-venue-id="2">
-                                Riverside Tennis Court
-                            </li>
-                            <li data-venue-id="3">
-                                Lakeside Basketball Court
-                            </li>
+                           
                         </ul>
                         <button class="btn-back-to-venues">Back to All Venues</button>
                     </div>
@@ -131,7 +71,7 @@
                     <!-- Right Content Area -->
                     <div class="booking-content">
                         <div class="venue-details">
-                            <h2>Downtown Soccer Field</h2>
+                            <h2 data-venue-id="">Downtown Soccer Field</h2>
                             <div class="venue-meta">
                                 <span class="location-badge">Central District</span>
                                 <span class="rating-badge">★ 4.8</span>
@@ -201,29 +141,33 @@
     </main>
 
     <!-- Add Booking Modal -->
-    <div id="addBookingModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3>Add New Booking</h3>
-            <form id="bookingForm">
-                <label>Username:</label>
-                <input type="text" name="username" required />
+<div id="addBookingModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Add New Booking</h3>
+        <form id="bookingForm">
+            <label>Username:</label>
+            <input type="text" name="username" required />
 
-                <label>Date:</label>
-                <input type="date" name="date" required />
+            <label>Date:</label>
+            <input type="date" name="date" required />
 
-                <label>Players:</label>
-                <input type="number" name="players" min="1" max="20" required />
+            <label>Players:</label>
+            <input type="number" name="players" min="1" max="20" required />
 
-                <label>Time Range:</label>
-                <input type="text" name="time" placeholder="e.g. 09:00 - 11:00" required />
+            <label>Time Range:</label>
+            <input type="text" name="time" placeholder="e.g. 09:00 - 11:00" required />
 
-                <div class="modal-buttons">
-                    <button type="submit" class="btn-confirm">Add Booking</button>
-    <button type="button" class="btn-cancel" onclick="document.getElementById('addBookingModal').style.display='none';">Cancel</button>
-                </div>
-            </form>
-        </div>
+            <!-- ✅ رسالة الخطأ أو النجاح ستظهر هنا -->
+            <div id="bookingMessage" class="form-message"></div>
+
+            <div class="modal-buttons">
+                <button type="submit" class="btn-confirm">Add Booking</button>
+                <button type="button" class="btn-cancel" onclick="document.getElementById('addBookingModal').style.display='none';">Cancel</button>
+            </div>
+        </form>
     </div>
+</div>
+
 
     <!-- Include the JavaScript file -->
     <script src="bookings.js"></script>

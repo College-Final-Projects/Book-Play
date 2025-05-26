@@ -24,6 +24,10 @@ switch ($action) {
         addFacility();
         break;
 
+    case 'update_facility':
+    updateFacility();
+    break;
+
     default:
         echo json_encode(["success" => false, "message" => "⛔ Invalid action"]);
         break;
@@ -134,8 +138,8 @@ function addFacility() {
 
     try {
         // تعديل الاستعلام لإضافة حقل الإحداثيات
-        $stmt = $conn->prepare("INSERT INTO sportfacilities (place_name, location, description, image_url, owner_username, SportCategory, price, coordinates, is_Accepted, is_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?)");
-        $stmt->bind_param("ssssssiis", $place_name, $location, $description, $image_url_string, $username, $sport_type, $price, $coordinates, $is_available);
+        $stmt = $conn->prepare("INSERT INTO sportfacilities (place_name, location, description, image_url, owner_username, SportCategory, price, latitude, longitude, is_Accepted, is_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)");
+        $stmt->bind_param("ssssssiddi", $place_name, $location, $description, $image_url_string, $username, $sport_type, $price, $latitude, $longitude, $is_available);
 
         if (!$stmt->execute()) {
             throw new Exception("Failed to add facility: " . $conn->error);
@@ -156,6 +160,58 @@ function addFacility() {
     } catch (Exception $e) {
         $conn->rollback();
         echo json_encode(["success" => false, "message" => $e->getMessage()]);
+    }
+}
+function updateFacility() {
+    global $conn;
+
+    if (!isset($_SESSION['user_id'])) {
+        echo json_encode(['success' => false, 'message' => 'User not logged in']);
+        return;
+    }
+
+    $username = $_SESSION['user_id'];
+    $facility_id = $_POST['facility_id'] ?? null;
+    $place_name = $_POST['place_name'] ?? '';
+    $sport_type = $_POST['sport_type'] ?? '';
+    $description = $_POST['description'] ?? '';
+    $price = intval($_POST['price'] ?? 0);
+    $location = $_POST['location'] ?? '';
+    $latitude = $_POST['latitude'] ?? null;
+    $longitude = $_POST['longitude'] ?? null;
+    $is_available = isset($_POST['is_available']) ? 1 : 0;
+
+    // Check if user owns this facility
+    $check_stmt = $conn->prepare("SELECT * FROM sportfacilities WHERE facilities_id = ? AND owner_username = ?");
+    $check_stmt->bind_param("is", $facility_id, $username);
+    $check_stmt->execute();
+    $result = $check_stmt->get_result();
+
+    if ($result->num_rows === 0) {
+        echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
+        return;
+    }
+
+    // Handle image upload if new images are provided
+    $image_url_string = '';
+    if (isset($_FILES['venueImages']) && is_array($_FILES['venueImages']['name']) && $_FILES['venueImages']['error'][0] !== UPLOAD_ERR_NO_FILE) {
+        $image_urls = upload_images($_FILES['venueImages']);
+        $image_url_string = implode(',', $image_urls);
+    }
+
+    // Update query - only update image_url if new images were uploaded
+    if ($image_url_string) {
+        $stmt = $conn->prepare("UPDATE sportfacilities SET place_name = ?, location = ?, description = ?, image_url = ?, SportCategory = ?, price = ?, latitude = ?, longitude = ?, is_available = ? WHERE facilities_id = ? AND owner_username = ?");
+        $stmt->bind_param("ssssssiddis", $place_name, $location, $description, $image_url_string, $sport_type, $price, $latitude, $longitude, $is_available, $facility_id, $username);
+    } else {
+        $stmt = $conn->prepare("UPDATE sportfacilities SET place_name = ?, location = ?, description = ?, SportCategory = ?, price = ?, latitude = ?, longitude = ?, is_available = ? WHERE facilities_id = ? AND owner_username = ?");
+        $stmt->bind_param("sssssiddis", $place_name, $location, $description, $sport_type, $price, $latitude, $longitude, $is_available, $facility_id, $username);
+    }
+
+    if ($stmt->execute()) {
+        echo json_encode(["success" => true, "message" => "Facility updated successfully"]);
+    } else {
+        echo json_encode(["success" => false, "message" => "Failed to update facility"]);
     }
 }
 ?>
