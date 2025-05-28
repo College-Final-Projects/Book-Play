@@ -76,22 +76,21 @@ $stmt = $conn->prepare("
 $stmt->bind_param("issss", $facilityId, $username, $date, $start, $end);
 
 if ($stmt->execute()) {
-    // ✅ إذا نجح الحجز وكان العدد > 1، ننشئ مجموعة
+    $bookingId = $conn->insert_id; // ✅ هنا صار عندك booking_id
+
     if ($players > 1) {
         $groupName = $username . "'s Group " . date("Ymd_His");
         $description = "Auto-created group for booking on $date at $start";
         $maxMembers = $players;
 
         $groupStmt = $conn->prepare("
-            INSERT INTO groups (group_name, facilities_id, description, created_by, max_members)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO groups (group_name, facilities_id, description, created_by, max_members, booking_id)
+            VALUES (?, ?, ?, ?, ?, ?)
         ");
-        $groupStmt->bind_param("sissi", $groupName, $facilityId, $description, $username, $maxMembers);
+        $groupStmt->bind_param("sissii", $groupName, $facilityId, $description, $username, $maxMembers, $bookingId);
 
         if ($groupStmt->execute()) {
             $groupId = $conn->insert_id;
-
-            // ✅ إدخال المستخدم إلى جدول group_members
             $memberStmt = $conn->prepare("INSERT INTO group_members (group_id, username) VALUES (?, ?)");
             $memberStmt->bind_param("is", $groupId, $username);
             $memberStmt->execute();

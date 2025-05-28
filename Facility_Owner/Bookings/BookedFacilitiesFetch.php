@@ -3,7 +3,6 @@ session_start();
 require_once '../../db.php';
 header('Content-Type: application/json');
 
-// التحقق من وجود المستخدم
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'User not logged in']);
     exit;
@@ -12,16 +11,18 @@ if (!isset($_SESSION['user_id'])) {
 $user_name = $_SESSION['user_id'];
 
 $query = "
-    SELECT f.facilities_id, f.place_name, f.location, f.image_url, f.SportCategory,
-           ROUND(AVG(r.rating_value), 1) AS avg_rating
-    FROM sportfacilities f
-    LEFT JOIN ratings r ON r.facilities_id = f.facilities_id
-    WHERE EXISTS (
-        SELECT 1 FROM bookings b WHERE b.facilities_id = f.facilities_id
-    )
-    AND f.is_Accepted = 1
-    AND f.owner_username = ?
-    GROUP BY f.facilities_id
+    SELECT 
+        sf.facilities_id, 
+        sf.place_name, 
+        sf.location, 
+        sf.image_url, 
+        sf.SportCategory,
+        ROUND(AVG(r.rating_value), 1) AS avg_rating
+    FROM sportfacilities sf
+    JOIN bookings b ON sf.facilities_id = b.facilities_id
+    LEFT JOIN ratings r ON sf.facilities_id = r.facilities_id
+    WHERE sf.owner_username = ? AND sf.is_Accepted = 1
+    GROUP BY sf.facilities_id
 ";
 
 $stmt = $conn->prepare($query);

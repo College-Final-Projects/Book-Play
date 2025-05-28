@@ -90,7 +90,7 @@ function updateAvailability() {
 function getSports() {
     global $conn;
     $sports = [];
-    $result = $conn->query("SELECT sport_id, sport_name FROM sports ORDER BY sport_name ASC");
+    $result = $conn->query("SELECT DISTINCT SportCategory as sport_name FROM sportfacilities WHERE is_Accepted = 1");
 
     while ($row = $result->fetch_assoc()) {
         $sports[] = $row;

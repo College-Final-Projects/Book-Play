@@ -16,7 +16,7 @@
     <li><a href="../Bookings/Bookings.php">Bookings</a></li>
     <li><a href="../Analytics/Analytics.php">Analytics</a></li>
     <li><a href="../Messages/Messages.php" class="active">Messages</a></li>
-    <li><a href="../../Login_Page/Login.php" class="logout">Logout</a></li>
+    <li><a href="../../logout.php" class="logout">Logout</a></li>
   </ul>
 </nav>
 
@@ -27,70 +27,28 @@
 <div class="main-container" id="chatSection">
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
-    <div class="user-entry" onclick="loadChat('John Doe')">
-      John Doe
-    </div>
-    <div class="user-entry" onclick="loadChat('Emma Smith')">
-      Emma Smith
-    </div>
+   
   </div>
 
   <!-- Chat Area -->
   <div class="chat-section">
     <div class="chat-header" id="chatHeader">
-      <!-- Removed back arrow icon -->
       Select a user
     </div>
     <div class="chat-body" id="chatBody">
-      <p class="message left">Hello!</p>
-      <p class="message right">Hi there!</p>
+      <p class="message left" style="display: none;"></p>
+      <p class="message right" style="display: none;"></p>
     </div>
-    <div class="chat-input">
-      <input type="text" placeholder="Type a message...">
-      <button>Send</button> <!-- Removed paper plane icon -->
-    </div>
+   <div class="chat-input">
+  <input type="text" id="messageInput" placeholder="Type a message...">
+  <button id="sendButton">Send</button>
+</div>
   </div>
 </div>
 
-<!-- Friends Section -->
-<div id="friendsSection" style="display: none;">
-  <!-- Search Bar -->
-  <div class="friend-search">
-    <div class="search-box">
-      <!-- Removed search icon -->
-      <input type="text" id="searchInput" placeholder="Search friends..." onkeyup="filterFriends()">
-    </div>
-  </div>
-
-  <!-- Friends List -->
-  <div class="friends-table" id="friendsList">
-    <div class="friend-row">
-      <img src="https://via.placeholder.com/50" alt="Friend" class="friend-img">
-      <span class="friend-name">John Doe</span>
-      <div class="friend-actions">
-        <button onclick="viewProfile('John Doe')">Show Profile</button>
-        <button onclick="messageUser('John Doe')">Message</button>
-      </div>
-    </div>
-    <div class="friend-row">
-      <img src="https://via.placeholder.com/50" alt="Friend" class="friend-img">
-      <span class="friend-name">Emma Smith</span>
-      <div class="friend-actions">
-        <button onclick="viewProfile('Emma Smith')">Show Profile</button>
-        <button onclick="messageUser('Emma Smith')">Message</button>
-      </div>
-    </div>
-    <div class="friend-row">
-      <img src="https://via.placeholder.com/50" alt="Friend" class="friend-img">
-      <span class="friend-name">Liam Brown</span>
-      <div class="friend-actions">
-        <button onclick="viewProfile('Liam Brown')">Show Profile</button>
-        <button onclick="messageUser('Liam Brown')">Message</button>
-      </div>
-    </div>
-  </div>
-</div>
-
+<script>
+  const sessionUsername = "<?php echo $_SESSION['user_id']; ?>";
+</script>
 <script src="Messages.js" defer></script>
 </body>
 </html>
