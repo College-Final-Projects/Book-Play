@@ -20,12 +20,8 @@ const venueForm = document.querySelector('form');
 const imageInput = document.getElementById('venueImages');
 const imagePreview = document.getElementById('imagePreview');
 
-// Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-});
-
 async function initializeApp() {
+    window.initializeApp = initializeApp;
     try {
         await loadSports();
         await loadVenues();
@@ -93,57 +89,55 @@ function populateSportsFilter() {
 
 // Initialize Google Maps
 function initializeMap() {
-    const defaultLocation = { lat: 32.0853, lng: 34.7818 }; // Tel Aviv coordinates
-    
+    const defaultLocation = { lat: 32.0853, lng: 34.7818 };
+
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 13,
         center: defaultLocation,
+        mapId: 'bec4fd1eef54f71c3e99df68',
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: false
     });
-    
-    marker = new google.maps.Marker({
+
+    marker = new google.maps.marker.AdvancedMarkerElement({
         position: defaultLocation,
         map: map,
-        draggable: true,
         title: 'Venue Location'
     });
-    
+
     geocoder = new google.maps.Geocoder();
-    
-    // Map click event
-    map.addListener('click', function(event) {
-        updateMarkerPosition(event.latLng);
-    });
-    
-    // Marker drag event
-    marker.addListener('dragend', function(event) {
-        updateMarkerPosition(event.latLng);
-    });
-    
-    // Initialize autocomplete for location input
+
     const locationInput = document.getElementById('locationInput');
     const autocomplete = new google.maps.places.Autocomplete(locationInput);
     autocomplete.bindTo('bounds', map);
+
+    autocomplete.addListener('place_changed', function () {
+    const place = autocomplete.getPlace();
     
-    autocomplete.addListener('place_changed', function() {
-        const place = autocomplete.getPlace();
-        if (place.geometry) {
-            const location = place.geometry.location;
-            map.setCenter(location);
-            marker.setPosition(location);
-            updateCoordinates(location.lat(), location.lng());
-        }
+    // ✅ حماية ضد إدخال يدوي بدون اختيار اقتراح
+    if (!place.geometry || !place.geometry.location) {
+        alert("❌ من فضلك اختر الموقع من القائمة التي تظهر، لا تكتب العنوان يدويًا فقط.");
+        document.getElementById('locationInput').value = '';
+        return;
+    }
+
+    const location = place.geometry.location;
+    map.setCenter(location);
+    marker.position = location;
+    updateCoordinates(location.lat(), location.lng());
+});
+
+
+    map.addListener('click', function(event) {
+        updateMarkerPosition(event.latLng);
     });
 }
 
 // Update marker position and coordinates
 function updateMarkerPosition(latLng) {
-    marker.setPosition(latLng);
+    marker.position = latLng;
     updateCoordinates(latLng.lat(), latLng.lng());
-    
-    // Reverse geocoding to get address
     geocoder.geocode({ location: latLng }, function(results, status) {
         if (status === 'OK' && results[0]) {
             document.getElementById('locationInput').value = results[0].formatted_address;
@@ -273,7 +267,7 @@ function openModal(venue = null) {
             // Update map
             const location = new google.maps.LatLng(lat, lng);
             map.setCenter(location);
-            marker.setPosition(location);
+            marker.position = location;
         }
         
         // Show existing images
@@ -297,7 +291,7 @@ function openModal(venue = null) {
         // Reset map to default location for new venue
         const defaultLocation = { lat: 32.0853, lng: 34.7818 };
         map.setCenter(defaultLocation);
-        marker.setPosition(defaultLocation);
+        marker.position = defaultLocation;
         updateCoordinates(defaultLocation.lat, defaultLocation.lng);
     }
     
@@ -482,28 +476,27 @@ function handleSportFilter() {
 // Get filtered and sorted venues
 function getFilteredVenues() {
     let filteredVenues = [...venuesData];
-    
-    // Apply search filter - exact match but case-insensitive
-    const searchTerm = searchInput.value.trim(); // Trim whitespace
+
+    // Apply search filter (startsWith only for place_name)
+    const searchTerm = searchInput.value.trim().toLowerCase();
     if (searchTerm !== '') {
-        const exactMatches = filteredVenues.filter(venue => 
-            venue.place_name.toLowerCase() === searchTerm.toLowerCase() ||
-            venue.SportCategory.toLowerCase() === searchTerm.toLowerCase() ||
-            venue.location.toLowerCase() === searchTerm.toLowerCase()
+        filteredVenues = filteredVenues.filter(venue =>
+            venue.place_name.toLowerCase().startsWith(searchTerm)
         );
-        filteredVenues = exactMatches;
     }
-    
+
     // Apply sport filter
     const selectedSport = sortBySportSelect.value;
     if (selectedSport) {
-        filteredVenues = filteredVenues.filter(venue => 
+        filteredVenues = filteredVenues.filter(venue =>
             venue.SportCategory === selectedSport
         );
     }
-    
+
     return applyFiltersAndSort(filteredVenues);
 }
+
+
 
 // Apply filters and sorting
 function applyFiltersAndSort(venues) {

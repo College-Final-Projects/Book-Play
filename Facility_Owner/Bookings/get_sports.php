@@ -2,7 +2,7 @@
 require_once '../../db.php';
 header('Content-Type: application/json');
 
-$query = "SELECT sport_name FROM sports WHERE is_Accepted = 1 ORDER BY sport_name ASC";
+$query = "SELECT DISTINCT SportCategory as sport_name FROM sportfacilities WHERE is_Accepted = 1";
 $result = $conn->query($query);
 
 $sports = [];
