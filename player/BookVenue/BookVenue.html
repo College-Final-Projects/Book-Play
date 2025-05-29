@@ -1,55 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Book Venue | Book&Play</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="bookvenue.css" />
-  <script type="module" src="bookvenue.js"></script>
-
+  <meta charset="UTF-8">
+  <title>Book Venue - Player</title>
+  <link rel="stylesheet" href="../player.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <nav class="navbar">
-    <div class="navbar-left">
-      <img src="https://cdn-icons-png.flaticon.com/512/1041/1041916.png" alt="logo" />
-      <span>Book&Play</span>
-    </div>
-    <div class="navbar-center">
-      <a href="#">Book Venue</a>
-      <a href="#">Join Group</a>
-      <a href="#">Find Player</a>
-      <a href="#">Add Facilities</a>
-      <a href="#">Favorites</a>
-      <a href="#">My Friends</a>
-    </div>
-    <div class="profile-icon">P</div>
-  </nav>
 
-  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
-  <div class="sidebar" id="sidebar">
-    <h3>Filter by Category</h3>
-    <ul id="categoryList"></ul>
+  <!-- Container for the navbar -->
+  <div id="fresh-navbar"></div>
+
+  <!-- Your page content below -->
+  <div class="page-content">
+    
   </div>
 
-  <main class="content">
-    <h2>Available Fields</h2>
-    <div class="cards-wrapper">
-      <button class="scroll-btn scroll-left" onclick="scrollCards(-1)">&#10094;</button>
-      <div class="cards" id="cards">
-        <!-- Example Venue -->
-        <div class="venue-card">
-          <div class="venue-image" style="background-image: url('https://th.bing.com/th/id/OIF.pPWbogCt3YGEh80DSJpb6A?rs=1&pid=ImgDetMain'); background-size: cover; background-position: center;"></div>
-          <div class="venue-info">
-            <h4>Soccer Field</h4>
-            <p>Location: Downtown</p>
-            <button class="book-btn">Book Now</button>
-          </div>
-        </div>
-        <!-- More venue-cards go here -->
-      </div>
-      <button class="scroll-btn scroll-right" onclick="scrollCards(1)">&#10095;</button>
-    </div>
-  </main>
+  <!-- Load Navbar from player.html -->
+  <script src="bookVenue.js"></script>
+
 </body>
 </html>

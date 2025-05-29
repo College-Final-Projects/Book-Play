@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book&Play - Sports Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="player.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="fresh-navbar">
+    <div class="logo">Book&Play</div>
+    <div class="nav-wrapper">
+      <ul class="nav-links">
+        <li><a href="#">Find Player</a></li>
+        <li><a href="#">Join Group</a></li>
+        <li><a href="#" class="active">Book Venue</a></li>
+        <li><a href="#">My Favorites</a></li>
+        <li><a href="#">My Chats</a></li>
+        <li><a href="#">My Bookings</a></li>
+        <li><a href="#" class="logout">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Player Search Section -->
+  <section class="search-section">
+    <div class="search-container">
+      <div class="search-box-main">
+        <input type="text" class="player-search" placeholder="🔍 Search for venues by name..." id="playerSearch">
+        <button class="search-btn">Search</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sports Selection -->
+  <section class="sports-scroll">
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-football">
+      <label for="sport-football" class="sport-circle">
+        <span class="sport-emoji">⚽</span>
+        <span>Football</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-basketball">
+      <label for="sport-basketball" class="sport-circle">
+        <span class="sport-emoji">🏀</span>
+        <span>Basketball</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-tennis">
+      <label for="sport-tennis" class="sport-circle">
+        <span class="sport-emoji">🎾</span>
+        <span>Tennis</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-volleyball">
+      <label for="sport-volleyball" class="sport-circle">
+        <span class="sport-emoji">🏐</span>
+        <span>Volleyball</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-fitness">
+      <label for="sport-fitness" class="sport-circle">
+        <span class="sport-emoji">🏋️</span>
+        <span>Fitness</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-badminton">
+      <label for="sport-badminton" class="sport-circle">
+        <span class="sport-emoji">🏸</span>
+        <span>Badminton</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-tabletennis">
+      <label for="sport-tabletennis" class="sport-circle">
+        <span class="sport-emoji">🏓</span>
+        <span>Table Tennis</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-swimming">
+      <label for="sport-swimming" class="sport-circle">
+        <span class="sport-emoji">🏊</span>
+        <span>Swimming</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-climbing">
+      <label for="sport-climbing" class="sport-circle">
+        <span class="sport-emoji">🧗</span>
+        <span>Climbing</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-cycling">
+      <label for="sport-cycling" class="sport-circle">
+        <span class="sport-emoji">🚴</span>
+        <span>Cycling</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-running">
+      <label for="sport-running" class="sport-circle">
+        <span class="sport-emoji">🏃</span>
+        <span>Running</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-boxing">
+      <label for="sport-boxing" class="sport-circle">
+        <span class="sport-emoji">🥊</span>
+        <span>Boxing</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-golf">
+      <label for="sport-golf" class="sport-circle">
+        <span class="sport-emoji">⛳</span>
+        <span>Golf</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-yoga">
+      <label for="sport-yoga" class="sport-circle">
+        <span class="sport-emoji">🧘</span>
+        <span>Yoga</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-dancing">
+      <label for="sport-dancing" class="sport-circle">
+        <span class="sport-emoji">💃</span>
+        <span>Dancing</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-skating">
+      <label for="sport-skating" class="sport-circle">
+        <span class="sport-emoji">⛸️</span>
+        <span>Skating</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-skiing">
+      <label for="sport-skiing" class="sport-circle">
+        <span class="sport-emoji">⛷️</span>
+        <span>Skiing</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-surfing">
+      <label for="sport-surfing" class="sport-circle">
+        <span class="sport-emoji">🏄</span>
+        <span>Surfing</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-wrestling">
+      <label for="sport-wrestling" class="sport-circle">
+        <span class="sport-emoji">🤼</span>
+        <span>Wrestling</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-archery">
+      <label for="sport-archery" class="sport-circle">
+        <span class="sport-emoji">🏹</span>
+        <span>Archery</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-football">
+      <label for="sport-football" class="sport-circle">
+        <span class="sport-emoji">⚽</span>
+        <span>Football</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-basketball">
+      <label for="sport-basketball" class="sport-circle">
+        <span class="sport-emoji">🏀</span>
+        <span>Basketball</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-tennis">
+      <label for="sport-tennis" class="sport-circle">
+        <span class="sport-emoji">🎾</span>
+        <span>Tennis</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-volleyball">
+      <label for="sport-volleyball" class="sport-circle">
+        <span class="sport-emoji">🏐</span>
+        <span>Volleyball</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-fitness">
+      <label for="sport-fitness" class="sport-circle">
+        <span class="sport-emoji">🏋️</span>
+        <span>Fitness</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-badminton">
+      <label for="sport-badminton" class="sport-circle">
+        <span class="sport-emoji">🏸</span>
+        <span>Badminton</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-tabletennis">
+      <label for="sport-tabletennis" class="sport-circle">
+        <span class="sport-emoji">🏓</span>
+        <span>Table Tennis</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-swimming">
+      <label for="sport-swimming" class="sport-circle">
+        <span class="sport-emoji">🏊</span>
+        <span>Swimming</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-climbing">
+      <label for="sport-climbing" class="sport-circle">
+        <span class="sport-emoji">🧗</span>
+        <span>Climbing</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-cycling">
+      <label for="sport-cycling" class="sport-circle">
+        <span class="sport-emoji">🚴</span>
+        <span>Cycling</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-running">
+      <label for="sport-running" class="sport-circle">
+        <span class="sport-emoji">🏃</span>
+        <span>Running</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-boxing">
+      <label for="sport-boxing" class="sport-circle">
+        <span class="sport-emoji">🥊</span>
+        <span>Boxing</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-golf">
+      <label for="sport-golf" class="sport-circle">
+        <span class="sport-emoji">⛳</span>
+        <span>Golf</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-yoga">
+      <label for="sport-yoga" class="sport-circle">
+        <span class="sport-emoji">🧘</span>
+        <span>Yoga</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-dancing">
+      <label for="sport-dancing" class="sport-circle">
+        <span class="sport-emoji">💃</span>
+        <span>Dancing</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-skating">
+      <label for="sport-skating" class="sport-circle">
+        <span class="sport-emoji">⛸️</span>
+        <span>Skating</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-skiing">
+      <label for="sport-skiing" class="sport-circle">
+        <span class="sport-emoji">⛷️</span>
+        <span>Skiing</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-surfing">
+      <label for="sport-surfing" class="sport-circle">
+        <span class="sport-emoji">🏄</span>
+        <span>Surfing</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-wrestling">
+      <label for="sport-wrestling" class="sport-circle">
+        <span class="sport-emoji">🤼</span>
+        <span>Wrestling</span>
+      </label>
+    </div>
+    <div class="sport-item">
+      <input type="checkbox" name="sport" id="sport-archery">
+      <label for="sport-archery" class="sport-circle">
+        <span class="sport-emoji">🏹</span>
+        <span>Archery</span>
+      </label>
+    </div>
+  </section>
+
+  <!-- Layout -->
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="filter-section">
+        <h3>Sort by Price</h3>
+        <label class="sort-option">
+          <input type="radio" name="price-sort" id="price-default" checked>
+          <span>Default</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="price-sort" id="price-low">
+          <span>Low to High</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="price-sort" id="price-high">
+          <span>High to Low</span>
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <h3>Sort by Rating</h3>
+        <label class="sort-option">
+          <input type="radio" name="rating-sort" id="rating-default" checked>
+          <span>Default</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="rating-sort" id="rating-low">
+          <span>Low to High</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="rating-sort" id="rating-high">
+          <span>High to Low</span>
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <h3>Sort by Distance</h3>
+        <label class="sort-option">
+          <input type="radio" name="distance-sort" id="distance-default" checked>
+          <span>Default</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="distance-sort" id="distance-near">
+          <span>Nearest First</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="distance-sort" id="distance-far">
+          <span>Farthest First</span>
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <h3>Filter by Location</h3>
+        <div class="location-filter">
+          <div class="search-box">
+            <input type="text" class="search-input" placeholder="Search cities...">
+          </div>
+          <div class="city-list">
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-haifa">
+              <span>Haifa</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-jerusalem">
+              <span>Jerusalem</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-telaviv">
+              <span>Tel Aviv</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-nazareth">
+              <span>Nazareth</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-acre">
+              <span>Acre</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-beersheba">
+              <span>Be'er Sheva</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-netanya">
+              <span>Netanya</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-ashdod">
+              <span>Ashdod</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-rishon">
+              <span>Rishon LeZion</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-petah">
+              <span>Petah Tikva</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="content">
+      <div class="venues-header">
+        <h2>Available Venues</h2>
+      </div>
+      
+      <div class="venues-grid">
+        <!-- Venue Card 1 -->
+        <div class="venue-card" data-sport="basketball" data-city="Jerusalem" data-price="120" data-rating="4.9">
+          <div class="venue-image">
+            <div class="image-placeholder">🏀</div>
+            <div class="venue-badge">Premium</div>
+          </div>
+          <div class="venue-content">
+            <h3 class="venue-title">Elite Basketball Arena</h3>
+            <div class="venue-location">📍 Jerusalem, Central District</div>
+            <div class="venue-rating">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <span class="rating-text">4.9 (127 reviews)</span>
+            </div>
+            <div class="venue-features">
+              <span class="feature">Indoor Court</span>
+              <span class="feature">AC</span>
+              <span class="feature">Parking</span>
+            </div>
+            <div class="venue-footer">
+              <div class="price">₪120<span class="per">/hour</span></div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Venue Card 2 -->
+        <div class="venue-card" data-sport="tennis" data-city="Tel Aviv" data-price="150" data-rating="4.8">
+          <div class="venue-image">
+            <div class="image-placeholder">🎾</div>
+            <div class="venue-badge">Popular</div>
+          </div>
+          <div class="venue-content">
+            <h3 class="venue-title">Pro Tennis Center</h3>
+            <div class="venue-location">📍 Tel Aviv, Central District</div>
+            <div class="venue-rating">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <span class="rating-text">4.8 (89 reviews)</span>
+            </div>
+            <div class="venue-features">
+              <span class="feature">Clay Court</span>
+              <span class="feature">Lighting</span>
+              <span class="feature">Equipment</span>
+            </div>
+            <div class="venue-footer">
+              <div class="price">₪150<span class="per">/hour</span></div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Venue Card 3 -->
+        <div class="venue-card" data-sport="swimming" data-city="Haifa" data-price="80" data-rating="4.7">
+          <div class="venue-image">
+            <div class="image-placeholder">🏊</div>
+            <div class="venue-badge">Best Value</div>
+          </div>
+          <div class="venue-content">
+            <h3 class="venue-title">Aquatic Sports Complex</h3>
+            <div class="venue-location">📍 Haifa, Northern District</div>
+            <div class="venue-rating">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <span class="rating-text">4.7 (156 reviews)</span>
+            </div>
+            <div class="venue-features">
+              <span class="feature">Olympic Pool</span>
+              <span class="feature">Heated</span>
+              <span class="feature">Locker Room</span>
+            </div>
+            <div class="venue-footer">
+              <div class="price">₪80<span class="per">/hour</span></div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Venue Card 4 -->
+        <div class="venue-card" data-sport="fitness" data-city="Jerusalem" data-price="60" data-rating="4.6">
+          <div class="venue-image">
+            <div class="image-placeholder">🏋️</div>
+          </div>
+          <div class="venue-content">
+            <h3 class="venue-title">PowerFit Gym</h3>
+            <div class="venue-location">📍 Jerusalem, Central District</div>
+            <div class="venue-rating">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <span class="rating-text">4.6 (203 reviews)</span>
+            </div>
+            <div class="venue-features">
+              <span class="feature">Full Equipment</span>
+              <span class="feature">Trainers</span>
+              <span class="feature">Sauna</span>
+            </div>
+            <div class="venue-footer">
+              <div class="price">₪60<span class="per">/hour</span></div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Venue Card 5 -->
+        <div class="venue-card" data-sport="football" data-city="Tel Aviv" data-price="200" data-rating="4.9">
+          <div class="venue-image">
+            <div class="image-placeholder">⚽</div>
+            <div class="venue-badge">Premium</div>
+          </div>
+          <div class="venue-content">
+            <h3 class="venue-title">Champions Football Field</h3>
+            <div class="venue-location">📍 Tel Aviv, Central District</div>
+            <div class="venue-rating">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <span class="rating-text">4.9 (95 reviews)</span>
+            </div>
+            <div class="venue-features">
+              <span class="feature">Full Size</span>
+              <span class="feature">Artificial Grass</span>
+              <span class="feature">Floodlights</span>
+            </div>
+            <div class="venue-footer">
+              <div class="price">₪200<span class="per">/hour</span></div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Venue Card 6 -->
+        <div class="venue-card" data-sport="climbing" data-city="Haifa" data-price="90" data-rating="4.5">
+          <div class="venue-image">
+            <div class="image-placeholder">🧗</div>
+          </div>
+          <div class="venue-content">
+            <h3 class="venue-title">Rock Climbing Center</h3>
+            <div class="venue-location">📍 Haifa, Northern District</div>
+            <div class="venue-rating">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <span class="rating-text">4.5 (78 reviews)</span>
+            </div>
+            <div class="venue-features">
+              <span class="feature">Indoor Wall</span>
+              <span class="feature">Equipment</span>
+              <span class="feature">Instructor</span>
+            </div>
+            <div class="venue-footer">
+              <div class="price">₪90<span class="per">/hour</span></div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Venue Card 7 -->
+        <div class="venue-card" data-sport="badminton" data-city="Nazareth" data-price="70" data-rating="4.4">
+          <div class="venue-image">
+            <div class="image-placeholder">🏸</div>
+          </div>
+          <div class="venue-content">
+            <h3 class="venue-title">Shuttle Sports Hall</h3>
+            <div class="venue-location">📍 Nazareth, Northern District</div>
+            <div class="venue-rating">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <span class="rating-text">4.4 (65 reviews)</span>
+            </div>
+            <div class="venue-features">
+              <span class="feature">4 Courts</span>
+              <span class="feature">Equipment</span>
+              <span class="feature">AC</span>
+            </div>
+            <div class="venue-footer">
+              <div class="price">₪70<span class="per">/hour</span></div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Venue Card 8 -->
+        <div class="venue-card" data-sport="volleyball" data-city="Ashdod" data-price="100" data-rating="4.6">
+          <div class="venue-image">
+            <div class="image-placeholder">🏐</div>
+          </div>
+          <div class="venue-content">
+            <h3 class="venue-title">Beach Volleyball Arena</h3>
+            <div class="venue-location">📍 Ashdod, Southern District</div>
+            <div class="venue-rating">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <span class="rating-text">4.6 (112 reviews)</span>
+            </div>
+            <div class="venue-features">
+              <span class="feature">Sand Court</span>
+              <span class="feature">Beach View</span>
+              <span class="feature">Nets</span>
+            </div>
+            <div class="venue-footer">
+              <div class="price">₪100<span class="per">/hour</span></div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Venue Card 9 -->
+        <div class="venue-card" data-sport="yoga" data-city="Tel Aviv" data-price="50" data-rating="4.8">
+          <div class="venue-image">
+            <div class="image-placeholder">🧘</div>
+          </div>
+          <div class="venue-content">
+            <h3 class="venue-title">Zen Yoga Studio</h3>
+            <div class="venue-location">📍 Tel Aviv, Central District</div>
+            <div class="venue-rating">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <span class="rating-text">4.8 (187 reviews)</span>
+            </div>
+            <div class="venue-features">
+              <span class="feature">Peaceful</span>
+              <span class="feature">Mats</span>
+              <span class="feature">Instructor</span>
+            </div>
+            <div class="venue-footer">
+              <div class="price">₪50<span class="per">/hour</span></div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Venue Card 10 -->
+        <div class="venue-card" data-sport="boxing" data-city="Jerusalem" data-price="85" data-rating="4.7">
+          <div class="venue-image">
+            <div class="image-placeholder">🥊</div>
+          </div>
+          <div class="venue-content">
+            <h3 class="venue-title">Combat Training Center</h3>
+            <div class="venue-location">📍 Jerusalem, Central District</div>
+            <div class="venue-rating">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <span class="rating-text">4.7 (143 reviews)</span>
+            </div>
+            <div class="venue-features">
+              <span class="feature">Ring</span>
+              <span class="feature">Equipment</span>
+              <span class="feature">Trainer</span>
+            </div>
+            <div class="venue-footer">
+              <div class="price">₪85<span class="per">/hour</span></div>
+              <button class="book-btn">Book Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // City search functionality
+      const searchInput = document.querySelector('.search-input');
+      const cityOptions = document.querySelectorAll('.city-option');
+
+      searchInput.addEventListener('input', function () {
+        const filter = this.value.trim().toLowerCase();
+        cityOptions.forEach(option => {
+          const span = option.querySelector('span');
+          const cityName = span ? span.textContent.trim().toLowerCase() : '';
+          option.style.display = cityName.includes(filter) ? 'flex' : 'none';
+        });
+      });
+
+      // Player search functionality
+      const playerSearch = document.getElementById('playerSearch');
+   playerSearch.addEventListener('input', function() {
+  const searchTerm = this.value.toLowerCase();
+  const venueCards = document.querySelectorAll('.venue-card');
+
+  venueCards.forEach(card => {
+    const title = card.querySelector('.venue-title').textContent.toLowerCase();
+    card.style.display = title.includes(searchTerm) ? 'block' : 'none';
+  });
+});
+
+      // Venue filtering functionality
+      const sortOptions = document.querySelectorAll('.sort-option input[type="radio"]');
+      const venueCards = document.querySelectorAll('.venue-card');
+
+      sortOptions.forEach(option => {
+        option.addEventListener('change', function() {
+          filterVenues();
+        });
+      });
+
+      function filterVenues() {
+        // Get selected filters
+        const priceSort = document.querySelector('input[name="price-sort"]:checked')?.id;
+        const ratingSort = document.querySelector('input[name="rating-sort"]:checked')?.id;
+        const distanceSort = document.querySelector('input[name="distance-sort"]:checked')?.id;
+        
+        // Apply sorting logic here
+        console.log('Filters:', { priceSort, ratingSort, distanceSort });
+      }
+    });
+    function updateVenueCount() {
+  const visibleVenues = document.querySelectorAll('.venue-card:not([style*="display: none"])');
+  document.querySelector('.results-count').textContent = `Showing ${visibleVenues.length} venues`;
+}
+let debounceTimeout;
+playerSearch.addEventListener('input', function() {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => {
+    const searchTerm = this.value.toLowerCase();
+    const venueCards = document.querySelectorAll('.venue-card');
+
+    venueCards.forEach(card => {
+      const title = card.querySelector('.venue-title').textContent.toLowerCase();
+      card.style.display = title.includes(searchTerm) ? 'block' : 'none';
+    });
+
+    updateVenueCount();
+  }, 200);
+});
+  </script>
+
+</body>
+</html>
