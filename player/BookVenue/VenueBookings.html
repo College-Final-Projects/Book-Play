@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Venue - Book&Play</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1e90ff;
+      --secondary: #22c55e;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --bg-main: #ffffff;
+      --bg-alt: #f9fafb;
+      --border: #e5e7eb;
+      --border-subtle: #f3f4f6;
+      --card-bg: #ffffff;
+      --card-border: #e5e7eb;
+      --shadow-light: rgba(0, 0, 0, 0.05);
+      --shadow-medium: rgba(0, 0, 0, 0.1);
+      --radius: 12px;
+      --transition: all 0.2s ease-in-out;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-alt);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: var(--bg-main);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .back-btn:hover {
+      background: var(--bg-alt);
+      color: var(--text-main);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    .booking-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 32px;
+    }
+
+    /* Venue Info */
+    .venue-info {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .venue-image {
+      height: 200px;
+      background: #f8fafc;
+      overflow: hidden;
+    }
+
+    .venue-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .venue-details {
+      padding: 24px;
+    }
+
+    .venue-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .venue-location {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .venue-price {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .venue-price .per {
+      font-size: 16px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Booking Form */
+    .booking-form {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .form-section {
+      margin-bottom: 24px;
+    }
+
+    .form-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-main);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      transition: var(--transition);
+      background: var(--bg-main);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .duration-options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .duration-option {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      background: var(--bg-main);
+    }
+
+    .duration-option:hover {
+      border-color: var(--primary);
+      background: rgba(30, 144, 255, 0.05);
+    }
+
+    .duration-option.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Summary Card */
+    .booking-summary {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 24px;
+      position: sticky;
+      top: 100px;
+    }
+
+    .summary-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .summary-item:last-child {
+      border-bottom: none;
+      font-weight: 600;
+      font-size: 18px;
+      padding-top: 16px;
+      margin-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    .summary-label {
+      color: var(--text-muted);
+    }
+
+    .summary-value {
+      font-weight: 500;
+    }
+
+    .book-button {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 20px;
+    }
+
+    .book-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px var(--shadow-light);
+    }
+
+    .book-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Time Slots */
+    .time-slots {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .time-slot {
+      padding: 10px 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 13px;
+      background: var(--bg-main);
+    }
+
+    .time-slot:hover {
+      border-color: var(--primary);
+      background: rgba(30, 144, 255, 0.05);
+    }
+
+    .time-slot.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .time-slot.unavailable {
+      background: #f3f4f6;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .time-slot.unavailable:hover {
+      border-color: var(--border);
+      background: #f3f4f6;
+    }
+
+    /* Payment Methods */
+    .payment-methods {
+      display: grid;
+      gap: 12px;
+    }
+
+    .payment-method {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .payment-method:hover {
+      border-color: var(--primary);
+      background: rgba(30, 144, 255, 0.02);
+    }
+
+    .payment-method.active {
+      border-color: var(--primary);
+      background: rgba(30, 144, 255, 0.05);
+    }
+
+    .payment-method input[type="radio"] {
+      margin-right: 12px;
+    }
+
+    .payment-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .payment-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--bg-alt);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .booking-layout {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .booking-summary {
+        position: relative;
+        top: 0;
+        order: -1;
+      }
+
+      .container {
+        padding: 24px 16px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .duration-options {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .time-slots {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">Book&Play</div>
+      <a href="#" class="back-btn" onclick="history.back()">
+        ← Back to Venues
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <div class="booking-layout">
+      <!-- Left Column - Venue Info & Form -->
+      <div class="main-content">
+        <!-- Venue Info -->
+        <div class="venue-info">
+          <div class="venue-image">
+            <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=500&h=300&fit=crop&crop=center" alt="Elite Basketball Arena" id="venueImage">
+          </div>
+          <div class="venue-details">
+            <h1 class="venue-title" id="venueTitle">Elite Basketball Arena</h1>
+            <div class="venue-location" id="venueLocation">
+              📍 Jerusalem, Central District
+            </div>
+            <div class="venue-price" id="venuePrice">
+              ₪120<span class="per">/hour</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="booking-form">
+          <form id="bookingForm">
+            <!-- Date Selection -->
+            <div class="form-section">
+              <h3 class="section-title">Select Date & Time</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Date</label>
+                  <input type="date" class="form-input" id="bookingDate" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Duration (hours)</label>
+                  <select class="form-input" id="duration" required>
+                    <option value="1">1 hour</option>
+                    <option value="2">2 hours</option>
+                    <option value="3">3 hours</option>
+                    <option value="4">4 hours</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Available Time Slots</label>
+                <div class="time-slots" id="timeSlots">
+                  <div class="time-slot" data-time="08:00">08:00</div>
+                  <div class="time-slot" data-time="09:00">09:00</div>
+                  <div class="time-slot" data-time="10:00">10:00</div>
+                  <div class="time-slot" data-time="11:00">11:00</div>
+                  <div class="time-slot" data-time="12:00">12:00</div>
+                  <div class="time-slot unavailable" data-time="13:00">13:00</div>
+                  <div class="time-slot" data-time="14:00">14:00</div>
+                  <div class="time-slot" data-time="15:00">15:00</div>
+                  <div class="time-slot" data-time="16:00">16:00</div>
+                  <div class="time-slot unavailable" data-time="17:00">17:00</div>
+                  <div class="time-slot" data-time="18:00">18:00</div>
+                  <div class="time-slot" data-time="19:00">19:00</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Personal Information -->
+            <div class="form-section">
+              <h3 class="section-title">Personal Information</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">First Name</label>
+                  <input type="text" class="form-input" id="firstName" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Last Name</label>
+                  <input type="text" class="form-input" id="lastName" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-input" id="email" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Phone</label>
+                  <input type="tel" class="form-input" id="phone" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="form-section">
+              <h3 class="section-title">Payment Method</h3>
+              <div class="payment-methods">
+                <label class="payment-method active">
+                  <input type="radio" name="payment" value="card" checked>
+                  <div class="payment-info">
+                    <div class="payment-icon">💳</div>
+                    <div>
+                      <div style="font-weight: 500;">Credit Card</div>
+                      <div style="font-size: 12px; color: var(--text-muted);">Visa, Mastercard, American Express</div>
+                    </div>
+                  </div>
+                </label>
+                <label class="payment-method">
+                  <input type="radio" name="payment" value="paypal">
+                  <div class="payment-info">
+                    <div class="payment-icon">🏦</div>
+                    <div>
+                      <div style="font-weight: 500;">PayPal</div>
+                      <div style="font-size: 12px; color: var(--text-muted);">Pay with your PayPal account</div>
+                    </div>
+                  </div>
+                </label>
+                <label class="payment-method">
+                  <input type="radio" name="payment" value="cash">
+                  <div class="payment-info">
+                    <div class="payment-icon">💵</div>
+                    <div>
+                      <div style="font-weight: 500;">Pay at Venue</div>
+                      <div style="font-size: 12px; color: var(--text-muted);">Cash payment on arrival</div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Column - Booking Summary -->
+      <div class="booking-summary">
+        <h3 class="summary-title">Booking Summary</h3>
+        
+        <div class="summary-item">
+          <span class="summary-label">Venue</span>
+          <span class="summary-value" id="summaryVenue">Elite Basketball Arena</span>
+        </div>
+        
+        <div class="summary-item">
+          <span class="summary-label">Date</span>
+          <span class="summary-value" id="summaryDate">-</span>
+        </div>
+        
+        <div class="summary-item">
+          <span class="summary-label">Time</span>
+          <span class="summary-value" id="summaryTime">-</span>
+        </div>
+        
+        <div class="summary-item">
+          <span class="summary-label">Duration</span>
+          <span class="summary-value" id="summaryDuration">1 hour</span>
+        </div>
+        
+        <div class="summary-item">
+          <span class="summary-label">Rate</span>
+          <span class="summary-value" id="summaryRate">₪120/hour</span>
+        </div>
+        
+        <div class="summary-item">
+          <span class="summary-label">Total</span>
+          <span class="summary-value" id="summaryTotal">₪120</span>
+        </div>
+        
+        <button type="submit" class="book-button" form="bookingForm">
+          Confirm Booking
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Set minimum date to today
+    document.getElementById('bookingDate').min = new Date().toISOString().split('T')[0];
+    
+    // Time slot selection
+    document.querySelectorAll('.time-slot:not(.unavailable)').forEach(slot => {
+      slot.addEventListener('click', function() {
+        document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('active'));
+        this.classList.add('active');
+        updateSummary();
+      });
+    });
+
+    // Duration change
+    document.getElementById('duration').addEventListener('change', updateSummary);
+    
+    // Date change
+    document.getElementById('bookingDate').addEventListener('change', updateSummary);
+
+    // Payment method selection
+    document.querySelectorAll('.payment-method').forEach(method => {
+      method.addEventListener('click', function() {
+        document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // Update summary
+    function updateSummary() {
+      const date = document.getElementById('bookingDate').value;
+      const activeTime = document.querySelector('.time-slot.active');
+      const duration = document.getElementById('duration').value;
+      const rate = 120; // Base rate per hour
+
+      if (date) {
+        const formattedDate = new Date(date).toLocaleDateString('en-US', {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+        document.getElementById('summaryDate').textContent = formattedDate;
+      }
+
+      if (activeTime) {
+        document.getElementById('summaryTime').textContent = activeTime.dataset.time;
+      }
+
+      document.getElementById('summaryDuration').textContent = `${duration} hour${duration > 1 ? 's' : ''}`;
+      
+      const total = rate * parseInt(duration);
+      document.getElementById('summaryTotal').textContent = `₪${total}`;
+    }
+
+    // Form submission
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const activeTime = document.querySelector('.time-slot.active');
+      if (!activeTime) {
+        alert('Please select a time slot');
+        return;
+      }
+
+      // Simulate booking process
+      const button = document.querySelector('.book-button');
+      button.textContent = 'Processing...';
+      button.disabled = true;
+
+      setTimeout(() => {
+        alert('Booking confirmed! You will receive a confirmation email shortly.');
+        // In a real app, you would redirect to a confirmation page
+        window.location.href = '#'; // Redirect to venues page or confirmation
+      }, 2000);
+    });
+
+    // Get venue info from URL parameters (if any)
+    const urlParams = new URLSearchParams(window.location.search);
+    const venueName = urlParams.get('venue');
+    const venuePrice = urlParams.get('price');
+    const venueLocation = urlParams.get('location');
+    const venueImage = urlParams.get('image');
+
+    if (venueName) {
+      document.getElementById('venueTitle').textContent = venueName;
+      document.getElementById('summaryVenue').textContent = venueName;
+    }
+    if (venuePrice) {
+      document.getElementById('venuePrice').innerHTML = `₪${venuePrice}<span class="per">/hour</span>`;
+      document.getElementById('summaryRate').textContent = `₪${venuePrice}/hour`;
+    }
+    if (venueLocation) {
+      document.getElementById('venueLocation').innerHTML = `📍 ${venueLocation}`;
+    }
+    if (venueImage) {
+      document.getElementById('venueImage').src = venueImage;
+    }
+  </script>
+</body>
+</html>
