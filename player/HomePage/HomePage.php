@@ -33,5 +33,5 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 include 'HomePage.html';
-exit();
+
 ?>

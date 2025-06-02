@@ -2,22 +2,150 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Book Venue - Player</title>
-  <link rel="stylesheet" href="../player.css">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book&Play - Book Venue</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="BookVenue.css">
 </head>
 <body>
 
-  <!-- Container for the navbar -->
-  <div id="fresh-navbar"></div>
+  <!-- Player Search Section -->
+  <section class="search-section">
+    <div class="search-container">
+      <div class="search-box-main">
+        <input type="text" class="player-search" placeholder="🔍 Search for venues by name..." id="playerSearch">
+        <button class="search-btn">Search</button>
+      </div>
+    </div>
+  </section>
+  <!-- Layout -->
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="filter-section">
+        <h3>Sort by Price</h3>
+        <label class="sort-option">
+          <input type="radio" name="price-sort" id="price-default" checked>
+          <span>Default</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="price-sort" id="price-low">
+          <span>Low to High</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="price-sort" id="price-high">
+          <span>High to Low</span>
+        </label>
+      </div>
 
-  <!-- Your page content below -->
-  <div class="page-content">
-    
+      <div class="filter-section">
+        <h3>Sort by Rating</h3>
+        <label class="sort-option">
+          <input type="radio" name="rating-sort" id="rating-default" checked>
+          <span>Default</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="rating-sort" id="rating-low">
+          <span>Low to High</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="rating-sort" id="rating-high">
+          <span>High to Low</span>
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <h3>Sort by Distance</h3>
+        <label class="sort-option">
+          <input type="radio" name="distance-sort" id="distance-default" checked>
+          <span>Default</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="distance-sort" id="distance-near">
+          <span>Nearest First</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="distance-sort" id="distance-far">
+          <span>Farthest First</span>
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <h3>Filter by Location</h3>
+        <div class="location-filter">
+          <div class="search-box">
+            <input type="text" class="search-input" placeholder="Search cities...">
+          </div>
+          <div class="city-list">
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-haifa">
+              <span>Haifa</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-jerusalem">
+              <span>Jerusalem</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-telaviv">
+              <span>Tel Aviv</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-nazareth">
+              <span>Nazareth</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-acre">
+              <span>Acre</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-beersheba">
+              <span>Be'er Sheva</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-netanya">
+              <span>Netanya</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-ashdod">
+              <span>Ashdod</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-rishon">
+              <span>Rishon LeZion</span>
+            </label>
+            <label class="city-option">
+              <input type="checkbox" name="cities" id="city-petah">
+              <span>Petah Tikva</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="content">
+      <div class="venues-header">
+        <h2>Available Venues</h2>
+      </div>
+      
+      <div class="venues-grid">
+        <!-- Venue Card 1 -->
+        <div class="venue-card" data-sport="basketball" data-city="Jerusalem" data-price="120" data-rating="4.9">
+          <div class="venue-image">
+          </div>
+          <div class="venue-content">
+            <h3 class="venue-title">Elite Basketball Arena</h3>
+            <div class="venue-location">📍 Jerusalem, Central District</div>
+            <div class="venue-footer">
+              <div class="price">₪120<span class="per">/hour</span></div>
+              <button class="book-btn" onclick="window.location.href='VenueBookings.html'">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
   </div>
-
-  <!-- Load Navbar from player.html -->
-  <script src="bookVenue.js"></script>
 
 </body>
 </html>
