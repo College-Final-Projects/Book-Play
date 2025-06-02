@@ -11,7 +11,13 @@
   <div class="header-bar">
     <div class="logo-title">BOOK&PLAY</div>
   <div class="profile-container" onclick="toggleProfileMenu()">
-      <div class="profile-icon">P</div>
+    <span id="usernameDisplay" class="username-display"></span>
+      <img
+          id="userProfileImage"
+          class="profile-icon"
+          src="../../uploads/users/default.jpg"
+          alt="Profile Image"
+        />
       <div class="profile-menu" id="profileMenu">
         <a href="../../EditProfile/EditProfile.php">Edit Profile</a>
         <a href="../../logout.php">Logout</a>

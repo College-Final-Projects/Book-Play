@@ -5,7 +5,7 @@
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   background: linear-gradient(to bottom right, #e0f7fa, #d0f8ce);
   color: #0f172a;
   margin: 0;
@@ -99,25 +99,25 @@ h2 {
     padding: 25px;
     margin-top: 40px;
   }
-  
+
   h2 {
     font-size: 24px;
     margin-bottom: 15px;
   }
-  
+
   .info {
     font-size: 16px;
     padding: 8px;
   }
-  
+
   #imagePreview {
     max-height: 250px;
   }
-  
+
   .back-wrapper {
     margin: 30px 0 25px 0;
   }
-  
+
   .btn-back {
     font-size: 18px;
     padding: 14px 30px;
@@ -128,32 +128,32 @@ h2 {
   body {
     padding: 10px;
   }
-  
+
   .venue-card {
     padding: 20px;
     margin-top: 30px;
     width: 100%;
   }
-  
+
   h2 {
     font-size: 22px;
     margin-bottom: 15px;
   }
-  
+
   .info {
     font-size: 15px;
     padding: 8px 5px;
   }
-  
+
   #imagePreview {
     max-height: 200px;
     border-radius: 12px;
   }
-  
+
   .back-wrapper {
     margin: 25px 0 20px 0;
   }
-  
+
   .btn-back {
     font-size: 16px;
     padding: 12px 25px;
@@ -169,23 +169,23 @@ h2 {
     margin-top: 20px;
     border-radius: 15px;
   }
-  
+
   h2 {
     font-size: 20px;
     margin-bottom: 12px;
   }
-  
+
   .info {
     font-size: 14px;
     padding: 6px 4px;
   }
-  
+
   #imagePreview {
     max-height: 180px;
     border-radius: 10px;
     margin-bottom: 15px;
   }
-  
+
   .btn-back {
     font-size: 15px;
     padding: 10px 20px;

@@ -233,16 +233,11 @@ footer {
     top: 15px;
     right: 15px;
   }
- .profile-icon {
-  width: 40px;
-  height: 40px;
-  background-color: var(--primary);
-  color: white;
+.profile-icon {
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
+  object-fit: cover;
   box-shadow: 0 0 6px var(--accent-glow);
 }
 
@@ -340,4 +335,10 @@ footer {
       max-width: 200px;
       height: 130px;
   }
+}
+.username-display {
+  margin-left: 20px;
+  font-weight: 600;
+  color: var(--text-main);
+  font-size: 15px;
 }

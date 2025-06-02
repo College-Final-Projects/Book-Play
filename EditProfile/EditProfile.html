@@ -12,7 +12,7 @@
 </head>
 <body>
   <!-- ========== START: Profile Form ========== -->
-  <form id="profileForm" class="profile-form" action="profile.php" method="POST" enctype="multipart/form-data">
+  <form id="profileForm" class="profile-form" action="EditProfile.php" method="POST" enctype="multipart/form-data">
     <h3>Edit Your User Profile</h3> <!-- Form title -->
 
     <!-- Hidden email and password fields (already known from DB) -->
@@ -81,7 +81,6 @@
         <option value="" disabled selected>Select Gender</option>
         <option value="male">Male</option>
         <option value="female">Female</option>
-        <option value="other">Other</option>
       </select>
     </div>
 
@@ -127,8 +126,15 @@
 
     <!-- Submit and back buttons -->
     <button type="submit" class="submit-btn">Save Profile</button>
-    <button type="button" id="backBtn" class="back-btn" onclick="history.back()">← Back</button>
+    <button onclick="goBack()" class="back-btn">← Back</button>
   </form>
   <!-- ========== END: Profile Form ========== -->
+   <!-- ✅ Confirmation Modal -->
+<div id="confirmationModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
+  <div style="background:white; padding:30px; border-radius:15px; text-align:center; max-width:90%; box-shadow:0 4px 20px rgba(0,0,0,0.2);">
+    <h3 style="margin-bottom: 15px; color:#22c55e;">✅ Your profile has been updated!</h3>
+    <button onclick="closeModal()" style="padding:10px 20px; background:#1e90ff; color:white; border:none; border-radius:8px; cursor:pointer;">OK</button>
+  </div>
+</div>
 </body>
 </html>

@@ -1,178 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FreshGlow - Facility Owner Bookings</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="Bookings.css">
-</head>
-<body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="Bookings.css" />
+  </head>
+  <body>
     <header>
-        <div class="logo">
-            <span>Book&Play</span>
-        </div>
-        <nav class="fresh-navbar">
-            <ul class="nav-links">
-                <li><a href="../HomePage/HomePage.php">HomePage</a></li>
-                <li><a href="../ManageVenue/ManageVenue.php">Manage Venue</a></li>
-                <li><a href="../Bookings/Bookings.php" class="active">Bookings</a></li>
-                <li><a href="../Analytics/Analytics.php">Analytics</a></li>
-                <li><a href="../Messages/Messages.php">Messages</a></li>
-                <li><a href="../../logout.php" class="logout">Logout</a></li>
-            </ul>
-        </nav>
+      <div class="logo">
+        <span>Book&Play</span>
+      </div>
+      <nav class="fresh-navbar">
+        <ul class="nav-links">
+          <li><a href="../HomePage/HomePage.php">HomePage</a></li>
+          <li><a href="../ManageVenue/ManageVenue.php">Manage Venue</a></li>
+          <li>
+            <a href="../Bookings/Bookings.php" class="active">Bookings</a>
+          </li>
+          <li><a href="../Analytics/Analytics.php">Analytics</a></li>
+          <li><a href="../Messages/Messages.php">Messages</a></li>
+          <li><a href="../../logout.php" class="logout">Logout</a></li>
+        </ul>
+      </nav>
     </header>
 
     <main>
-        <!-- Main Content -->
-        <div class="container">
-            <div class="page-header">
-                <h1 class="page-title">Bookings</h1>
-                <p class="page-subtitle">View and control all your venue reservations with clarity and ease</p>
-            </div>
-
-            <!-- Search and Sort -->
-            <div class="search-sort-container">
-                <div class="search-bar">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="searchInput" placeholder="Search venues by name">
-                </div>
-                <div class="sort-container">
-                    <span class="sort-label">Sort By:</span>
-                    <select class="sort-select" id="sortSelect">
-                        <option value="name">Name (A-Z)</option>
-                        <option value="name-desc">Name (Z-A)</option>
-                    </select>
-                </div>
-                <div class="sort-container">
-                    <select class="sort-select" id="sortSelectSport">
-                        <option value="">All Sports</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="venues-container" id="venue-cards-view">
-                
-            </div>
-
-            <!-- Detailed Booking View (initially hidden) -->
-            <section id="booking-detail-view" class="hidden">
-                <div class="booking-container">
-                    <!-- Left Sidebar with Venues -->
-                    <div class="venues-sidebar">
-                        <h3>Your Venues</h3>
-                        <ul class="venues-list">
-                           
-                        </ul>
-                        <button class="btn-back-to-venues">Back to All Venues</button>
-                    </div>
-
-                    <!-- Right Content Area -->
-                    <div class="booking-content">
-                        <div class="venue-details">
-                            <h2 data-venue-id="">Downtown Soccer Field</h2>
-                            <div class="venue-meta">
-                                <span class="location-badge">Central District</span>
-                                <span class="rating-badge">★ 4.8</span>
-                            </div>
-                        </div>
-                        <div style="margin-top: 10px; margin-bottom: 20px;">
-                            <button class="btn-add-booking">+ Add Booking</button>
-                        </div>
-                        <div class="booking-controls">
-                           <div id="calendar-container"></div>
-                        </div>
-
-                        <div class="bookings-table-container">
-                            <table class="bookings-table">
-                                <thead>
-                                    <tr>
-                                        <th>Username</th>
-                                        <th>Players</th>
-                                        <th>Time Range</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="user-column">
-                                            <span>SoccerFan42</span>
-                                        </td>
-                                        <td>8/10</td>
-                                        <td>09:00 - 11:00</td>
-                                        <td><button class="btn-send-message">Send Message</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="user-column">
-                                            <span>GoalKeeper88</span>
-                                        </td>
-                                        <td>6/10</td>
-                                        <td>13:00 - 15:00</td>
-                                        <td><button class="btn-send-message">Send Message</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="user-column">
-                                            <span>TeamCaptainX</span>
-                                        </td>
-                                        <td>10/10</td>
-                                        <td>18:00 - 20:00</td>
-                                        <td><button class="btn-send-message">Send Message</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </section>
+      <!-- Main Content -->
+      <div class="container">
+        <div class="page-header">
+          <h1 class="page-title">Bookings</h1>
+          <p class="page-subtitle">
+            View and control all your venue reservations with clarity and ease
+          </p>
         </div>
+
+        <!-- Search and Sort -->
+        <div class="search-sort-container">
+          <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search venues by name"
+            />
+          </div>
+          <div class="sort-container">
+            <span class="sort-label">Sort By:</span>
+            <select class="sort-select" id="sortSelect">
+              <option value="name">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+            </select>
+          </div>
+          <div class="sort-container">
+            <select class="sort-select" id="sortSelectSport">
+              <option value="">All Sports</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="venues-container" id="venue-cards-view"></div>
+
+        <!-- Detailed Booking View (initially hidden) -->
+        <section id="booking-detail-view" class="hidden">
+          <div class="booking-container">
+            <!-- Left Sidebar with Venues -->
+            <div class="venues-sidebar">
+              <h3>Your Venues</h3>
+              <ul class="venues-list"></ul>
+              <button class="btn-back-to-venues">Back to All Venues</button>
+            </div>
+
+            <!-- Right Content Area -->
+            <div class="booking-content">
+              <div class="venue-details">
+                <h2 data-venue-id="">Downtown Soccer Field</h2>
+                <div class="venue-meta">
+                  <span class="location-badge">Central District</span>
+                  <span class="rating-badge">★ 4.8</span>
+                </div>
+              </div>
+              <div style="margin-top: 10px; margin-bottom: 20px">
+                <button class="btn-add-booking">+ Add Booking</button>
+              </div>
+              <div class="booking-controls">
+                <div id="calendar-container"></div>
+              </div>
+
+              <div class="bookings-table-container">
+                <table class="bookings-table">
+                  <thead>
+                    <tr>
+                      <th>Username</th>
+                      <th>Players</th>
+                      <th>Time Range</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="user-column">
+                        <span>SoccerFan42</span>
+                      </td>
+                      <td>8/10</td>
+                      <td>09:00 - 11:00</td>
+                      <td>
+                        <button class="btn-send-message">Send Message</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="user-column">
+                        <span>GoalKeeper88</span>
+                      </td>
+                      <td>6/10</td>
+                      <td>13:00 - 15:00</td>
+                      <td>
+                        <button class="btn-send-message">Send Message</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="user-column">
+                        <span>TeamCaptainX</span>
+                      </td>
+                      <td>10/10</td>
+                      <td>18:00 - 20:00</td>
+                      <td>
+                        <button class="btn-send-message">Send Message</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
 
     <!-- Add Booking Modal -->
-<div id="addBookingModal" class="modal-overlay">
-    <div class="modal-content">
+    <div id="addBookingModal" class="modal-overlay">
+      <div class="modal-content">
         <h3>Add New Booking</h3>
         <form id="bookingForm">
-            <label>Username:</label>
-            <input type="text" name="username" required />
+          <label>Username:</label>
+          <input type="text" name="username" required />
 
-            <label>Date:</label>
-            <input type="date" name="date" required />
+          <label>Date:</label>
+          <input type="date" name="date" required />
 
-            <label>Players:</label>
-            <input type="number" name="players" min="1" max="20" required />
+          <label>Players:</label>
+          <input type="number" name="players" min="1" max="20" required />
 
-            <label>Time Range:</label>
-            <input type="text" name="time" placeholder="e.g. 09:00 - 11:00" required />
+          <label>Time Range:</label>
+          <input
+            type="text"
+            name="time"
+            placeholder="e.g. 09:00 - 11:00"
+            required
+          />
 
-            <!-- ✅ رسالة الخطأ أو النجاح ستظهر هنا -->
-            <div id="bookingMessage" class="form-message"></div>
+          <!-- ✅ رسالة الخطأ أو النجاح ستظهر هنا -->
+          <div id="bookingMessage" class="form-message"></div>
 
-            <div class="modal-buttons">
-                <button type="submit" class="btn-confirm">Add Booking</button>
-                <button type="button" class="btn-cancel" onclick="document.getElementById('addBookingModal').style.display='none';">Cancel</button>
-            </div>
+          <div class="modal-buttons">
+            <button type="submit" class="btn-confirm">Add Booking</button>
+            <button
+              type="button"
+              class="btn-cancel"
+              onclick="document.getElementById('addBookingModal').style.display='none';"
+            >
+              Cancel
+            </button>
+          </div>
         </form>
-    </div>
-</div>
-<!-- Message Modal -->
-<div id="messageModal" class="modal-overlay">
-  <div class="modal-content">
-    <h3>Send Message</h3>
-    <form id="messageForm">
-      <input type="hidden" name="receiver_username" id="receiverInput" />
-      <label for="messageInput">Message:</label>
-      <input type="text" name="message" id="messageInput" required />
-      <div class="modal-buttons">
-        <button type="submit" class="btn-confirm">Send</button>
-        <button type="button" class="btn-cancel" onclick="document.getElementById('messageModal').style.display='none'">Cancel</button>
       </div>
-    </form>
-  </div>
-</div>
-
+    </div>
+    <!-- Message Modal -->
+    <div id="messageModal" class="modal-overlay">
+      <div class="modal-content">
+        <h3>Send Message</h3>
+        <form id="messageForm">
+          <input type="hidden" name="receiver_username" id="receiverInput" />
+          <label for="messageInput">Message:</label>
+          <input type="text" name="message" id="messageInput" required />
+          <div class="modal-buttons">
+            <button type="submit" class="btn-confirm">Send</button>
+            <button
+              type="button"
+              class="btn-cancel"
+              onclick="document.getElementById('messageModal').style.display='none'"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <!-- Include the JavaScript file -->
     <script src="bookings.js"></script>
-</body>
+  </body>
 </html>
