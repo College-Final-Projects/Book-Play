@@ -279,6 +279,27 @@ input[type="radio"], input[type="checkbox"] {
   color: var(--text-main);
   letter-spacing: -0.025em;
 }
+.venue-card.unavailable {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+}
+
+.venue-card.unavailable::after {
+  content: "🔒 Unavailable";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(220, 38, 38, 0.9); /* red background */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5);
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
 
 .results-count {
   color: var(--text-muted);

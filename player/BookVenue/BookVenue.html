@@ -22,6 +22,18 @@
   <div class="layout">
     <!-- Sidebar -->
     <aside class="sidebar">
+<div class="filter-section">
+        <h3>Sort by Available </h3>
+        <label class="sort-option">
+          <input type="radio" name="Available-sort" id="All-default" checked>
+          <span>All </span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="Available-sort" id="Available">
+          <span>Available </span>
+        </label>
+    
+      </div>
       <div class="filter-section">
         <h3>Sort by Price</h3>
         <label class="sort-option">
@@ -37,6 +49,9 @@
           <span>High to Low</span>
         </label>
       </div>
+
+
+
 
       <div class="filter-section">
         <h3>Sort by Rating</h3>
@@ -69,6 +84,13 @@
           <span>Farthest First</span>
         </label>
       </div>
+
+
+
+
+
+
+
 
       <div class="filter-section">
         <h3>Filter by Location</h3>
@@ -127,25 +149,28 @@
       <div class="venues-header">
         <h2>Available Venues</h2>
       </div>
-      
-      <div class="venues-grid">
-        <!-- Venue Card 1 -->
-        <div class="venue-card" data-sport="basketball" data-city="Jerusalem" data-price="120" data-rating="4.9">
-          <div class="venue-image">
-          </div>
-          <div class="venue-content">
-            <h3 class="venue-title">Elite Basketball Arena</h3>
-            <div class="venue-location">📍 Jerusalem, Central District</div>
-            <div class="venue-footer">
-              <div class="price">₪120<span class="per">/hour</span></div>
-              <button class="book-btn" onclick="window.location.href='VenueBookings.html'">Book Now</button>
-            </div>
-          </div>
-        </div>
-
+<div class="venues-grid" id="venuesContainer">
+  <!-- This card will be cloned for each venue -->
+  <div class="venue-card">
+    <div class="venue-image">
+      <img src="" onclick="window.location.href='../VenueDetails/VenueDetails.php'" alt="Venue Image">
+    </div>
+    <div class="venue-content">
+      <h3 class="venue-title">VENUE_NAME_HERE</h3>
+      <div class="venue-location">📍 LOCATION_HERE</div>
+      <div class="venue-footer">
+        <div class="price">₪PRICE_HERE<span class="per">/hour</span></div>
+        <button class="book-btn">Book Now</button>
       </div>
+    </div>
+  </div>
+</div>
+
+
     </main>
   </div>
+<script src="BookVenue.js" defer></script>
+
 
 </body>
 </html>
