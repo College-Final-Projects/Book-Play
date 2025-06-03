@@ -33,6 +33,34 @@ async function initializeApp() {
         showMessage('Error loading data. Please refresh the page.', 'error');
     }
 }
+async function initMap() {
+  await google.maps.importLibrary("places");
+  const placeAutocomplete = new google.maps.places.PlaceAutocompleteElement();
+  const container = document.getElementById("autocompleteElement");
+  container.replaceWith(placeAutocomplete);
+
+  const selectedLatInput = document.getElementById("latitude");
+  const selectedLngInput = document.getElementById("longitude");
+
+  placeAutocomplete.addEventListener("gmp-select", async ({ placePrediction }) => {
+    const place = placePrediction.toPlace();
+    await place.fetchFields({ fields: ["displayName", "formattedAddress", "location"] });
+
+    const location = place.location;
+    const lat = location.lat;
+    const lng = location.lng;
+
+    if (lat && lng) {
+      const latLng = { lat, lng };
+
+      map.setCenter(latLng);
+      marker.position = latLng;
+
+      selectedLatInput.value = lat;
+      selectedLngInput.value = lng;
+    }
+  });
+}
 
 // Load sports data from server
 async function loadSports() {

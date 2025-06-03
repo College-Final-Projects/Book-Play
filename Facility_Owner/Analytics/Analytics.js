@@ -1,21 +1,22 @@
-// Global variables
+// 🌐 Global state variables
 let facilities = [];
 let currentSearch = '';
 let currentSort = 'name';
 let currentSport = 'all';
 let currentVenue = '';
-let currentMonth = 'January';
+let currentMonth = '';
 let venueAnalyticsData = {};
 
+// 📥 Load all venues from AnalyticsAPI
 function loadFacilities() {
-  fetch('fetch_venues.php?action=get_facilities')
+  fetch('AnalyticsAPI.php?action=fetch_venues')
     .then(response => response.json())
     .then(data => {
-      if (!Array.isArray(data)) {
-        console.error('Invalid data:', data);
+      if (!Array.isArray(data.venues)) {
+        console.error('Invalid data format:', data);
         return;
       }
-      facilities = data;
+      facilities = data.venues;
       applyFilters();
     })
     .catch(error => {
@@ -27,6 +28,7 @@ function loadFacilities() {
     });
 }
 
+// 🖼️ Display venue cards in the UI
 function displayVenues(data) {
   const grid = document.getElementById('venueCards');
   grid.innerHTML = '';
@@ -42,7 +44,7 @@ function displayVenues(data) {
     card.innerHTML = `
       <img src="${facility.image_url || 'default.jpg'}" class="venue-image" />
       <div class="venue-name">${facility.place_name}</div>
-      <div class="venue-sport"> ${facility.SportCategory}</div>
+      <div class="venue-sport">${facility.SportCategory}</div>
       <div class="venue-rating">📍 ${facility.location || 'Unknown location'}</div>
       <button class="view-button" onclick="openBookings('${facility.place_name}')">View Analytics</button>
     `;
@@ -50,6 +52,7 @@ function displayVenues(data) {
   });
 }
 
+// 🧠 Apply filters and sorting on venue data
 function applyFilters() {
   let result = facilities;
   if (currentSearch.trim()) {
@@ -66,9 +69,12 @@ function applyFilters() {
   displayVenues(result);
 }
 
+// 🚀 Initialize on page load
 window.onload = () => {
   loadFacilities();
   loadSports();
+
+  // 🔎 Handle user input and filters
   document.getElementById('searchInput').addEventListener('input', e => {
     currentSearch = e.target.value;
     applyFilters();
@@ -83,38 +89,43 @@ window.onload = () => {
   });
 };
 
+// 🎯 Load all sports categories from API
 function loadSports() {
-  fetch('fetch_sports.php')
+  fetch('AnalyticsAPI.php?action=fetch_sports')
     .then(response => response.json())
     .then(data => {
       const sportSelect = document.getElementById('sportSelect');
-      data.forEach(sport => {
+      data.sports.forEach(sport => {
         const option = document.createElement('option');
-        option.value = sport.toLowerCase();
-        option.textContent = sport;
+        option.value = sport.sport_name.toLowerCase();
+        option.textContent = sport.sport_name;
         sportSelect.appendChild(option);
       });
     })
     .catch(error => console.error('Error loading sports:', error));
 }
 
+// 📊 Open analytics view for a selected venue
 function openBookings(venueName) {
   const year = document.getElementById("yearSelect").value;
   currentVenue = venueName;
   currentMonth = 'January';
+
   document.getElementById("venueTitle").textContent = `Bookings for ${venueName}`;
   document.getElementById("bookingPage").style.display = "flex";
   document.getElementById("cardSection").style.display = "none";
+
   fetchMonthlyData(venueName, year);
 }
 
+// 📅 Fetch monthly analytics from API
 function fetchMonthlyData(venueName, year) {
-  const url = `fetch_monthly_analytics.php?venue=${encodeURIComponent(venueName)}&year=${year}`;
+  const url = `AnalyticsAPI.php?action=fetch_monthly_analytics&venue=${encodeURIComponent(venueName)}&year=${year}`;
   fetch(url)
     .then(res => res.json())
     .then(data => {
-      venueAnalyticsData = data;
-      populateMonthButtons(Object.keys(data));
+      venueAnalyticsData = data.data || {};
+      populateMonthButtons(Object.keys(venueAnalyticsData));
       showMonth("January");
     })
     .catch(err => {
@@ -122,6 +133,7 @@ function fetchMonthlyData(venueName, year) {
     });
 }
 
+// 📆 Show or hide month buttons depending on available data
 function populateMonthButtons(months) {
   document.querySelectorAll('.month-btn').forEach(btn => {
     if (btn.textContent !== 'All') {
@@ -130,6 +142,7 @@ function populateMonthButtons(months) {
   });
 }
 
+// 📈 Show table data for selected month
 function showMonth(month) {
   currentMonth = month;
   const tableBody = document.getElementById("dailyBookingTable");
@@ -190,16 +203,19 @@ function showMonth(month) {
     `;
   }
 
+  // Highlight selected month button
   document.querySelectorAll('.month-btn').forEach(btn => btn.classList.remove('active'));
   const activeBtn = Array.from(document.querySelectorAll('.month-btn')).find(b => b.textContent === month);
   if (activeBtn) activeBtn.classList.add('active');
 }
 
+// ⬅️ Back to venue cards view
 function goBack() {
   document.getElementById("bookingPage").style.display = "none";
   document.getElementById("cardSection").style.display = "block";
 }
 
+// 🧾 Export bookings data to PDF
 function downloadPDF() {
   const element = document.getElementById("pdfContent");
   const opt = {
@@ -212,4 +228,5 @@ function downloadPDF() {
   html2pdf().set(opt).from(element).save();
 }
 
+// Expose function to global scope
 window.openBookings = openBookings;

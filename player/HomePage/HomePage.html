@@ -15,7 +15,13 @@
    <div class="header-bar">
     <div class="logo-title">BOOK&PLAY</div>
   <div class="profile-container" onclick="toggleProfileMenu()">
-      <div class="profile-icon">P</div>
+      <span id="usernameDisplay" class="username-display"></span>
+        <img
+          id="userProfileImage"
+          class="profile-icon"
+          src="../../uploads/users/default.jpg"
+          alt="Profile Image"
+        />
       <div class="profile-menu" id="profileMenu">
         <a href="../../EditProfile/EditProfile.php">Edit Profile</a>
         <a href="../../Login_Page/Login.php">Logout</a>
@@ -66,8 +72,8 @@
   </footer>
 
   <script src="HomePage.js"></script>
-  <button class="floating-admin-btn" onclick="handleAdminRequest()">
-  Request Admin Access
-</button>
+  <button class="floating-admin-btn" id="adminRequestBtn">
+      Request Admin Access
+    </button>
 </body>
 </html>

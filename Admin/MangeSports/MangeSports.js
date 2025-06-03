@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-  loadAcceptedSports(); // تحميل الرياضات المقبولة
+  loadAcceptedSports(); // 🔹 Load accepted sports
 
-  // 🔹 تحميل الرياضات المقبولة
+  // 🔹 Load accepted sports
   function loadAcceptedSports() {
     fetch("MangeSportsController.php?action=get_accepted_sports")
       .then(res => res.json())
@@ -24,12 +24,12 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
-  // 🔹 عرض/إخفاء أقسام
+  // 🔹 Toggle section visibility
   window.toggleSection = function (id) {
     document.getElementById(id).classList.toggle("hidden");
   };
 
-  // 🔹 تحميل الرياضات المقترحة
+  // 🔹 Load suggested sports
   window.loadSuggestedSports = function () {
     fetch("MangeSportsController.php?action=get_suggested_sports")
       .then(res => res.json())
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   };
 
-  // 🔹 تنفيذ إجراء القبول/الرفض
+  // 🔹 Handle accept/reject action
   window.handleAction = function (action, reportId, sportName = null) {
     const bodyData = new URLSearchParams({ action, report_id: reportId });
     if (sportName) bodyData.append("sport_name", sportName);
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   };
 
-  // 🔹 إضافة رياضة جديدة
+  // 🔹 Add a new sport
   document.getElementById("addSportBtn").addEventListener("click", () => {
     const name = document.getElementById("newSportName").value.trim();
     if (!name) return alert("Please enter sport name");
@@ -99,15 +99,17 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("❌ Failed to add sport:", err);
       });
   });
+
+  // 🔹 Delete a sport
   window.deleteSport = function (sportId) {
     const button = document.querySelector(`button[data-sport-id="${sportId}"]`);
     const row = button.closest("tr");
-  
+
     if (!confirm("Are you sure you want to delete this sport?")) return;
-  
+
     button.disabled = true;
     button.textContent = "Deleting...";
-  
+
     fetch("MangeSportsController.php", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -116,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(res => res.json())
       .then(data => {
         showMessage(data.message, data.success);
-  
+
         if (data.success) {
           row.remove();
           setTimeout(() => {
@@ -134,16 +136,17 @@ document.addEventListener("DOMContentLoaded", function () {
         button.textContent = "Delete";
       });
   };
-  
+
+  // 🔹 Show success or error message
   function showMessage(message, isSuccess = true) {
     const msgBox = document.getElementById("sportMessage");
     msgBox.textContent = message;
     msgBox.className = "message-box " + (isSuccess ? "message-success" : "message-error");
     msgBox.style.display = "block";
-  
-    // إخفاء الرسالة بعد 4 ثواني تلقائيًا
+
+    // Hide message automatically after 4 seconds
     setTimeout(() => {
       msgBox.style.display = "none";
     }, 4000);
-  }  
+  }
 });

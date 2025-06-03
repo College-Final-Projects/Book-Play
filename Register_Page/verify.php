@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
     // 📷 Handle image upload
     $userImagePath = null; // Default to null
     if ($userImage && $userImage['tmp_name']) { // If file uploaded
-        $targetDir = "uploads/"; // Directory to store uploads
+        $targetDir = "../uploads/users/"; // Directory to store uploads
         if (!file_exists($targetDir)) {
             mkdir($targetDir, 0755, true); // Create directory if not exists
         }
@@ -101,6 +101,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
             $userImagePath = $filename; // Save file name for DB
         }
     }
+
+    // Check if username already exists
+$stmt = $conn->prepare("SELECT username FROM users WHERE username = ?");
+$stmt->bind_param("s", $_POST['username']);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "❌ Username already exists. Please choose another one."
+    ]);
+    exit;
+}
+
 
     // 💾 Insert user data into 'users' table
     $stmt = $conn->prepare("INSERT INTO users (username, email, first_name, last_name, password, description, age, gender, phone_number, user_image)
