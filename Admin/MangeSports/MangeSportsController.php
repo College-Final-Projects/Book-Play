@@ -2,12 +2,12 @@
 require_once '../../db.php';
 header('Content-Type: application/json');
 
-// تحديد نوع العملية المطلوبة
+// Determine requested action
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
 switch ($action) {
 
-    // 🟢 إضافة رياضة جديدة مباشرة (تم قبولها مسبقًا)
+    // 🟢 Add new sport directly (already accepted)
     case 'add_sport':
         $name = $_POST['name'] ?? '';
         if (!$name) {
@@ -26,7 +26,7 @@ switch ($action) {
         $stmt->close();
         break;
 
-    // ✅ قبول اقتراح رياضة وإضافتها لجدول الرياضات
+    // ✅ Accept suggested sport and add to sports table
     case 'accept':
         $report_id = intval($_POST['report_id'] ?? 0);
         $sport_name = trim($_POST['sport_name'] ?? '');
@@ -49,7 +49,7 @@ switch ($action) {
         echo json_encode(["success" => true, "message" => "✅ Sport accepted and added successfully."]);
         break;
 
-    // ❌ رفض اقتراح رياضة (يُحذف التقرير فقط)
+    // ❌ Reject suggested sport (only delete report)
     case 'reject':
         $report_id = intval($_POST['report_id'] ?? 0);
         $deleteReport = $conn->prepare("DELETE FROM reports WHERE report_id = ?");
@@ -60,7 +60,7 @@ switch ($action) {
         echo json_encode(["success" => true, "message" => "🗑️ Sport suggestion rejected and removed."]);
         break;
 
-    // 📋 جلب الرياضات المقبولة
+    // 📋 Fetch accepted sports
     case 'get_accepted_sports':
         $sports = [];
         $sql = "SELECT * FROM sports WHERE is_Accepted = 1";
@@ -75,7 +75,7 @@ switch ($action) {
         echo json_encode($sports);
         break;
 
-    // 📥 جلب تقارير اقتراحات الرياضات
+    // 📥 Fetch sport suggestion reports
     case 'get_suggested_sports':
         $reports = [];
         $sql = "SELECT * FROM reports WHERE type = 'suggest_sport' ORDER BY created_at DESC";
@@ -89,25 +89,26 @@ switch ($action) {
 
         echo json_encode($reports);
         break;
-        case 'delete_sport':
-            $sport_id = intval($_POST['sport_id'] ?? 0);
-            if ($sport_id <= 0) {
-                echo json_encode(["success" => false, "message" => "❌ Invalid sport ID."]);
-                exit;
-            }
-        
-            $stmt = $conn->prepare("DELETE FROM sports WHERE sport_id = ?");
-            $stmt->bind_param("i", $sport_id);
-            if ($stmt->execute()) {
-                echo json_encode(["success" => true, "message" => "🗑️ Sport deleted successfully."]);
-            } else {
-                echo json_encode(["success" => false, "message" => "❌ Failed to delete sport."]);
-            }
-            $stmt->close();
-            break;
-        
 
-    // ⛔ إذا لم يتم التعرف على العملية
+    // 🗑️ Delete a sport
+    case 'delete_sport':
+        $sport_id = intval($_POST['sport_id'] ?? 0);
+        if ($sport_id <= 0) {
+            echo json_encode(["success" => false, "message" => "❌ Invalid sport ID."]);
+            exit;
+        }
+
+        $stmt = $conn->prepare("DELETE FROM sports WHERE sport_id = ?");
+        $stmt->bind_param("i", $sport_id);
+        if ($stmt->execute()) {
+            echo json_encode(["success" => true, "message" => "🗑️ Sport deleted successfully."]);
+        } else {
+            echo json_encode(["success" => false, "message" => "❌ Failed to delete sport."]);
+        }
+        $stmt->close();
+        break;
+
+    // ⛔ Unrecognized or missing action
     default:
         echo json_encode(["success" => false, "message" => "⛔ Invalid or missing action."]);
         break;

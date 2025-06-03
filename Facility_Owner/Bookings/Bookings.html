@@ -155,14 +155,11 @@
           <label>Players:</label>
           <input type="number" name="players" min="1" max="20" required />
 
-          <label>Time Range:</label>
-          <input
-            type="text"
-            name="time"
-            placeholder="e.g. 09:00 - 11:00"
-            required
-          />
+          <label>Start Time:</label>
+<input type="time" name="start_time" step="1800" required />
 
+<label>End Time:</label>
+<input type="time" name="end_time" step="1800" required />
           <!-- ✅ رسالة الخطأ أو النجاح ستظهر هنا -->
           <div id="bookingMessage" class="form-message"></div>
 

@@ -1,65 +1,31 @@
-/**
- * Venue Management System
- * Clean and organized JavaScript code
- */
+// Global variables
+let venuesData = [];
+let sportsData = [];
+let map;
+let marker;
+let geocoder;
+let currentEditingId = null;
 
-// ========================
-// GLOBAL STATE
-// ========================
-const AppState = {
-    venues: [],
-    sports: [],
-    map: null,
-    marker: null,
-    geocoder: null,
-    currentEditingId: null
-};
+// DOM elements
+const venueGrid = document.getElementById('venueGrid');
+const venueModal = document.getElementById('venueModal');
+const addVenueBtn = document.querySelector('.add-venue-btn');
+const closeModalBtn = document.getElementById('closeModal');
+const cancelBtn = document.querySelector('.cancel-btn');
+const searchInput = document.getElementById('searchInput');
+const sortSelect = document.getElementById('sortSelect');
+const sortBySportSelect = document.getElementById('sortbysport');
+const modalTitle = document.getElementById('modalTitle');
+const venueForm = document.querySelector('form');
+const imageInput = document.getElementById('venueImages');
+const imagePreview = document.getElementById('imagePreview');
 
-// ========================
-// DOM REFERENCES
-// ========================
-const Elements = {
-    venueGrid: document.getElementById('venueGrid'),
-    venueModal: document.getElementById('venueModal'),
-    addVenueBtn: document.querySelector('.add-venue-btn'),
-    closeModalBtn: document.getElementById('closeModal'),
-    cancelBtn: document.querySelector('.cancel-btn'),
-    searchInput: document.getElementById('searchInput'),
-    sortSelect: document.getElementById('sortSelect'),
-    sortBySportSelect: document.getElementById('sortbysport'),
-    modalTitle: document.getElementById('modalTitle'),
-    venueForm: document.querySelector('form'),
-    imageInput: document.getElementById('venueImages'),
-    imagePreview: document.getElementById('imagePreview')
-};
-
-// ========================
-// CONSTANTS
-// ========================
-const CONFIG = {
-    DEFAULT_LOCATION: { lat: 32.0853, lng: 34.7818 },
-    MAX_IMAGES: 3,
-    MESSAGE_TIMEOUT: 5000,
-    MAP_CONFIG: {
-        zoom: 13,
-        mapId: 'bec4fd1eef54f71c3e99df68',
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false
-    }
-};
-
-// ========================
-// INITIALIZATION
-// ========================
 async function initializeApp() {
     window.initializeApp = initializeApp;
-    
     try {
         await loadSports();
         await loadVenues();
         initializeMap();
-        await initMap(); // Initialize the new Place Autocomplete
         setupEventListeners();
         populateSportsFilter();
     } catch (error) {
@@ -67,16 +33,42 @@ async function initializeApp() {
         showMessage('Error loading data. Please refresh the page.', 'error');
     }
 }
+async function initMap() {
+  await google.maps.importLibrary("places");
+  const placeAutocomplete = new google.maps.places.PlaceAutocompleteElement();
+  const container = document.getElementById("autocompleteElement");
+  container.replaceWith(placeAutocomplete);
 
-// ========================
-// DATA LOADING
-// ========================
+  const selectedLatInput = document.getElementById("latitude");
+  const selectedLngInput = document.getElementById("longitude");
+
+  placeAutocomplete.addEventListener("gmp-select", async ({ placePrediction }) => {
+    const place = placePrediction.toPlace();
+    await place.fetchFields({ fields: ["displayName", "formattedAddress", "location"] });
+
+    const location = place.location;
+    const lat = location.lat;
+    const lng = location.lng;
+
+    if (lat && lng) {
+      const latLng = { lat, lng };
+
+      map.setCenter(latLng);
+      marker.position = latLng;
+
+      selectedLatInput.value = lat;
+      selectedLngInput.value = lng;
+    }
+  });
+}
+
+// Load sports data from server
 async function loadSports() {
     try {
         const response = await fetch('fetch_venues.php?action=get_sports');
         if (!response.ok) throw new Error('Failed to fetch sports');
         
-        AppState.sports = await response.json();
+        sportsData = await response.json();
         populateSportsDropdown();
     } catch (error) {
         console.error('Error loading sports:', error);
@@ -84,220 +76,26 @@ async function loadSports() {
     }
 }
 
+// Load venues data from server
 async function loadVenues() {
     try {
         const response = await fetch('fetch_venues.php?action=get_facilities');
         if (!response.ok) throw new Error('Failed to fetch venues');
         
-        AppState.venues = await response.json();
-        displayVenues(AppState.venues);
+        venuesData = await response.json();
+        displayVenues(venuesData);
     } catch (error) {
         console.error('Error loading venues:', error);
         showMessage('Error loading venues data', 'error');
     }
 }
 
-// ========================
-// MAP FUNCTIONALITY
-// ========================
-function initializeMap() {
-    AppState.map = new google.maps.Map(document.getElementById('map'), {
-        ...CONFIG.MAP_CONFIG,
-        center: CONFIG.DEFAULT_LOCATION
-    });
-
-    AppState.marker = new google.maps.marker.AdvancedMarkerElement({
-        position: CONFIG.DEFAULT_LOCATION,
-        map: AppState.map,
-        title: 'Venue Location'
-    });
-
-    AppState.geocoder = new google.maps.Geocoder();
-    setupLocationAutocomplete();
-    setupMapClickHandler();
-}
-
-async function initMap() {
-    // Request needed libraries
-    await google.maps.importLibrary("places");
-    
-    // Create the Place Autocomplete element
-    const placeAutocomplete = new google.maps.places.PlaceAutocompleteElement();
-    
-    // Check if there's a specific container, otherwise append to modal or create one
-    const container = document.getElementById("autocompleteElement") || 
-                     document.getElementById("placeAutocompleteContainer");
-    
-    if (container) {
-        container.replaceWith(placeAutocomplete);
-    } else {
-        // Create a container in the modal form if it doesn't exist
-        const modalForm = document.querySelector('#venueModal form');
-        if (modalForm) {
-            const autocompleteContainer = document.createElement('div');
-            autocompleteContainer.id = 'placeAutocompleteContainer';
-            autocompleteContainer.style.marginBottom = '15px';
-            
-            const label = document.createElement('label');
-            label.textContent = 'Search Location:';
-            label.style.display = 'block';
-            label.style.marginBottom = '5px';
-            label.style.fontWeight = 'bold';
-            
-            autocompleteContainer.appendChild(label);
-            autocompleteContainer.appendChild(placeAutocomplete);
-            
-            // Insert before the existing location input
-            const locationInput = document.getElementById('locationInput');
-            if (locationInput && locationInput.parentNode) {
-                locationInput.parentNode.insertBefore(autocompleteContainer, locationInput.parentNode);
-            } else {
-                modalForm.insertBefore(autocompleteContainer, modalForm.firstChild);
-            }
-        } else {
-            // Fallback: append to body
-            document.body.appendChild(placeAutocomplete);
-        }
-    }
-
-    // Get coordinate input fields
-    const selectedLatInput = document.getElementById("latitude");
-    const selectedLngInput = document.getElementById("longitude");
-    const locationInput = document.getElementById("locationInput");
-
-    // Create info display elements (optional - for debugging)
-    const selectedPlaceTitle = document.createElement('p');
-    selectedPlaceTitle.id = 'selectedPlaceTitle';
-    selectedPlaceTitle.textContent = '';
-    selectedPlaceTitle.style.display = 'none'; // Hidden by default
-    
-    const selectedPlaceInfo = document.createElement('pre');
-    selectedPlaceInfo.id = 'selectedPlaceInfo';
-    selectedPlaceInfo.textContent = '';
-    selectedPlaceInfo.style.display = 'none'; // Hidden by default
-    selectedPlaceInfo.style.fontSize = '12px';
-    selectedPlaceInfo.style.backgroundColor = '#f5f5f5';
-    selectedPlaceInfo.style.padding = '10px';
-    selectedPlaceInfo.style.borderRadius = '5px';
-    selectedPlaceInfo.style.maxHeight = '200px';
-    selectedPlaceInfo.style.overflow = 'auto';
-
-    // Append info elements to modal or body
-    const modalContent = document.querySelector('#venueModal .modal-content');
-    if (modalContent) {
-        modalContent.appendChild(selectedPlaceTitle);
-        modalContent.appendChild(selectedPlaceInfo);
-    } else {
-        document.body.appendChild(selectedPlaceTitle);
-        document.body.appendChild(selectedPlaceInfo);
-    }
-
-    // Add the place select listener
-    placeAutocomplete.addEventListener('gmp-select', async ({ placePrediction }) => {
-        try {
-            const place = placePrediction.toPlace();
-            await place.fetchFields({ 
-                fields: ['displayName', 'formattedAddress', 'location'] 
-            });
-
-            // Update coordinate inputs
-            const location = place.location;
-            if (location?.lat && location?.lng) {
-                const lat = location.lat;
-                const lng = location.lng;
-                
-                // Update hidden coordinate fields
-                if (selectedLatInput) selectedLatInput.value = lat;
-                if (selectedLngInput) selectedLngInput.value = lng;
-                
-                // Update location input field
-                if (locationInput) {
-                    locationInput.value = place.formattedAddress || place.displayName;
-                }
-                
-                // Update map if it exists
-                if (AppState.map && AppState.marker) {
-                    const latLng = { lat, lng };
-                    AppState.map.setCenter(latLng);
-                    AppState.marker.position = latLng;
-                }
-                
-                // Show selected place info (for debugging - can be removed)
-                selectedPlaceTitle.textContent = 'Selected Place:';
-                selectedPlaceTitle.style.display = 'block';
-                selectedPlaceInfo.textContent = JSON.stringify(
-                    place.toJSON(), 
-                    null, 
-                    2
-                );
-                selectedPlaceInfo.style.display = 'block';
-                
-                // Hide info after 3 seconds (optional)
-                setTimeout(() => {
-                    selectedPlaceTitle.style.display = 'none';
-                    selectedPlaceInfo.style.display = 'none';
-                }, 3000);
-            }
-            
-            showMessage('Location selected successfully!', 'success');
-        } catch (error) {
-            console.error('Error selecting place:', error);
-            showMessage('Error selecting location. Please try again.', 'error');
-        }
-    });
-}
-
-function setupLocationAutocomplete() {
-    const locationInput = document.getElementById('locationInput');
-    const autocomplete = new google.maps.places.Autocomplete(locationInput);
-    autocomplete.bindTo('bounds', AppState.map);
-
-    autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
-        
-        if (!place.geometry?.location) {
-            alert("Please select a location from the dropdown suggestions.");
-            locationInput.value = '';
-            return;
-        }
-
-        const location = place.geometry.location;
-        AppState.map.setCenter(location);
-        AppState.marker.position = location;
-        updateCoordinates(location.lat(), location.lng());
-    });
-}
-
-function setupMapClickHandler() {
-    AppState.map.addListener('click', (event) => {
-        updateMarkerPosition(event.latLng);
-    });
-}
-
-function updateMarkerPosition(latLng) {
-    AppState.marker.position = latLng;
-    updateCoordinates(latLng.lat(), latLng.lng());
-    
-    AppState.geocoder.geocode({ location: latLng }, (results, status) => {
-        if (status === 'OK' && results[0]) {
-            document.getElementById('locationInput').value = results[0].formatted_address;
-        }
-    });
-}
-
-function updateCoordinates(lat, lng) {
-    document.getElementById('latitude').value = lat;
-    document.getElementById('longitude').value = lng;
-}
-
-// ========================
-// UI POPULATION
-// ========================
+// Populate sports dropdown in modal
 function populateSportsDropdown() {
     const sportSelect = document.getElementById('sportType');
     sportSelect.innerHTML = '<option value="">Select Sport Type</option>';
     
-    AppState.sports.forEach(sport => {
+    sportsData.forEach(sport => {
         const option = document.createElement('option');
         option.value = sport.sport_name;
         option.textContent = sport.sport_name;
@@ -305,23 +103,112 @@ function populateSportsDropdown() {
     });
 }
 
+// Populate sports filter dropdown
 function populateSportsFilter() {
-    Elements.sortBySportSelect.innerHTML = '<option value="">All Sports</option>';
+    sortBySportSelect.innerHTML = '<option value="">All Sports</option>';
     
-    AppState.sports.forEach(sport => {
+    sportsData.forEach(sport => {
         const option = document.createElement('option');
         option.value = sport.sport_name;
         option.textContent = sport.sport_name;
-        Elements.sortBySportSelect.appendChild(option);
+        sortBySportSelect.appendChild(option);
     });
 }
 
-// ========================
-// VENUE DISPLAY
-// ========================
+// Initialize Google Maps
+function initializeMap() {
+    const defaultLocation = { lat: 32.0853, lng: 34.7818 };
+
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 13,
+        center: defaultLocation,
+        mapId: 'bec4fd1eef54f71c3e99df68',
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false
+    });
+
+    marker = new google.maps.marker.AdvancedMarkerElement({
+        position: defaultLocation,
+        map: map,
+        title: 'Venue Location'
+    });
+
+    geocoder = new google.maps.Geocoder();
+
+    const locationInput = document.getElementById('locationInput');
+    const autocomplete = new google.maps.places.Autocomplete(locationInput);
+    autocomplete.bindTo('bounds', map);
+
+    autocomplete.addListener('place_changed', function () {
+    const place = autocomplete.getPlace();
+    
+    // ✅ حماية ضد إدخال يدوي بدون اختيار اقتراح
+    if (!place.geometry || !place.geometry.location) {
+        alert("❌ من فضلك اختر الموقع من القائمة التي تظهر، لا تكتب العنوان يدويًا فقط.");
+        document.getElementById('locationInput').value = '';
+        return;
+    }
+
+    const location = place.geometry.location;
+    map.setCenter(location);
+    marker.position = location;
+    updateCoordinates(location.lat(), location.lng());
+});
+
+
+    map.addListener('click', function(event) {
+        updateMarkerPosition(event.latLng);
+    });
+}
+
+// Update marker position and coordinates
+function updateMarkerPosition(latLng) {
+    marker.position = latLng;
+    updateCoordinates(latLng.lat(), latLng.lng());
+    geocoder.geocode({ location: latLng }, function(results, status) {
+        if (status === 'OK' && results[0]) {
+            document.getElementById('locationInput').value = results[0].formatted_address;
+        }
+    });
+}
+
+// Update hidden coordinate fields
+function updateCoordinates(lat, lng) {
+    document.getElementById('latitude').value = lat;
+    document.getElementById('longitude').value = lng;
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    // Modal controls
+    addVenueBtn.addEventListener('click', () => openModal());
+    closeModalBtn.addEventListener('click', () => closeModal());
+    cancelBtn.addEventListener('click', () => closeModal());
+    
+    // Click outside modal to close
+    venueModal.addEventListener('click', function(e) {
+        if (e.target === venueModal) {
+            closeModal();
+        }
+    });
+    
+    // Form submission
+    venueForm.addEventListener('submit', handleFormSubmit);
+    
+    // Search and filter
+    searchInput.addEventListener('input', handleSearch);
+    sortSelect.addEventListener('change', handleSort);
+    sortBySportSelect.addEventListener('change', handleSportFilter);
+    
+    // Image preview
+    imageInput.addEventListener('change', handleImagePreview);
+}
+
+// Display venues in grid
 function displayVenues(venues) {
     if (venues.length === 0) {
-        Elements.venueGrid.innerHTML = `
+        venueGrid.innerHTML = `
             <div class="no-venues-message">
                 <p>No venues found. Click "Add New Venue" to get started!</p>
             </div>
@@ -329,9 +216,13 @@ function displayVenues(venues) {
         return;
     }
     
-    Elements.venueGrid.innerHTML = venues.map(createVenueCard).join('');
+    venueGrid.innerHTML = venues.map(venue => createVenueCard(venue)).join('');
+    
+    // Add event listeners to toggle switches and action buttons
+    setupVenueCardEventListeners();
 }
 
+// Create venue card HTML
 function createVenueCard(venue) {
     const images = venue.image_url ? venue.image_url.split(',') : [];
     const firstImage = images.length > 0 ? images[0] : 'placeholder.jpg';
@@ -340,8 +231,7 @@ function createVenueCard(venue) {
     return `
         <div class="venue-card" data-venue-id="${venue.facilities_id}">
             <div class="venue-image">
-                <img src="${firstImage}" alt="${venue.place_name}" 
-                     onerror="this.src='../../assets/placeholder.jpg'">
+                <img src="${firstImage}" alt="${venue.place_name}" onerror="this.src='../../assets/placeholder.jpg'">
             </div>
             <div class="venue-details">
                 <div class="venue-name">
@@ -357,9 +247,7 @@ function createVenueCard(venue) {
                 </div>
                 <div class="venue-actions">
                     <div class="action-buttons">
-                        <button class="action-btn edit" onclick="editVenue(${venue.facilities_id})">
-                            ✏️ Edit
-                        </button>
+                        <button class="action-btn edit" onclick="editVenue(${venue.facilities_id})">✏️ Edit</button>
                     </div>
                     <label class="toggle-switch">
                         <input type="checkbox" ${isAvailable ? 'checked' : ''} 
@@ -372,106 +260,92 @@ function createVenueCard(venue) {
     `;
 }
 
-// ========================
-// MODAL MANAGEMENT
-// ========================
+// Setup event listeners for venue cards
+function setupVenueCardEventListeners() {
+    // Event listeners are handled inline in the HTML for simplicity
+    // This function can be expanded if needed for more complex event handling
+}
+
+// Open modal for adding/editing venue
 function openModal(venue = null) {
-    AppState.currentEditingId = venue?.facilities_id || null;
-    Elements.modalTitle.textContent = venue ? 'Edit Venue' : 'Add New Venue';
+    currentEditingId = venue ? venue.facilities_id : null;
+    modalTitle.textContent = venue ? 'Edit Venue' : 'Add New Venue';
     
-    resetForm();
+    // Reset form
+    venueForm.reset();
+    imagePreview.innerHTML = '';
     
     if (venue) {
-        populateFormWithVenue(venue);
+        // Populate form with venue data
+        document.getElementById('facilityId').value = venue.facilities_id;
+        document.getElementById('placeName').value = venue.place_name;
+        document.getElementById('sportType').value = venue.SportCategory;
+        document.getElementById('description').value = venue.description || '';
+        document.getElementById('price').value = venue.price;
+        document.getElementById('locationInput').value = venue.location;
+        document.getElementById('isAvailable').checked = venue.is_available == 1;
+        
+        // Set coordinates if available
+        if (venue.latitude && venue.longitude) {
+            const lat = parseFloat(venue.latitude);
+            const lng = parseFloat(venue.longitude);
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+            
+            // Update map
+            const location = new google.maps.LatLng(lat, lng);
+            map.setCenter(location);
+            marker.position = location;
+        }
+        
+        // Show existing images
+        if (venue.image_url) {
+            const images = venue.image_url.split(',');
+            images.forEach(imageUrl => {
+                if (imageUrl.trim()) {
+                    const img = document.createElement('img');
+                    img.src = imageUrl.trim();
+                    img.style.width = '100px';
+                    img.style.height = '100px';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '10px';
+                    imagePreview.appendChild(img);
+                }
+            });
+        }
     } else {
-        resetMapToDefault();
+        // Reset for new venue
+        document.getElementById('facilityId').value = '';
+        // Reset map to default location for new venue
+        const defaultLocation = { lat: 32.0853, lng: 34.7818 };
+        map.setCenter(defaultLocation);
+        marker.position = defaultLocation;
+        updateCoordinates(defaultLocation.lat, defaultLocation.lng);
     }
     
-    Elements.venueModal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    venueModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
 }
 
+// Close modal
 function closeModal() {
-    Elements.venueModal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-    AppState.currentEditingId = null;
+    venueModal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restore scrolling
+    currentEditingId = null;
 }
 
-function resetForm() {
-    Elements.venueForm.reset();
-    Elements.imagePreview.innerHTML = '';
-}
-
-function populateFormWithVenue(venue) {
-    const fields = {
-        'facilityId': venue.facilities_id,
-        'placeName': venue.place_name,
-        'sportType': venue.SportCategory,
-        'description': venue.description || '',
-        'price': venue.price,
-        'locationInput': venue.location,
-        'isAvailable': venue.is_available == 1
-    };
-    
-    Object.entries(fields).forEach(([id, value]) => {
-        const element = document.getElementById(id);
-        if (element) {
-            if (element.type === 'checkbox') {
-                element.checked = value;
-            } else {
-                element.value = value;
-            }
-        }
-    });
-    
-    updateMapForVenue(venue);
-    displayExistingImages(venue.image_url);
-}
-
-function updateMapForVenue(venue) {
-    if (venue.latitude && venue.longitude) {
-        const lat = parseFloat(venue.latitude);
-        const lng = parseFloat(venue.longitude);
-        
-        document.getElementById('latitude').value = lat;
-        document.getElementById('longitude').value = lng;
-        
-        const location = new google.maps.LatLng(lat, lng);
-        AppState.map.setCenter(location);
-        AppState.marker.position = location;
-    }
-}
-
-function displayExistingImages(imageUrl) {
-    if (!imageUrl) return;
-    
-    const images = imageUrl.split(',');
-    images.forEach(url => {
-        if (url.trim()) {
-            createImagePreview(url.trim());
-        }
-    });
-}
-
-function resetMapToDefault() {
-    document.getElementById('facilityId').value = '';
-    AppState.map.setCenter(CONFIG.DEFAULT_LOCATION);
-    AppState.marker.position = CONFIG.DEFAULT_LOCATION;
-    updateCoordinates(CONFIG.DEFAULT_LOCATION.lat, CONFIG.DEFAULT_LOCATION.lng);
-}
-
-// ========================
-// FORM HANDLING
-// ========================
+// Handle form submission
 async function handleFormSubmit(e) {
     e.preventDefault();
     
-    const formData = new FormData(Elements.venueForm);
-    const action = AppState.currentEditingId ? 'update_facility' : 'add_facility';
+    const formData = new FormData(venueForm);
     
-    formData.append('action', action);
-    if (AppState.currentEditingId) {
-        formData.append('facility_id', AppState.currentEditingId);
+    // Determine if we're editing or adding
+    if (currentEditingId) {
+        formData.append('action', 'update_facility');
+        formData.append('facility_id', currentEditingId);
+    } else {
+        formData.append('action', 'add_facility');
     }
     
     try {
@@ -480,14 +354,16 @@ async function handleFormSubmit(e) {
             body: formData
         });
         
-        if (!response.ok) throw new Error('Network response was not ok');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
         
         const result = await response.json();
         
         if (result.success) {
             showMessage(result.message, 'success');
             closeModal();
-            await loadVenues();
+            await loadVenues(); // Reload venues
         } else {
             showMessage(result.message, 'error');
         }
@@ -497,46 +373,63 @@ async function handleFormSubmit(e) {
     }
 }
 
+// Handle image preview
 function handleImagePreview(e) {
-    const files = Array.from(e.target.files).slice(0, CONFIG.MAX_IMAGES);
-    Elements.imagePreview.innerHTML = '';
+    const files = Array.from(e.target.files);
+    imagePreview.innerHTML = '';
     
-    files.forEach(file => {
+    // Limit to 3 images
+    const limitedFiles = files.slice(0, 3);
+    
+    limitedFiles.forEach(file => {
         if (file.type.startsWith('image/')) {
             const reader = new FileReader();
-            reader.onload = (e) => createImagePreview(e.target.result);
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '100px';
+                img.style.height = '100px';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '10px';
+                img.style.border = '1px solid #ddd';
+                imagePreview.appendChild(img);
+            };
             reader.readAsDataURL(file);
         }
     });
     
-    if (e.target.files.length > CONFIG.MAX_IMAGES) {
-        showMessage(`Only the first ${CONFIG.MAX_IMAGES} images will be uploaded.`, 'warning');
+    if (files.length > 3) {
+        showMessage('Only the first 3 images will be uploaded.', 'warning');
     }
 }
 
-function createImagePreview(src) {
-    const img = document.createElement('img');
-    Object.assign(img.style, {
-        width: '100px',
-        height: '100px',
-        objectFit: 'cover',
-        borderRadius: '10px',
-        border: '1px solid #ddd'
-    });
-    img.src = src;
-    Elements.imagePreview.appendChild(img);
-}
-
-// ========================
-// VENUE ACTIONS
-// ========================
+// Edit venue function
 async function editVenue(venueId) {
-    const venue = AppState.venues.find(v => v.facilities_id == venueId);
+    const venue = venuesData.find(v => v.facilities_id == venueId);
     if (venue) {
         openModal(venue);
     }
 }
 
+// Delete venue function
+async function deleteVenue(venueId) {
+    if (!confirm('Are you sure you want to delete this venue? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        // Note: You'll need to implement delete functionality in your PHP
+        // For now, we'll just remove it from the display
+        venuesData = venuesData.filter(v => v.facilities_id != venueId);
+        displayVenues(venuesData);
+        showMessage('Venue deleted successfully', 'success');
+    } catch (error) {
+        console.error('Error deleting venue:', error);
+        showMessage('Error deleting venue', 'error');
+    }
+}
+
+// Toggle venue availability
 async function toggleAvailability(venueId, isAvailable) {
     try {
         const formData = new FormData();
@@ -552,69 +445,90 @@ async function toggleAvailability(venueId, isAvailable) {
         const result = await response.json();
         
         if (result.success) {
-            updateLocalVenueData(venueId, isAvailable);
-            updateVenueCardStatus(venueId, isAvailable);
+            // Update local data without reloading
+            const venue = venuesData.find(v => v.facilities_id == venueId);
+            if (venue) {
+                venue.is_available = isAvailable ? 1 : 0;
+                
+                // Update only the specific venue card's status display
+                updateVenueCardStatus(venueId, isAvailable);
+            }
             showMessage(result.message, 'success');
         } else {
             showMessage(result.message, 'error');
-            revertToggle(venueId, !isAvailable);
+            // Revert the toggle
+            const checkbox = document.querySelector(`input[onchange*="${venueId}"]`);
+            if (checkbox) {
+                checkbox.checked = !isAvailable;
+            }
         }
     } catch (error) {
         console.error('Error updating availability:', error);
         showMessage('Error updating availability', 'error');
-        revertToggle(venueId, !isAvailable);
+        // Revert the toggle
+        const checkbox = document.querySelector(`input[onchange*="${venueId}"]`);
+        if (checkbox) {
+            checkbox.checked = !isAvailable;
+        }
     }
 }
 
-function updateLocalVenueData(venueId, isAvailable) {
-    const venue = AppState.venues.find(v => v.facilities_id == venueId);
-    if (venue) {
-        venue.is_available = isAvailable ? 1 : 0;
-    }
-}
-
+// Update specific venue card status without reloading all cards
 function updateVenueCardStatus(venueId, isAvailable) {
-    const statusElement = document.querySelector(`[data-venue-id="${venueId}"] .venue-status`);
-    if (statusElement) {
-        statusElement.textContent = isAvailable ? 'Available' : 'Unavailable';
-        statusElement.className = `venue-status ${isAvailable ? 'status-available' : 'status-unavailable'}`;
+    const venueCard = document.querySelector(`[data-venue-id="${venueId}"]`);
+    if (venueCard) {
+        const statusElement = venueCard.querySelector('.venue-status');
+        if (statusElement) {
+            // Update status text and class
+            statusElement.textContent = isAvailable ? 'Available' : 'Unavailable';
+            statusElement.className = `venue-status ${isAvailable ? 'status-available' : 'status-unavailable'}`;
+        }
     }
 }
 
-function revertToggle(venueId, originalState) {
-    const checkbox = document.querySelector(`input[onchange*="${venueId}"]`);
-    if (checkbox) {
-        checkbox.checked = originalState;
-    }
+// Handle search
+function handleSearch() {
+    displayVenues(getFilteredVenues());
 }
 
-// ========================
-// FILTERING & SEARCHING
-// ========================
+// Handle sorting
+function handleSort() {
+    displayVenues(getFilteredVenues());
+}
+
+// Handle sport filter
+function handleSportFilter() {
+    displayVenues(getFilteredVenues());
+}
+
+// Get filtered and sorted venues
 function getFilteredVenues() {
-    let filtered = [...AppState.venues];
-    
-    // Apply search filter
-    const searchTerm = Elements.searchInput.value.trim().toLowerCase();
-    if (searchTerm) {
-        filtered = filtered.filter(venue =>
+    let filteredVenues = [...venuesData];
+
+    // Apply search filter (startsWith only for place_name)
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    if (searchTerm !== '') {
+        filteredVenues = filteredVenues.filter(venue =>
             venue.place_name.toLowerCase().startsWith(searchTerm)
         );
     }
-    
+
     // Apply sport filter
-    const selectedSport = Elements.sortBySportSelect.value;
+    const selectedSport = sortBySportSelect.value;
     if (selectedSport) {
-        filtered = filtered.filter(venue =>
+        filteredVenues = filteredVenues.filter(venue =>
             venue.SportCategory === selectedSport
         );
     }
-    
-    return applySorting(filtered);
+
+    return applyFiltersAndSort(filteredVenues);
 }
 
-function applySorting(venues) {
-    const sortBy = Elements.sortSelect.value;
+
+
+// Apply filters and sorting
+function applyFiltersAndSort(venues) {
+    const sortBy = sortSelect.value;
     
     return venues.sort((a, b) => {
         switch (sortBy) {
@@ -632,83 +546,63 @@ function applySorting(venues) {
     });
 }
 
-function handleSearch() {
-    displayVenues(getFilteredVenues());
-}
-
-function handleSort() {
-    displayVenues(getFilteredVenues());
-}
-
-function handleSportFilter() {
-    displayVenues(getFilteredVenues());
-}
-
-// ========================
-// EVENT LISTENERS
-// ========================
-function setupEventListeners() {
-    // Modal controls
-    Elements.addVenueBtn.addEventListener('click', () => openModal());
-    Elements.closeModalBtn.addEventListener('click', closeModal);
-    Elements.cancelBtn.addEventListener('click', closeModal);
-    
-    // Close modal on backdrop click
-    Elements.venueModal.addEventListener('click', (e) => {
-        if (e.target === Elements.venueModal) closeModal();
-    });
-    
-    // Form submission
-    Elements.venueForm.addEventListener('submit', handleFormSubmit);
-    
-    // Search and filter
-    Elements.searchInput.addEventListener('input', handleSearch);
-    Elements.sortSelect.addEventListener('change', handleSort);
-    Elements.sortBySportSelect.addEventListener('change', handleSportFilter);
-    
-    // Image preview
-    Elements.imageInput.addEventListener('change', handleImagePreview);
-}
-
-// ========================
-// UTILITY FUNCTIONS
-// ========================
+// Show message to user
 function showMessage(message, type = 'info') {
-    // Remove existing message
-    const existing = document.querySelector('.message');
-    if (existing) existing.remove();
+    // Remove existing messages
+    const existingMessage = document.querySelector('.message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
     
     // Create new message
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}`;
     messageDiv.textContent = message;
     
-    // Apply styling
-    const styles = {
-        success: { borderLeftColor: '#22c55e', backgroundColor: '#f0f9ff' },
-        error: { borderLeftColor: '#ef4444', backgroundColor: '#fef2f2' },
-        warning: { borderLeftColor: '#f59e0b', backgroundColor: '#fffbeb' },
-        info: { borderLeftColor: '#1e90ff', backgroundColor: '#f8f9fa' }
-    };
+    // Style based on type
+    switch (type) {
+        case 'success':
+            messageDiv.style.borderLeftColor = '#22c55e';
+            messageDiv.style.backgroundColor = '#f0f9ff';
+            break;
+        case 'error':
+            messageDiv.style.borderLeftColor = '#ef4444';
+            messageDiv.style.backgroundColor = '#fef2f2';
+            break;
+        case 'warning':
+            messageDiv.style.borderLeftColor = '#f59e0b';
+            messageDiv.style.backgroundColor = '#fffbeb';
+            break;
+        default:
+            messageDiv.style.borderLeftColor = '#1e90ff';
+            messageDiv.style.backgroundColor = '#f8f9fa';
+    }
     
-    Object.assign(messageDiv.style, styles[type] || styles.info);
-    
-    // Insert message
+    // Insert at the top of the container
     const container = document.querySelector('.container');
     container.insertBefore(messageDiv, container.firstChild);
     
-    // Auto-remove
-    setTimeout(() => messageDiv.remove(), CONFIG.MESSAGE_TIMEOUT);
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (messageDiv.parentNode) {
+            messageDiv.remove();
+        }
+    }, 5000);
 }
 
-// ========================
-// INITIALIZATION
-// ========================
-document.addEventListener('DOMContentLoaded', () => {
-    // Any additional UI enhancements can go here
-});
+// Utility function to handle errors
+function handleError(error, context = '') {
+    console.error(`Error ${context}:`, error);
+    showMessage(`An error occurred ${context}. Please try again.`, 'error');
+}
 
-// Expose global functions for Google Maps and inline event handlers
-window.initMap = initMap;
-window.editVenue = editVenue;
-window.toggleAvailability = toggleAvailability;
+// Initialize tooltips or other UI enhancements
+function initializeUIEnhancements() {
+    // Add any additional UI enhancements here
+    // For example, tooltips, animations, etc.
+}
+
+// Call UI enhancements after DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeUIEnhancements();
+});

@@ -1,9 +1,11 @@
 <?php
 session_start();
 require_once '../../db.php';
+
+// Save current page as the last visited (for back button or redirects)
 $_SESSION['previous_page'] = $_SERVER['PHP_SELF'];
 
-// ✅ 1. التحقق من الطلب لجلب صورة المستخدم
+// ✅ 1. Handle AJAX request to get user image and username
 if (isset($_GET['action']) && $_GET['action'] === 'get_user_image') {
     $username = $_SESSION['user_id'] ?? '';
 
@@ -16,28 +18,43 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_user_image') {
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
+
     if ($user = $result->fetch_assoc()) {
-        echo json_encode(['image' => $user['user_image'], 'username' => $user['username']]);
+        echo json_encode([
+            'image' => $user['user_image'],
+            'username' => $user['username']
+        ]);
     } else {
         echo json_encode(['error' => 'User not found']);
     }
     exit;
 }
-// Check if user is admin by querying the database
-$user_name = $_SESSION['user_id'];
-$stmt = $conn->prepare("SELECT * FROM users WHERE username  = ?");
+
+// ✅ 2. Protect this page: only accessible if user is an admin
+
+$user_name = $_SESSION['user_id'] ?? null;
+
+if (!$user_name) {
+    // No user session – redirect to login
+    header('Location: ../../Login_Page/Login.php');
+    exit;
+}
+
+$stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
 $stmt->bind_param("s", $user_name);
 $stmt->execute();
 $result = $stmt->get_result();
+$user = $result->fetch_assoc();
 
-if (!isset($_SESSION['user_id']) || $result->fetch_assoc()['is_admin'] != 1) {
-    // Unset all session variables
+// If not an admin, log them out and redirect
+if (!$user || $user['is_admin'] != 1) {
     session_unset();
-    // Destroy the session completely
     session_destroy();
     header('Location: ../../Login_Page/Login.php');
     exit();
 }
+
+// ✅ 3. Load admin homepage HTML if access is allowed
 include 'HomePage.html';
-exit();
+exit;
 ?>
