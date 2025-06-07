@@ -149,23 +149,32 @@
       <div class="venues-header">
         <h2>Available Venues</h2>
       </div>
+<div class="venues-grid" id="venuesContainer">
+  <!-- This card will be cloned for each venue -->
+  <div class="venue-card" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
+  <div class="venue-image">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
       
-      <div class="venues-grid">
-        <!-- Venue Card 1 -->
-        <div class="venue-card" data-sport="basketball" data-city="Jerusalem" data-price="120" data-rating="4.9">
-          <div class="venue-image">
-          </div>
-          <div class="venue-content">
-            <h3 class="venue-title">Elite Basketball Arena</h3>
-            <div class="venue-location">📍 Jerusalem, Central District</div>
-            <div class="venue-footer">
-              <div class="price">₪120<span class="per">/hour</span></div>
-              <button class="book-btn" onclick="window.location.href='VenueBookings.html'">Book Now</button>
-            </div>
-          </div>
-        </div>
+      &#10084;
+    </div>
+  </div>
+  <div class="venue-content">
+    <h3 class="venue-title">VENUE_NAME_HERE</h3>
+    <div class="venue-location">
+      📍 
+      <a href="https://www.google.com/maps/search/?api=1&query=Jerusalem" target="_blank" onclick="event.stopPropagation();">
+        LOCATION_HERE
+      </a>
+    </div>
+    <div class="venue-footer">
+      <div class="price">₪PRICE_HERE<span class="per">/hour</span></div>
+      <button class="book-btn" onclick="event.stopPropagation(); window.location.href='VenueBookings.php';">Book Now</button>
+    </div>
+  </div>
+</div>
 
-
+ 
     </main>
   </div>
 <script src="BookVenue.js" defer></script>

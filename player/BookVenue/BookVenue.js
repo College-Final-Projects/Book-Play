@@ -5,3 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+function toggleFavorite(element) {
+  element.classList.toggle("active");
+}

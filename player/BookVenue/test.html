@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Venue - Book&Play</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="VenueBookings.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="fresh-navbar">
+    <div class="logo">Book&Play</div>
+    <a href="#" class="back-btn">
+      ← Back to Venues
+    </a>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <div class="booking-layout">
+      <!-- Left Column - Venue Info & Form -->
+      <div class="main-content">
+        <!-- Venue Info - Database content will be generated here -->
+        <div class="venue-info">
+          <div class="venue-image" >
+            <!-- Dynamic image will be generated here -->
+          </div>
+          <div class="venue-details">
+            <!-- Dynamic venue details will be generated here -->
+          </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="booking-form">
+          <form id="bookingForm">
+            <!-- Date Selection -->
+            <div class="form-section">
+              <h3 class="section-title">Select Date & Time</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Date</label>
+                  <input type="date" class="form-input" id="bookingDate" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Duration (hours)</label>
+                  <select class="form-input" id="duration" required>
+                    <option value="1">1 hour</option>
+                    <option value="2">2 hours</option>
+                    <option value="3">3 hours</option>
+                    <option value="4">4 hours</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Available Time Slots</label>
+                <div class="time-slots" id="timeSlots">
+                  <!-- Dynamic time slots will be generated here based on venue availability -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Personal Information -->
+            <div class="form-section">
+              <h3 class="section-title">Personal Information</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-input" id="email" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Phone</label>
+                  <input type="tel" class="form-input" id="phone" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="form-section">
+              <h3 class="section-title">Payment Method</h3>
+              <div class="payment-methods">
+                <label class="payment-method active">
+                  <input type="radio" name="payment" value="card" checked>
+                  <div class="payment-info">
+                    <div class="payment-icon">💳</div>
+                    <div>
+                      <div style="font-weight: 500;">Credit Card</div>
+                      <div style="font-size: 12px; color: var(--text-muted);">Visa, Mastercard, American Express</div>
+                    </div>
+                  </div>
+                </label>
+                <label class="payment-method">
+                  <input type="radio" name="payment" value="paypal">
+                  <div class="payment-info">
+                    <div class="payment-icon">🏦</div>
+                    <div>
+                      <div style="font-weight: 500;">PayPal</div>
+                      <div style="font-size: 12px; color: var(--text-muted);">Pay with your PayPal account</div>
+                    </div>
+                  </div>
+                </label>
+                <label class="payment-method">
+                  <input type="radio" name="payment" value="cash">
+                  <div class="payment-info">
+                    <div class="payment-icon">💵</div>
+                    <div>
+                      <div style="font-weight: 500;">Pay at Venue</div>
+                      <div style="font-size: 12px; color: var(--text-muted);">Cash payment on arrival</div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Column - Booking Summary -->
+      <div class="booking-summary">
+        <h3 class="summary-title">Booking Summary</h3>
+        
+        <!-- Dynamic summary content will be generated here -->
+        <div class="summary-content">
+          <!-- Database generated summary items will go here -->
+        </div>
+        
+        <button type="submit" class="book-button" form="bookingForm">
+          Confirm Booking
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

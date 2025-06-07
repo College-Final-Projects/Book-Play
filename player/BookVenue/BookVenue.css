@@ -590,3 +590,28 @@ input[type="radio"], input[type="checkbox"] {
 .venue-card:nth-child(3n) {
   animation-delay: 0.2s;
 }
+
+
+
+.favorite-icon {
+    top: 12px;
+  right: 12px;
+  position: absolute;
+  bottom: 10px; /* now it goes to the bottom of image */
+  right: 15px;
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.8); /* always visible on every image */
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.6); /* glow effect for better contrast */
+  cursor: pointer;
+  transition: 0.3s ease;
+  z-index: 2;
+}
+
+.favorite-icon:hover {
+  transform: scale(1.15);
+}
+
+.favorite-icon.active {
+  color: red;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+}

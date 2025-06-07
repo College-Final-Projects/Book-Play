@@ -5,36 +5,450 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Book Venue - Book&Play</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="VenueBookings.css">
+    <link rel="stylesheet" href="../global.css">
+
+
+  <style>
+  
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      color: var(--text-main);
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      transition: var(--transition);
+      box-shadow: 0 1px 3px var(--shadow-light);
+    }
+
+    .back-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px var(--shadow-light);
+      background: linear-gradient(to right, #4fc3f7, #81c784);
+      color: white;
+      border-color: transparent;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    .booking-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 32px;
+    }
+
+    /* Venue Info Card */
+    .venue-info {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px var(--shadow-light);
+      backdrop-filter: blur(10px);
+    }
+
+    .venue-image {
+      height: 220px;
+      background: linear-gradient(45deg, #4fc3f7, #81c784);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 48px;
+      font-weight: 700;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .venue-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/><circle cx="30" cy="30" r="15" fill="rgba(255,255,255,0.05)"/><circle cx="70" cy="70" r="20" fill="rgba(255,255,255,0.05)"/></svg>');
+    }
+
+    .venue-details {
+      padding: 24px;
+    }
+
+    .venue-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .venue-location {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    .venue-price {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .venue-price .per {
+      font-size: 16px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Booking Form */
+    .booking-form {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 4px 20px var(--shadow-light);
+      backdrop-filter: blur(10px);
+    }
+
+    .form-section {
+      margin-bottom: 24px;
+    }
+
+    .form-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-main);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-small);
+      font-size: 14px;
+      transition: var(--transition);
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--text-main);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* Time Picker */
+    .time-picker {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .time-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-small);
+      font-size: 16px;
+      font-weight: 500;
+      transition: var(--transition);
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--text-main);
+      text-align: center;
+    }
+
+    .time-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .time-separator {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Unavailable Slots Section */
+    .unavailable-section {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    .unavailable-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .unavailable-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(239, 68, 68, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .unavailable-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--danger);
+    }
+
+    .unavailable-slots {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 8px;
+    }
+
+    .unavailable-slot {
+      padding: 8px 12px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: var(--radius-small);
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--danger);
+    }
+
+    /* Warning Section */
+    .warning-section {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    .warning-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .warning-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(245, 158, 11, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .warning-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--warning);
+    }
+
+    .warning-text {
+      color: var(--text-main);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* Booking Summary */
+    .booking-summary {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 24px;
+      position: sticky;
+      top: 100px;
+      box-shadow: 0 4px 20px var(--shadow-light);
+      backdrop-filter: blur(10px);
+    }
+
+    .summary-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-main);
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .summary-item:last-child {
+      border-bottom: none;
+      font-weight: 600;
+      font-size: 18px;
+      padding-top: 16px;
+      margin-top: 8px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .summary-label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .summary-value {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .book-button {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 20px;
+      box-shadow: 0 4px 12px rgba(30, 144, 255, 0.25);
+    }
+
+    .book-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(30, 144, 255, 0.3);
+    }
+
+    .book-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 4px 12px rgba(30, 144, 255, 0.15);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .booking-layout {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .booking-summary {
+        position: relative;
+        top: 0;
+        order: -1;
+      }
+
+      .container {
+        padding: 24px 16px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .time-picker {
+        justify-content: center;
+      }
+
+      .fresh-navbar {
+        padding: 12px 16px;
+      }
+
+      .unavailable-slots {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .venue-image {
+        height: 180px;
+        font-size: 36px;
+      }
+
+      .unavailable-slots {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="fresh-navbar">
-    <div class="logo">Book&Play</div>
-    <a href="#" class="back-btn">
-      ← Back to Venues
-    </a>
-  </nav>
+
 
   <!-- Main Container -->
   <div class="container">
+    
     <div class="booking-layout">
       <!-- Left Column - Venue Info & Form -->
       <div class="main-content">
-        <!-- Venue Info - Database content will be generated here -->
+
+        
+        <!-- Venue Info -->
         <div class="venue-info">
           <div class="venue-image">
-            <!-- Dynamic image will be generated here -->
+            🏀
           </div>
           <div class="venue-details">
-            <!-- Dynamic venue details will be generated here -->
+            <h2 class="venue-title">Elite Basketball Arena</h2>
+            <div class="venue-location">
+              📍 Downtown Sports Complex, City Center
+            </div>
+            <div class="venue-price">
+              ₪120 <span class="per">per hour</span>
+            </div>
           </div>
         </div>
 
         <!-- Booking Form -->
         <div class="booking-form">
           <form id="bookingForm">
-            <!-- Date Selection -->
+            <!-- Date & Time Selection -->
             <div class="form-section">
               <h3 class="section-title">Select Date & Time</h3>
               <div class="form-row">
@@ -43,73 +457,70 @@
                   <input type="date" class="form-input" id="bookingDate" required>
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Duration (hours)</label>
-                  <select class="form-input" id="duration" required>
-                    <option value="1">1 hour</option>
-                    <option value="2">2 hours</option>
-                    <option value="3">3 hours</option>
-                    <option value="4">4 hours</option>
-                  </select>
+                  <label class="form-label">Start Time</label>
+                  <div class="time-picker">
+                    <select class="time-input" id="hours" required>
+                      <option value="">Hour</option>
+                      <option value="08">08</option>
+                      <option value="09">09</option>
+                      <option value="10">10</option>
+                      <option value="11">11</option>
+                      <option value="12">12</option>
+                      <option value="13">13</option>
+                      <option value="14">14</option>
+                      <option value="15">15</option>
+                      <option value="16">16</option>
+                      <option value="17">17</option>
+                      <option value="18">18</option>
+                      <option value="19">19</option>
+                      <option value="20">20</option>
+                      <option value="21">21</option>
+                      <option value="22">22</option>
+                    </select>
+                    <span class="time-separator">:</span>
+                    <select class="time-input" id="minutes" required>
+                      <option value="">Min</option>
+                      <option value="00">00</option>
+                      <option value="30">30</option>
+                    </select>
+                  </div>
                 </div>
               </div>
               
               <div class="form-group">
-                <label class="form-label">Available Time Slots</label>
-                <div class="time-slots" id="timeSlots">
-                  <!-- Dynamic time slots will be generated here based on venue availability -->
+                <label class="form-label">Duration (hours)</label>
+                <select class="form-input" id="duration" required>
+                  <option value="1">1 hour</option>
+                  <option value="2">2 hours</option>
+                  <option value="3">3 hours</option>
+                  <option value="4">4 hours</option>
+                </select>
+              </div>
+
+              <!-- Unavailable Time Slots -->
+              <div class="unavailable-section">
+                <div class="unavailable-header">
+                  <div class="unavailable-icon">⚠️</div>
+                  <div class="unavailable-title">Unavailable Time Slots</div>
+                </div>
+                <div class="unavailable-slots">
+                  <div class="unavailable-slot">10:00</div>
+                  <div class="unavailable-slot">11:30</div>
+                  <div class="unavailable-slot">15:00</div>
+                  <div class="unavailable-slot">18:30</div>
+                  <div class="unavailable-slot">20:00</div>
                 </div>
               </div>
-            </div>
 
-            <!-- Personal Information -->
-            <div class="form-section">
-              <h3 class="section-title">Personal Information</h3>
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Email</label>
-                  <input type="email" class="form-input" id="email" required>
+              <!-- Payment Warning -->
+              <div class="warning-section">
+                <div class="warning-header">
+                  <div class="warning-icon">⏰</div>
+                  <div class="warning-title">Payment Reminder</div>
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Phone</label>
-                  <input type="tel" class="form-input" id="phone" required>
+                <div class="warning-text">
+                  <strong>Important:</strong> At least 20% of the total payment must be completed within one hour of booking confirmation. Failure to complete payment within this timeframe will result in automatic booking cancellation.
                 </div>
-              </div>
-            </div>
-
-            <!-- Payment Method -->
-            <div class="form-section">
-              <h3 class="section-title">Payment Method</h3>
-              <div class="payment-methods">
-                <label class="payment-method active">
-                  <input type="radio" name="payment" value="card" checked>
-                  <div class="payment-info">
-                    <div class="payment-icon">💳</div>
-                    <div>
-                      <div style="font-weight: 500;">Credit Card</div>
-                      <div style="font-size: 12px; color: var(--text-muted);">Visa, Mastercard, American Express</div>
-                    </div>
-                  </div>
-                </label>
-                <label class="payment-method">
-                  <input type="radio" name="payment" value="paypal">
-                  <div class="payment-info">
-                    <div class="payment-icon">🏦</div>
-                    <div>
-                      <div style="font-weight: 500;">PayPal</div>
-                      <div style="font-size: 12px; color: var(--text-muted);">Pay with your PayPal account</div>
-                    </div>
-                  </div>
-                </label>
-                <label class="payment-method">
-                  <input type="radio" name="payment" value="cash">
-                  <div class="payment-info">
-                    <div class="payment-icon">💵</div>
-                    <div>
-                      <div style="font-weight: 500;">Pay at Venue</div>
-                      <div style="font-size: 12px; color: var(--text-muted);">Cash payment on arrival</div>
-                    </div>
-                  </div>
-                </label>
               </div>
             </div>
           </form>
@@ -120,9 +531,31 @@
       <div class="booking-summary">
         <h3 class="summary-title">Booking Summary</h3>
         
-        <!-- Dynamic summary content will be generated here -->
         <div class="summary-content">
-          <!-- Database generated summary items will go here -->
+          <div class="summary-item">
+            <span class="summary-label">Venue</span>
+            <span class="summary-value" id="summaryVenue">Elite Basketball Arena</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Date</span>
+            <span class="summary-value" id="summaryDate">Sun, May 4, 2025</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Time</span>
+            <span class="summary-value" id="summaryTime">14:00</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Duration</span>
+            <span class="summary-value" id="summaryDuration">3 hours</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Rate</span>
+            <span class="summary-value" id="summaryRate">₪120/hour</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Total</span>
+            <span class="summary-value" id="summaryTotal">₪360</span>
+          </div>
         </div>
         
         <button type="submit" class="book-button" form="bookingForm">
@@ -131,5 +564,92 @@
       </div>
     </div>
   </div>
+
+  <script>
+    // Initialize form with default values
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set default date to today + 1 day
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('bookingDate').value = tomorrow.toISOString().split('T')[0];
+      
+      // Set default time
+      document.getElementById('hours').value = '14';
+      document.getElementById('minutes').value = '00';
+      document.getElementById('duration').value = '3';
+      
+      // Update summary when form changes
+      updateSummary();
+      
+      // Add event listeners
+      document.getElementById('bookingDate').addEventListener('change', updateSummary);
+      document.getElementById('hours').addEventListener('change', updateSummary);
+      document.getElementById('minutes').addEventListener('change', updateSummary);
+      document.getElementById('duration').addEventListener('change', updateSummary);
+      
+      // Form submission
+      document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const button = document.querySelector('.book-button');
+        const originalText = button.textContent;
+        
+        // Check if selected time is unavailable
+        const selectedTime = document.getElementById('hours').value + ':' + document.getElementById('minutes').value;
+        const unavailableSlots = ['10:00', '11:30', '15:00', '18:30', '20:00'];
+        
+        if (unavailableSlots.includes(selectedTime)) {
+          alert('Selected time slot is not available. Please choose another time.');
+          return;
+        }
+        
+        button.textContent = 'Processing...';
+        button.disabled = true;
+        
+        // Simulate booking process
+        setTimeout(() => {
+          button.textContent = 'Booking Confirmed! ✓';
+          button.style.background = 'linear-gradient(135deg, var(--success), #16a34a)';
+          
+          setTimeout(() => {
+            alert('Booking confirmed successfully! You will receive a confirmation email shortly.');
+            button.textContent = originalText;
+            button.disabled = false;
+            button.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+          }, 2000);
+        }, 1500);
+      });
+    });
+    
+    function updateSummary() {
+      const date = document.getElementById('bookingDate').value;
+      const hours = document.getElementById('hours').value;
+      const minutes = document.getElementById('minutes').value;
+      const duration = document.getElementById('duration').value;
+      
+      // Update date
+      if (date) {
+        const dateObj = new Date(date);
+        const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+        document.getElementById('summaryDate').textContent = dateObj.toLocaleDateString('en-US', options);
+      }
+      
+      // Update time
+      if (hours && minutes) {
+        document.getElementById('summaryTime').textContent = hours + ':' + minutes;
+      }
+      
+      // Update duration
+      if (duration) {
+        document.getElementById('summaryDuration').textContent = duration + ' hour' + (duration > 1 ? 's' : '');
+      }
+      
+      // Update total
+      if (duration) {
+        const total = parseInt(duration) * 120;
+        document.getElementById('summaryTotal').textContent = '₪' + total;
+      }
+    }
+  </script>
 </body>
 </html>
