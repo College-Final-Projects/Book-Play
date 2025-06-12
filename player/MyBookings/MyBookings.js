@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="empty-state-icon">📭</div>
                         <div class="empty-state-title">No bookings found</div>
                         <div class="empty-state-subtitle">You haven't made any bookings yet.</div>
-                        <a href="explore.html" class="empty-state-btn">Explore Venues</a>
+                        <a href="../BookVenue/BookVenue.php" class="empty-state-btn">Explore Venues</a>
                     </div>`;
                 return;
             }

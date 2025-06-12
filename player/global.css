@@ -15,6 +15,7 @@
   --shadow-medium: rgba(0, 0, 0, 0.08);
   --shadow-strong: rgba(0, 0, 0, 0.15);
   --radius: 12px;
+  --radius-medium: 10px;
   --radius-small: 8px;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --border-subtle: rgba(0, 0, 0, 0.06);

@@ -36,4 +36,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
 // Not AJAX request? Load full HTML page
 include '../navbar.html';
 include 'MyBookings.html';
+exit;
+
 ?>

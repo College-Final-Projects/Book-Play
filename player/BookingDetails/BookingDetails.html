@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details - Book&Play</title>
+    <link rel="stylesheet" href="BookingDetails.css">
+</head>
+<body>
+    <!-- Venue Information Section -->
+    <section class="venue-section">
+        <div class="venue-banner">
+            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Venue Image" class="venue-image">
+            <div class="venue-overlay">
+                <h1 class="venue-name">Elite Sports Center</h1>
+                <p class="venue-location">📍 Downtown Athletic District, New York</p>
+            </div>
+        </div>
+        
+        <div class="booking-info">
+            <div class="info-grid">
+                <div class="info-card">
+                    <span class="info-label">Booking Date</span>
+                    <span class="info-value">Saturday, June 15, 2025</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">Time</span>
+                    <span class="info-value">2:00 PM - 4:00 PM</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">Booking ID</span>
+                    <span class="info-value">#BP-2025-1234</span>
+                </div>
+                <div class="info-card total-price">
+                    <span class="info-label">Total Price</span>
+                    <span class="info-value">$<span id="totalAmount">240.00</span></span>
+                </div>
+                <div class="info-card privacy-card">
+                    <span class="info-label">Privacy</span>
+                    <button class="privacy-toggle" id="privacyToggle">
+                        <span class="privacy-status">Public</span>
+                        <span class="privacy-icon">🌐</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Private Room Password (Hidden by default) -->
+            <div class="password-section" id="passwordSection" style="display: none;">
+                <div class="password-card">
+                    <h3>🔒 Private Room Password</h3>
+                    <div class="password-display">
+                        <code id="roomPassword">BP2025-ELITE-9847</code>
+                        <button class="copy-btn" id="copyPassword">📋 Copy</button>
+                    </div>
+                    <p class="password-note">Share this password with players to join the private room</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Player List Section -->
+    <section class="players-section">
+        <div class="section-header">
+            <h2 class="section-title">Players (20/24)</h2>
+            <div class="host-controls" id="hostControls">
+                <button class="edit-prices-btn" id="editPricesBtn">✏ Edit Prices</button>
+                <button class="save-prices-btn" id="savePricesBtn" style="display: none;">💾 Save Changes</button>
+                <button class="cancel-edit-btn" id="cancelEditBtn" style="display: none;">❌ Cancel</button>
+            </div>
+        </div>
+        
+        <div class="players-scroll-container">
+            <button class="scroll-arrow scroll-left" id="scrollLeft">
+                <span>‹</span>
+            </button>
+            
+            <div class="players-horizontal-scroll" id="playersScroll">
+                <!-- Host Player (You) -->
+                <div class="player-card host-player">
+                    <div class="host-badge">HOST (YOU)</div>
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 1" class="player-image" data-player="1">
+                    <h3 class="player-name">Mike Johnson</h3>
+                    <div class="player-actions">
+                        <button class="friend-btn" disabled>👤 You</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="1">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="1" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 2 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1494790108755-2616b332c393?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 2" class="player-image" data-player="2">
+                    <h3 class="player-name">Sarah Chen</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn">👥 Add Friend</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="2">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="2" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 3 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 3" class="player-image" data-player="3">
+                    <h3 class="player-name">David Rodriguez</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn friends">✅ Friends</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="3">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="3" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 4 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 4" class="player-image" data-player="4">
+                    <h3 class="player-name">Emma Wilson</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn">👥 Add Friend</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="4">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="4" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 5 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 5" class="player-image" data-player="5">
+                    <h3 class="player-name">Alex Thompson</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn">👥 Add Friend</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="5">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="5" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 6 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 6" class="player-image" data-player="6">
+                    <h3 class="player-name">Jessica Lee</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn friends">✅ Friends</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="6">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="6" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 7 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1507591064344-4c6ce005b128?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 7" class="player-image" data-player="7">
+                    <h3 class="player-name">Marcus Johnson</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn">👥 Add Friend</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="7">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="7" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 8 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 8" class="player-image" data-player="8">
+                    <h3 class="player-name">Sofia Martinez</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn">👥 Add Friend</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="8">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="8" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 9 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 9" class="player-image" data-player="9">
+                    <h3 class="player-name">Ryan Cooper</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn friends">✅ Friends</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="9">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="9" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 10 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 10" class="player-image" data-player="10">
+                    <h3 class="player-name">Kevin Park</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn">👥 Add Friend</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="10">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="10" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 11 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1554151228-14d9def656e4?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 11" class="player-image" data-player="11">
+                    <h3 class="player-name">Lisa Wang</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn">👥 Add Friend</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="11">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="11" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 12 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 12" class="player-image" data-player="12">
+                    <h3 class="player-name">James Brown</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn friends">✅ Friends</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="12">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="12" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 13 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 13" class="player-image" data-player="13">
+                    <h3 class="player-name">Maya Patel</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn">👥 Add Friend</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="13">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="13" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 14 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 14" class="player-image" data-player="14">
+                    <h3 class="player-name">Daniel Kim</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn">👥 Add Friend</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="14">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="14" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 15 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 15" class="player-image" data-player="15">
+                    <h3 class="player-name">Grace Taylor</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn friends">✅ Friends</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="15">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="15" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 16 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1566753323558-f4e0952af115?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 16" class="player-image" data-player="16">
+                    <h3 class="player-name">Chris Anderson</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn">👥 Add Friend</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="16">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="16" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 17 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 17" class="player-image" data-player="17">
+                    <h3 class="player-name">Amanda White</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn">👥 Add Friend</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="17">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="17" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 18 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 18" class="player-image" data-player="18">
+                    <h3 class="player-name">Tyler Davis</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn friends">✅ Friends</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="18">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="18" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 19 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 19" class="player-image" data-player="19">
+                    <h3 class="player-name">Olivia Garcia</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn">👥 Add Friend</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="19">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="19" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player 20 -->
+                <div class="player-card">
+                    <img src="https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Player 20" class="player-image" data-player="20">
+                    <h3 class="player-name">Nathan Miller</h3>
+                    <div class="player-actions">
+                        <button class="switch-host-btn">👑 Make Host</button>
+                        <button class="friend-btn">👥 Add Friend</button>
+                        <div class="payment-amount-container">
+                            <div class="payment-amount" data-player="20">$<span class="amount-value">12.00</span></div>
+                            <input type="number" class="payment-input" data-player="20" value="12.00" step="0.01" min="0" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="scroll-arrow scroll-right" id="scrollRight">
+                <span>›</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Payment Reminder Section -->
+    <section class="payment-section">
+        <div class="payment-reminder">
+            <div class="timer-container">
+                <div class="timer-icon">⏰</div>
+                <div class="timer-content">
+                    <h3 class="timer-title">Payment Deadline</h3>
+                    <div class="countdown-timer" id="countdown">
+                        <div class="time-unit">
+                            <span class="time-value" id="hours">01</span>
+                            <span class="time-label">Hours</span>
+                        </div>
+                        <div class="time-separator">:</div>
+                        <div class="time-unit">
+                            <span class="time-value" id="minutes">45</span>
+                            <span class="time-label">Minutes</span>
+                        </div>
+                        <div class="time-separator">:</div>
+                        <div class="time-unit">
+                            <span class="time-value" id="seconds">30</span>
+                            <span class="time-label">Seconds</span>
+                        </div>
+                    </div>
+                    <p class="timer-message">
+                        You must pay at least <strong>20% ($<span id="minimumAmount">48.00</span>)</strong> of the total booking price before the timer expires, otherwise the booking will be automatically canceled.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <section class="actions-section">
+        <div class="action-buttons">
+            <button class="cancel-btn">Cancel Booking</button>
+            <button class="pay-btn">Pay Now</button>
+        </div>
+    </section>
+
+    <!-- Player Details Modal -->
+    <div class="modal-overlay" id="playerModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-header">
+                <img src="" alt="Player" class="modal-player-image" id="modalPlayerImage">
+                <div class="modal-player-info">
+                    <h2 class="modal-player-name" id="modalPlayerName"></h2>
+                    <p class="modal-player-role" id="modalPlayerRole"></p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="profile-section">
+                    <h3>Profile Information</h3>
+                    <div class="profile-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Member Since:</span>
+                            <span class="detail-value" id="memberSince"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Games Played:</span>
+                            <span class="detail-value" id="gamesPlayed"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Rating:</span>
+                            <span class="detail-value" id="playerRating"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Favorite Sport:</span>
+                            <span class="detail-value" id="favoriteSport"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Location:</span>
+                            <span class="detail-value" id="playerLocation"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="BookingDetails.js"></script>
+</body>
+</html>

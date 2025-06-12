@@ -85,63 +85,7 @@
         </label>
       </div>
 
-
-
-
-
-
-
-
-      <div class="filter-section">
-        <h3>Filter by Location</h3>
-        <div class="location-filter">
-          <div class="search-box">
-            <input type="text" class="search-input" placeholder="Search cities...">
-          </div>
-          <div class="city-list">
-            <label class="city-option">
-              <input type="checkbox" name="cities" id="city-haifa">
-              <span>Haifa</span>
-            </label>
-            <label class="city-option">
-              <input type="checkbox" name="cities" id="city-jerusalem">
-              <span>Jerusalem</span>
-            </label>
-            <label class="city-option">
-              <input type="checkbox" name="cities" id="city-telaviv">
-              <span>Tel Aviv</span>
-            </label>
-            <label class="city-option">
-              <input type="checkbox" name="cities" id="city-nazareth">
-              <span>Nazareth</span>
-            </label>
-            <label class="city-option">
-              <input type="checkbox" name="cities" id="city-acre">
-              <span>Acre</span>
-            </label>
-            <label class="city-option">
-              <input type="checkbox" name="cities" id="city-beersheba">
-              <span>Be'er Sheva</span>
-            </label>
-            <label class="city-option">
-              <input type="checkbox" name="cities" id="city-netanya">
-              <span>Netanya</span>
-            </label>
-            <label class="city-option">
-              <input type="checkbox" name="cities" id="city-ashdod">
-              <span>Ashdod</span>
-            </label>
-            <label class="city-option">
-              <input type="checkbox" name="cities" id="city-rishon">
-              <span>Rishon LeZion</span>
-            </label>
-            <label class="city-option">
-              <input type="checkbox" name="cities" id="city-petah">
-              <span>Petah Tikva</span>
-            </label>
-          </div>
-        </div>
-      </div>
+      
     </aside>
 
     <!-- Main content area -->
@@ -150,7 +94,7 @@
         <h2>Available Venues</h2>
       </div>
 <div class="venues-grid" id="venuesContainer">
-  <!-- This card will be cloned for each venue -->
+  <!-- Venue 1 -->
   <div class="venue-card" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
   <div class="venue-image">
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
@@ -160,15 +104,231 @@
     </div>
   </div>
   <div class="venue-content">
-    <h3 class="venue-title">VENUE_NAME_HERE</h3>
+    <h3 class="venue-title">Elite Basketball Arena</h3>
     <div class="venue-location">
       📍 
-      <a href="https://www.google.com/maps/search/?api=1&query=Jerusalem" target="_blank" onclick="event.stopPropagation();">
-        LOCATION_HERE
+      <a href="https://www.google.com/maps/search/?api=1&query=Downtown Sports Complex" target="_blank" onclick="event.stopPropagation();">
+        Downtown Sports Complex, City Center
       </a>
     </div>
     <div class="venue-footer">
-      <div class="price">₪PRICE_HERE<span class="per">/hour</span></div>
+      <div class="price">₪120<span class="per">/hour</span></div>
+      <button class="book-btn" onclick="event.stopPropagation(); window.location.href='VenueBookings.php';">Book Now</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Venue 2 -->
+  <div class="venue-card" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
+  <div class="venue-image">
+    <img src="https://images.unsplash.com/photo-1459865264687-595d652de67e?w=400&h=200&fit=crop" alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+  </div>
+  <div class="venue-content">
+    <h3 class="venue-title">Champions Football Stadium</h3>
+    <div class="venue-location">
+      📍 
+      <a href="https://www.google.com/maps/search/?api=1&query=North District Athletic Center" target="_blank" onclick="event.stopPropagation();">
+        North District Athletic Center
+      </a>
+    </div>
+    <div class="venue-footer">
+      <div class="price">₪200<span class="per">/hour</span></div>
+      <button class="book-btn" onclick="event.stopPropagation(); window.location.href='VenueBookings.php';">Book Now</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Venue 3 -->
+  <div class="venue-card" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
+  <div class="venue-image">
+    <img src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=200&fit=crop" alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+  </div>
+  <div class="venue-content">
+    <h3 class="venue-title">Premium Tennis Courts</h3>
+    <div class="venue-location">
+      📍 
+      <a href="https://www.google.com/maps/search/?api=1&query=Westside Tennis Club" target="_blank" onclick="event.stopPropagation();">
+        Westside Tennis Club
+      </a>
+    </div>
+    <div class="venue-footer">
+      <div class="price">₪80<span class="per">/hour</span></div>
+      <button class="book-btn" onclick="event.stopPropagation(); window.location.href='VenueBookings.php';">Book Now</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Venue 4 -->
+  <div class="venue-card" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
+  <div class="venue-image">
+    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400&h=200&fit=crop" alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+  </div>
+  <div class="venue-content">
+    <h3 class="venue-title">Splash Swimming Pool</h3>
+    <div class="venue-location">
+      📍 
+      <a href="https://www.google.com/maps/search/?api=1&query=Aquatic Center Marina" target="_blank" onclick="event.stopPropagation();">
+        Aquatic Center Marina
+      </a>
+    </div>
+    <div class="venue-footer">
+      <div class="price">₪150<span class="per">/hour</span></div>
+      <button class="book-btn" onclick="event.stopPropagation(); window.location.href='VenueBookings.php';">Book Now</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Venue 5 -->
+  <div class="venue-card" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
+  <div class="venue-image">
+    <img src="https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=400&h=200&fit=crop" alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+  </div>
+  <div class="venue-content">
+    <h3 class="venue-title">Victory Volleyball Hall</h3>
+    <div class="venue-location">
+      📍 
+      <a href="https://www.google.com/maps/search/?api=1&query=Central Sports Complex" target="_blank" onclick="event.stopPropagation();">
+        Central Sports Complex
+      </a>
+    </div>
+    <div class="venue-footer">
+      <div class="price">₪90<span class="per">/hour</span></div>
+      <button class="book-btn" onclick="event.stopPropagation(); window.location.href='VenueBookings.php';">Book Now</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Venue 6 -->
+  <div class="venue-card" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
+  <div class="venue-image">
+    <img src="https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=200&fit=crop" alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+  </div>
+  <div class="venue-content">
+    <h3 class="venue-title">Pro Badminton Center</h3>
+    <div class="venue-location">
+      📍 
+      <a href="https://www.google.com/maps/search/?api=1&query=East Side Sports Hub" target="_blank" onclick="event.stopPropagation();">
+        East Side Sports Hub
+      </a>
+    </div>
+    <div class="venue-footer">
+      <div class="price">₪70<span class="per">/hour</span></div>
+      <button class="book-btn" onclick="event.stopPropagation(); window.location.href='VenueBookings.php';">Book Now</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Venue 7 - Unavailable -->
+  <div class="venue-card unavailable" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
+  <div class="venue-image">
+    <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=200&fit=crop" alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+  </div>
+  <div class="venue-content">
+    <h3 class="venue-title">Olympic Basketball Court</h3>
+    <div class="venue-location">
+      📍 
+      <a href="https://www.google.com/maps/search/?api=1&query=Premier Sports Academy" target="_blank" onclick="event.stopPropagation();">
+        Premier Sports Academy
+      </a>
+    </div>
+    <div class="venue-footer">
+      <div class="price">₪250<span class="per">/hour</span></div>
+      <button class="book-btn" onclick="event.stopPropagation(); window.location.href='VenueBookings.php';">Book Now</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Venue 8 - Unavailable -->
+  <div class="venue-card unavailable" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
+  <div class="venue-image">
+    <img src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=200&fit=crop" alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+  </div>
+  <div class="venue-content">
+    <h3 class="venue-title">Luxury Football Pitch</h3>
+    <div class="venue-location">
+      📍 
+      <a href="https://www.google.com/maps/search/?api=1&query=Elite Athletic Complex" target="_blank" onclick="event.stopPropagation();">
+        Elite Athletic Complex
+      </a>
+    </div>
+    <div class="venue-footer">
+      <div class="price">₪300<span class="per">/hour</span></div>
+      <button class="book-btn" onclick="event.stopPropagation(); window.location.href='VenueBookings.php';">Book Now</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Venue 9 - Unavailable -->
+  <div class="venue-card unavailable" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
+  <div class="venue-image">
+    <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=200&fit=crop" alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+  </div>
+  <div class="venue-content">
+    <h3 class="venue-title">Championship Tennis Court</h3>
+    <div class="venue-location">
+      📍 
+      <a href="https://www.google.com/maps/search/?api=1&query=Grand Slam Tennis Center" target="_blank" onclick="event.stopPropagation();">
+        Grand Slam Tennis Center
+      </a>
+    </div>
+    <div class="venue-footer">
+      <div class="price">₪180<span class="per">/hour</span></div>
+      <button class="book-btn" onclick="event.stopPropagation(); window.location.href='VenueBookings.php';">Book Now</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Venue 10 - Unavailable -->
+  <div class="venue-card unavailable" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
+  <div class="venue-image">
+    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400&h=200&fit=crop" alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+  </div>
+  <div class="venue-content">
+    <h3 class="venue-title">Infinity Swimming Complex</h3>
+    <div class="venue-location">
+      📍 
+      <a href="https://www.google.com/maps/search/?api=1&query=Luxury Aqua Resort" target="_blank" onclick="event.stopPropagation();">
+        Luxury Aqua Resort
+      </a>
+    </div>
+    <div class="venue-footer">
+      <div class="price">₪220<span class="per">/hour</span></div>
       <button class="book-btn" onclick="event.stopPropagation(); window.location.href='VenueBookings.php';">Book Now</button>
     </div>
   </div>
