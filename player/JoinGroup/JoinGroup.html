@@ -8,120 +8,290 @@
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <div class="logo">Book&Play</div>
-      <div class="nav-menu">
-        <a href="#">Home Page</a>
-        <a href="#">Find Player</a>
-        <a href="#" class="nav-link active">Join Group</a>
-        <a href="#">Book Venue</a>
-        <a href="#">My Favorites</a>
-        <a href="#">My Chats</a>
-        <a href="#">My Bookings</a>
-        <a href="#" class="nav-link logout">Logout</a>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Header -->
-  <section class="header">
+  <!-- Search Bar -->
+  <section class="search-section">
     <div class="search-container">
-      <input type="text" id="searchInput" class="search-input" placeholder="Search for groups by sport or location..." />
-      <button class="search-btn">Search</button>
+      <div class="search-box-main">
+        <input type="text" class="player-search" placeholder="🔍 Search for group by name..." id="playerSearch">
+        <button class="search-btn">Search</button>
+      </div>
     </div>
   </section>
 
-  <!-- Sports Scroll Filter -->
-  <div class="sports-scroll" id="sportsScroll">
-    <label class="sport-item">
-      <input type="checkbox" class="sport-checkbox" value="all" checked />
-      <div class="sport-circle"><span class="sport-emoji">🏃</span><span>All Sports</span></div>
-    </label>
-    <label class="sport-item"><input type="checkbox" class="sport-checkbox" value="basketball" />
-      <div class="sport-circle"><span class="sport-emoji">🏀</span><span>Basketball</span></div>
-    </label>
-    <label class="sport-item"><input type="checkbox" class="sport-checkbox" value="football" />
-      <div class="sport-circle"><span class="sport-emoji">⚽</span><span>Football</span></div>
-    </label>
-    <label class="sport-item"><input type="checkbox" class="sport-checkbox" value="tennis" />
-      <div class="sport-circle"><span class="sport-emoji">🎾</span><span>Tennis</span></div>
-    </label>
-    <label class="sport-item"><input type="checkbox" class="sport-checkbox" value="volleyball" />
-      <div class="sport-circle"><span class="sport-emoji">🏐</span><span>Volleyball</span></div>
-    </label>
-    <label class="sport-item"><input type="checkbox" class="sport-checkbox" value="badminton" />
-      <div class="sport-circle"><span class="sport-emoji">🏸</span><span>Badminton</span></div>
-    </label>
-    <label class="sport-item"><input type="checkbox" class="sport-checkbox" value="swimming" />
-      <div class="sport-circle"><span class="sport-emoji">🏊</span><span>Swimming</span></div>
-    </label>
-  </div>
-
-  <!-- Layout: Sidebar + Content -->
-  <div class="main-content">
-    <!-- Sidebar -->
+  <!-- Layout: Sidebar + Venue Cards -->
+  <div class="layout">
+    
+    <!-- Sidebar Filters -->
     <aside class="sidebar">
+      <!-- Sort by Group Type -->
       <div class="filter-section">
-        <h3>Sort by Available</h3>
-        <label class="filter-option"><input type="radio" name="available" value="all" checked /> <span>All</span></label>
-        <label class="filter-option"><input type="radio" name="available" value="public" /> <span>Public</span></label>
-        <label class="filter-option"><input type="radio" name="available" value="private" /> <span>Private</span></label>
+        <h3>Sort by Group Type</h3>
+        <label class="sort-option">
+          <input type="radio" name="public-sort" id="all-groups" checked>
+          <span>All</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="public-sort" id="only-public">
+          <span>Public</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="public-sort" id="only-private">
+          <span>Private</span>
+        </label>
       </div>
 
+      <!-- Sort by Price -->
       <div class="filter-section">
         <h3>Sort by Price</h3>
-        <label class="filter-option"><input type="radio" name="price" value="default" checked /> <span>Default</span></label>
-        <label class="filter-option"><input type="radio" name="price" value="low-to-high" /> <span>Low to High</span></label>
-        <label class="filter-option"><input type="radio" name="price" value="high-to-low" /> <span>High to Low</span></label>
+        <label class="sort-option">
+          <input type="radio" name="price-sort" id="price-default" checked>
+          <span>Default</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="price-sort" id="price-low">
+          <span>Low to High</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="price-sort" id="price-high">
+          <span>High to Low</span>
+        </label>
       </div>
 
+      <!-- Sort by Rating -->
       <div class="filter-section">
         <h3>Sort by Rating</h3>
-        <label class="filter-option"><input type="radio" name="rating" value="default" checked /> <span>Default</span></label>
-        <label class="filter-option"><input type="radio" name="rating" value="low-to-high" /> <span>Low to High</span></label>
-        <label class="filter-option"><input type="radio" name="rating" value="high-to-low" /> <span>High to Low</span></label>
+        <label class="sort-option">
+          <input type="radio" name="rating-sort" id="rating-default" checked>
+          <span>Default</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="rating-sort" id="rating-low">
+          <span>Low to High</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="rating-sort" id="rating-high">
+          <span>High to Low</span>
+        </label>
       </div>
 
+      <!-- Sort by Distance -->
       <div class="filter-section">
         <h3>Sort by Distance</h3>
-        <label class="filter-option"><input type="radio" name="distance" value="default" checked /> <span>Default</span></label>
-        <label class="filter-option"><input type="radio" name="distance" value="nearest" /> <span>Nearest First</span></label>
-        <label class="filter-option"><input type="radio" name="distance" value="farthest" /> <span>Farthest First</span></label>
-      </div>
-
-      <div class="filter-section">
-        <h3>Location</h3>
-        <input type="text" class="search-input" placeholder="Search cities..." id="citySearch" />
-        <div class="city-list" id="cityList">
-          <label class="city-option"><input type="checkbox" value="all" checked /><span>All Cities</span></label>
-          <label class="city-option"><input type="checkbox" value="tel-aviv" /><span>Tel Aviv</span></label>
-          <label class="city-option"><input type="checkbox" value="jerusalem" /><span>Jerusalem</span></label>
-          <label class="city-option"><input type="checkbox" value="haifa" /><span>Haifa</span></label>
-          <label class="city-option"><input type="checkbox" value="beer-sheva" /><span>Beer Sheva</span></label>
-          <label class="city-option"><input type="checkbox" value="netanya" /><span>Netanya</span></label>
-        </div>
+        <label class="sort-option">
+          <input type="radio" name="distance-sort" id="distance-default" checked>
+          <span>Default</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="distance-sort" id="distance-near">
+          <span>Nearest First</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="distance-sort" id="distance-far">
+          <span>Farthest First</span>
+        </label>
       </div>
     </aside>
 
-    <!-- Content Area -->
-    <main class="content">
-      <div class="page-title">Available Groups</div>
-      <span class="results-count" id="resultsCount">12 groups found</span>
-      <div class="groups-grid" id="groupsGrid">
-        <!-- JS will insert cards here -->
+    <!-- Venue Cards Section -->
+    <div class="content">
+      <!-- Public Group Card -->
+      <div class="venue-card" data-group-type="public">
+        <div class="venue-card-header">
+          <span class="group-badge public">PUBLIC</span>
+        </div>
+
+        <div class="venue-image">
+           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+        </div>
+
+        <div class="venue-info">
+          <h3 class="venue-title">Elite Basketball Team</h3>
+          <p class="venue-location">📍 Downtown Sports Complex, City Center</p>
+
+          <div class="venue-tags">
+            <span class="tag">basketball</span>
+            <span class="player-count">8/10 players</span>
+          </div>
+
+          <div class="venue-footer">
+            <span class="venue-price">₪25<span class="per">/person</span></span>
+            <button class="join-btn" onclick="joinGroup('public', 'Elite Basketball Team')">Join Group</button>
+          </div>
+        </div>
       </div>
-    </main>
+
+      <!-- Private Group Card -->
+      <div class="venue-card" data-group-type="private" data-access-code="TENNIS123">
+        <div class="venue-card-header">
+          <span class="group-badge private">PRIVATE</span>
+        </div>
+
+        <div class="venue-image">
+           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+        </div>
+
+        <div class="venue-info">
+          <h3 class="venue-title">Pro Tennis Club</h3>
+          <p class="venue-location">📍 Uptown Tennis Center, North District</p>
+
+          <div class="venue-tags">
+            <span class="tag">tennis</span>
+            <span class="player-count">4/6 players</span>
+          </div>
+
+          <div class="venue-footer">
+            <span class="venue-price">₪45<span class="per">/person</span></span>
+            <button class="join-btn" onclick="joinGroup('private', 'Pro Tennis Club', 'TENNIS123')">Join Group</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Another Public Group Card -->
+      <div class="venue-card" data-group-type="public">
+        <div class="venue-card-header">
+          <span class="group-badge public">PUBLIC</span>
+        </div>
+
+        <div class="venue-image">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+        </div>
+
+        <div class="venue-info">
+          <h3 class="venue-title">Weekend Warriors FC</h3>
+          <p class="venue-location">📍 City Park Football Ground, East Side</p>
+
+          <div class="venue-tags">
+            <span class="tag">football</span>
+            <span class="player-count">18/22 players</span>
+          </div>
+
+          <div class="venue-footer">
+            <span class="venue-price">₪15<span class="per">/person</span></span>
+            <button class="join-btn" onclick="joinGroup('public', 'Weekend Warriors FC')">Join Group</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Another Private Group Card -->
+      <div class="venue-card" data-group-type="private" data-access-code="SWIM2024">
+        <div class="venue-card-header">
+          <span class="group-badge private">PRIVATE</span>
+        </div>
+
+        <div class="venue-image">
+           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+        </div>
+
+        <div class="venue-info">
+          <h3 class="venue-title">Aqua Masters Swimming</h3>
+          <p class="venue-location">📍 Premium Aquatic Center, West End</p>
+
+          <div class="venue-tags">
+            <span class="tag">swimming</span>
+            <span class="player-count">12/15 players</span>
+          </div>
+
+          <div class="venue-footer">
+            <span class="venue-price">₪35<span class="per">/person</span></span>
+            <button class="join-btn" onclick="joinGroup('private', 'Aqua Masters Swimming', 'SWIM2024')">Request Join</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Public Volleyball Group -->
+      <div class="venue-card" data-group-type="public">
+        <div class="venue-card-header">
+          <span class="group-badge public">PUBLIC</span>
+        </div>
+
+        <div class="venue-image">
+           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+        </div>
+
+        <div class="venue-info">
+          <h3 class="venue-title">Beach Volleyball Squad</h3>
+          <p class="venue-location">📍 Seaside Sports Complex, Marina</p>
+
+          <div class="venue-tags">
+            <span class="tag">volleyball</span>
+            <span class="player-count">10/12 players</span>
+          </div>
+
+          <div class="venue-footer">
+            <span class="venue-price">₪20<span class="per">/person</span></span>
+            <button class="join-btn" onclick="joinGroup('public', 'Beach Volleyball Squad')">Join Group</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Private Badminton Group -->
+      <div class="venue-card" data-group-type="private" data-access-code="BADMIN99">
+        <div class="venue-card-header">
+          <span class="group-badge private">PRIVATE</span>
+        </div>
+
+        <div class="venue-image">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
+    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
+      
+      &#10084;
+    </div>
+        </div>
+
+        <div class="venue-info">
+          <h3 class="venue-title">Elite Badminton Club</h3>
+          <p class="venue-location">📍 Indoor Sports Arena, Central Plaza</p>
+
+          <div class="venue-tags">
+            <span class="tag">badminton</span>
+            <span class="player-count">6/8 players</span>
+          </div>
+
+          <div class="venue-footer">
+            <span class="venue-price">₪30<span class="per">/person</span></span>
+            <button class="join-btn" onclick="joinGroup('private', 'Elite Badminton Club', 'BADMIN99')">Request Join</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Private Group Password Modal -->
-  <div class="modal" id="passwordModal">
+  <!-- Private Group Access Modal -->
+  <div id="privateModal" class="modal">
     <div class="modal-content">
-      <span class="close" id="closeModal">&times;</span>
-      <h3>Enter Group Password</h3>
-      <input type="password" id="groupPassword" placeholder="Enter password" />
-      <button id="submitPassword">Join Group</button>
+      <div class="modal-header">
+        <h3>Enter Access Code</h3>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <p>This is a private group. Please enter the access code to join:</p>
+        <input type="text" id="accessCodeInput" placeholder="Enter access code" />
+        <div class="modal-buttons">
+          <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+          <button class="modal-btn confirm" onclick="validateAccessCode()">Join Group</button>
+        </div>
+      </div>
     </div>
   </div>
 
