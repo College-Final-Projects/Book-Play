@@ -1,9 +1,39 @@
-<section class="sports-scroll">
-  <!-- Loop starts here -->
-  <label class="sport-item">
-    <input type="checkbox" class="sport-checkbox">
-    <div class="sport-circle">
-    </div>
-  </label>
-  <!-- Loop ends here -->
-</section>
+<section class="sports-scroll" id="sportsContainer"></section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("fetch_sports.php")
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const container = document.getElementById("sportsContainer");
+        container.innerHTML = "";
+
+        data.sports.forEach(sport => {
+          const label = document.createElement("label");
+          label.className = "sport-item";
+
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.className = "sport-checkbox";
+
+          const circle = document.createElement("div");
+          circle.className = "sport-circle";
+          circle.textContent = sport;
+          circle.dataset.sport = sport;
+
+          input.addEventListener("change", () => {
+            const checked = document.querySelectorAll(".sport-checkbox:checked");
+            const selectedSports = Array.from(checked).map(cb => cb.nextElementSibling.dataset.sport);
+            filterVenuesBySports(selectedSports);
+          });
+
+          label.appendChild(input);
+          label.appendChild(circle);
+          container.appendChild(label);
+        });
+      }
+    })
+    .catch(err => console.error("Failed to fetch sports", err));
+});
+</script>

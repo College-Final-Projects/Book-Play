@@ -367,7 +367,7 @@ input[type="radio"], input[type="checkbox"] {
 .venue-location {
   color: var(--text-muted);
   font-size: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -614,4 +614,17 @@ input[type="radio"], input[type="checkbox"] {
 .favorite-icon.active {
   color: red;
   text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+}
+.venue-rating {
+  font-size: 14px;
+  color: #FFD700; /* ذهبية */
+  margin-bottom: 5px;
+}
+.favorite-icon.active {
+  color: red;
+}
+.favorite-icon {
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
 }

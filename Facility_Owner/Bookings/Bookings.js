@@ -11,6 +11,79 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentMonthIndex = 0;
     let globalCalendar = {};
 
+    // Initialize Flatpickr time pickers with improved configuration
+    function initializeTimePickers() {
+        // Start time picker
+        const startTimePicker = flatpickr("#startTime", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+            minuteIncrement: 30,
+            defaultHour: 9,
+            defaultMinute: 0,
+            minTime: "06:00",
+            maxTime: "23:30",
+            onChange: function(selectedDates, dateStr) {
+                // Update end time minimum when start time changes
+                if (endTimePicker && dateStr) {
+                    const startTime = dateStr.split(':');
+                    const startHour = parseInt(startTime[0]);
+                    const startMinute = parseInt(startTime[1]);
+                    
+                    // Set minimum end time to 30 minutes after start time
+                    let minEndHour = startHour;
+                    let minEndMinute = startMinute + 30;
+                    
+                    if (minEndMinute >= 60) {
+                        minEndHour += 1;
+                        minEndMinute = 0;
+                    }
+                    
+                    const minEndTime = `${minEndHour.toString().padStart(2, '0')}:${minEndMinute.toString().padStart(2, '0')}`;
+                    endTimePicker.set('minTime', minEndTime);
+                    
+                    // Clear end time if it's now invalid
+                    const currentEndTime = document.getElementById('endTime').value;
+                    if (currentEndTime && currentEndTime <= dateStr) {
+                        endTimePicker.clear();
+                    }
+                }
+            }
+        });
+
+        // End time picker
+        const endTimePicker = flatpickr("#endTime", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+            minuteIncrement: 30,
+            defaultHour: 10,
+            defaultMinute: 0,
+            minTime: "06:30",
+            maxTime: "23:59"
+        });
+
+        return { startTimePicker, endTimePicker };
+    }
+
+    // Initialize date picker
+    function initializeDatePicker() {
+        return flatpickr("#dateInput", {
+            dateFormat: "Y-m-d",
+            minDate: new Date().fp_incr(1), // Tomorrow onwards
+            disableMobile: true,
+            locale: {
+                firstDayOfWeek: 1 // Start week on Monday
+            }
+        });
+    }
+
+    // Initialize time and date pickers
+    const timePickers = initializeTimePickers();
+    const datePicker = initializeDatePicker();
+
     // Fetch venues data
     fetch("BookedFacilitiesFetch.php")
         .then(res => res.json())
@@ -78,9 +151,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             .then(res => res.json())
                             .then(data => {
                                 allBookings = data.bookings || [];
-                                renderBookingsForDate('___EMPTY___'); // Initial display - empty table
+                                renderBookingsForDate('___EMPTY___');
                                 
-                                // Display calendar with date filtering functionality
                                 if (data.calendar) {
                                     globalCalendar = data.calendar;
                                     currentMonthIndex = 0;
@@ -101,7 +173,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const tbody = document.querySelector('.bookings-table tbody');
         tbody.innerHTML = '';
 
-        // Handle empty state explicitly
         if (selectedDate === '___EMPTY___') {
             tbody.innerHTML = '<tr><td colspan="4">Select a date to view bookings.</td></tr>';
             return;
@@ -122,7 +193,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 `;
                 tbody.appendChild(row);
 
-                // Add event listener for send message button
                 row.querySelector('.btn-send-message').addEventListener('click', function () {
                     const receiver = this.dataset.receiver;
                     document.getElementById('receiverInput').value = receiver;
@@ -198,13 +268,105 @@ document.addEventListener('DOMContentLoaded', function () {
         container.appendChild(daysRow);
     }
 
-    // Booking form submission
+    // Enhanced form validation function
+    function validateBookingForm() {
+        const startTime = document.getElementById('startTime').value;
+        const endTime = document.getElementById('endTime').value;
+        const dateInput = document.getElementById('dateInput').value;
+        const playersInput = document.getElementById('playersInput')?.value;
+
+        // Clear previous error messages
+        clearErrorMessages();
+
+        let isValid = true;
+        const errors = [];
+
+        // Validate date
+        if (!dateInput) {
+            errors.push("Please select a booking date.");
+            isValid = false;
+        }
+
+        // Validate start time
+        if (!startTime) {
+            errors.push("Please select a start time.");
+            isValid = false;
+        }
+
+        // Validate end time
+        if (!endTime) {
+            errors.push("Please select an end time.");
+            isValid = false;
+        }
+
+        // Validate time logic
+        if (startTime && endTime) {
+            if (startTime >= endTime) {
+                errors.push("End time must be after start time.");
+                isValid = false;
+            }
+
+            // Check minimum duration (30 minutes)
+            const start = new Date(`1970-01-01T${startTime}:00`);
+            const end = new Date(`1970-01-01T${endTime}:00`);
+            const diffMinutes = (end - start) / (1000 * 60);
+
+            if (diffMinutes < 30) {
+                errors.push("Minimum booking duration is 30 minutes.");
+                isValid = false;
+            }
+        }
+
+        // Validate players (if field exists)
+        if (playersInput !== undefined) {
+            const players = parseInt(playersInput);
+            if (!players || players < 1) {
+                errors.push("Please enter a valid number of players.");
+                isValid = false;
+            }
+        }
+
+        // Display errors
+        if (!isValid) {
+            showErrors(errors);
+        }
+
+        return isValid;
+    }
+
+    function showErrors(errors) {
+        const messageBox = document.getElementById('bookingMessage');
+        if (messageBox) {
+            messageBox.className = 'form-message error';
+            messageBox.innerHTML = errors.join('<br>');
+        }
+    }
+
+    function clearErrorMessages() {
+        const messageBox = document.getElementById('bookingMessage');
+        if (messageBox) {
+            messageBox.textContent = '';
+            messageBox.className = '';
+        }
+    }
+
+    // Booking form submission with enhanced validation
     if (bookingForm) {
         bookingForm.onsubmit = function (e) {
             e.preventDefault();
 
+            // Validate form before submission
+            if (!validateBookingForm()) {
+                return;
+            }
+
             const formData = new FormData(bookingForm);
             const selectedVenueId = document.querySelector('.booking-content h2')?.dataset.venueId;
+
+            if (!selectedVenueId) {
+                showErrors(["Unable to identify selected venue. Please try again."]);
+                return;
+            }
 
             formData.append('facility_id', selectedVenueId);
 
@@ -222,21 +384,23 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     if (data.success) {
-                        // Reset form and hide modal after success
                         setTimeout(() => {
                             bookingForm.reset();
-                            messageBox.textContent = '';
-                            messageBox.className = '';
+                            // Reset time pickers
+                            timePickers.startTimePicker.clear();
+                            timePickers.endTimePicker.clear();
+                            datePicker.clear();
+                            
+                            clearErrorMessages();
                             document.getElementById('addBookingModal').style.display = 'none';
 
-                            // Refresh bookings table
+                            // Refresh bookings
                             fetch(`get_bookings.php?facilities_id=${selectedVenueId}`)
                                 .then(res => res.json())
                                 .then(data => {
                                     allBookings = data.bookings || [];
-                                    renderBookingsForDate('___EMPTY___'); // Keep table empty after booking
+                                    renderBookingsForDate('___EMPTY___');
                                     
-                                    // Update calendar if available
                                     if (data.calendar) {
                                         globalCalendar = data.calendar;
                                         renderCalendar(data.calendar);
@@ -244,18 +408,21 @@ document.addEventListener('DOMContentLoaded', function () {
                                 });
                         }, 1500);
                     }
+                })
+                .catch(error => {
+                    console.error('Booking submission error:', error);
+                    showErrors(["Failed to submit booking. Please try again."]);
                 });
         };
     }
 
-    // Search functionality - improved to use startsWith
+    // Search functionality
     if (searchInput) {
         searchInput.addEventListener('input', function () {
             const query = searchInput.value.trim().toLowerCase();
             const venueCards = document.querySelectorAll('.venue-card');
             venueCards.forEach(card => {
                 const name = card.querySelector('.venue-name')?.textContent.toLowerCase() || '';
-                // Filter: only if name starts with search query
                 card.style.display = name.startsWith(query) ? 'flex' : 'none';
             });
         });
@@ -311,20 +478,26 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(err => console.error("Failed to load sports:", err));
 
-    // Modal functionality for adding bookings
+    // Modal functionality
     const addBookingBtn = document.querySelector('.btn-add-booking');
     const addBookingModal = document.getElementById('addBookingModal');
     const cancelBtn = document.querySelector('.btn-cancel');
 
     if (addBookingBtn) {
         addBookingBtn.onclick = function () {
-            if (addBookingModal) addBookingModal.style.display = 'flex';
+            if (addBookingModal) {
+                addBookingModal.style.display = 'flex';
+                clearErrorMessages(); // Clear any previous error messages
+            }
         };
     }
 
     if (cancelBtn) {
         cancelBtn.onclick = function () {
-            if (addBookingModal) addBookingModal.style.display = 'none';
+            if (addBookingModal) {
+                addBookingModal.style.display = 'none';
+                clearErrorMessages();
+            }
         };
     }
 
@@ -332,10 +505,11 @@ document.addEventListener('DOMContentLoaded', function () {
     window.onclick = function (e) {
         if (e.target === addBookingModal) {
             addBookingModal.style.display = 'none';
+            clearErrorMessages();
         }
     };
 
-    // Message form submission with validation
+    // Message form submission
     const messageForm = document.getElementById('messageForm');
     if (messageForm) {
         messageForm.addEventListener('submit', function (e) {
@@ -343,7 +517,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const receiver = document.getElementById('receiverInput').value;
             const message = document.getElementById('messageInput').value;
 
-            // Validate message is not empty
             if (!message.trim()) {
                 alert("Please enter a message.");
                 return;

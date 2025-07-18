@@ -8,6 +8,9 @@
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
     <link rel="stylesheet" href="Bookings.css" />
   </head>
   <body>
@@ -150,16 +153,17 @@
           <input type="text" name="username" required />
 
           <label>Date:</label>
-          <input type="date" name="date" required />
+<input type="text" name="date" id="dateInput" required />
 
           <label>Players:</label>
           <input type="number" name="players" min="1" max="20" required />
 
           <label>Start Time:</label>
-<input type="time" name="start_time" step="1800" required />
+<input type="text" id="startTime" name="start_time" required />
 
 <label>End Time:</label>
-<input type="time" name="end_time" step="1800" required />
+<input type="text" id="endTime" name="end_time" required />
+
           <!-- ✅ رسالة الخطأ أو النجاح ستظهر هنا -->
           <div id="bookingMessage" class="form-message"></div>
 
@@ -197,8 +201,10 @@
         </form>
       </div>
     </div>
-
+ <!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <!-- Include the JavaScript file -->
     <script src="bookings.js"></script>
+   
   </body>
 </html>

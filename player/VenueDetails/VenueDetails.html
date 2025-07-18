@@ -16,45 +16,41 @@
       <a href="../BookVenue/BookVenue.php">← Back to Venues</a>
     </div>
 
-    <!-- FLEX Layout for header -->
+    <!-- Venue Header -->
     <div class="venue-header-wrapper">
-
       <div class="venue-header">
         <div class="venue-image">
-          <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1000&h=700&fit=crop&crop=center" alt="Venue Image">
+          <img id="venue-image" src="" alt="Venue Image">
         </div>
 
         <div class="venue-info">
           <div class="venue-title-row">
-            <h1>Elite Basketball Arena</h1>
+            <h1 id="venue-name">Loading...</h1>
             <button class="report-btn" onclick="openReportModal()">Report Venue</button>
           </div>
 
-          <div class="info">📍 Location: Jerusalem, Central District</div>
-          <div class="info">⚽ Sport: Basketball</div>
-          <div class="info">👤 Owner: john_doe</div>
-          <div class="info price">₪120 / hour</div>
-          <div class="stars">★★★★☆</div>
+          <div class="info" id="venue-location"></div>
+          <div class="info" id="venue-sport"></div>
+          <div class="info" id="venue-owner"></div>
+          <div class="info price" id="venue-price"></div>
+          <div class="stars" id="venue-stars">★★★★☆</div>
         </div>
       </div>
     </div>
 
     <!-- Description -->
     <h2 class="section-title">Description</h2>
-    <p>Welcome to the Elite Basketball Arena — a world-class facility for both casual games and professional tournaments.</p>
+    <p id="venue-description">Loading description...</p>
 
     <!-- Reviews -->
     <h2 class="section-title">Reviews</h2>
-    <div class="comments">
-      <div class="comment-card">
-        <div class="user">Michael23</div>
-        <div class="comment-stars">★★★★☆</div>
-        <div class="text">Best basketball court I've played on. Clean, spacious, and very professional staff!</div>
-      </div>
-
-      <button id="view-more-btn" class="view-more-btn">View More Comments</button>
-      <button id="view-less-btn" class="view-more-btn" style="display: none;">View Less Comments</button>
+    <div class="comments" id="commentsContainer">
+      <!-- Comments will be dynamically inserted here -->
     </div>
+
+    <!-- View More / View Less Buttons -->
+    <button id="view-more-btn" class="view-more-btn" style="display: none;">View More Comments</button>
+    <button id="view-less-btn" class="view-more-btn" style="display: none;">View Less Comments</button>
 
     <!-- Add Review -->
     <div class="add-comment">
@@ -75,7 +71,6 @@
   <div id="reportModal" class="modal">
     <div class="modal-content">
       <h3>Report Venue</h3>
-
       <label for="reason">Reason:</label>
       <select id="reason">
         <option value="" disabled selected>Select a reason</option>
@@ -86,12 +81,9 @@
         <option>Fake Images</option>
         <option>Other</option>
       </select>
-
       <label for="details">Additional Details:</label>
-     <textarea id="details" rows="3" placeholder="Write details..." maxlength="100"></textarea>
-<div class="char-counter" id="charCounter">0 / 100</div>
-
-
+      <textarea id="details" rows="3" placeholder="Write details..." maxlength="100"></textarea>
+      <div class="char-counter" id="charCounter">0 / 100</div>
       <div class="modal-buttons">
         <button onclick="submitReport()">Submit</button>
         <button onclick="closeReportModal()">Cancel</button>
