@@ -42,6 +42,9 @@ function populateBookingDetails(booking) {
   document.getElementById("totalPrice").textContent = booking.total_price + " ₪";
   document.getElementById("bookingId").textContent = booking.booking_id;
 
+  // store group id globally for later updates
+  window.currentGroupId = booking.group_id;
+
   // ✅ عرض الخصوصية
   const privacyToggle = document.getElementById("privacyToggle");
   const passwordSection = document.getElementById("passwordSection");
@@ -169,6 +172,7 @@ function initializePrivacyToggle() {
   // ✅ Host can toggle
   privacyToggle?.addEventListener('click', function () {
     window.isPrivate = !window.isPrivate;
+    const newPrivacy = window.isPrivate ? 'private' : 'public';
 
     if (window.isPrivate) {
       this.innerHTML = '<span class="privacy-status">Private</span><span class="privacy-icon">🔒</span>';
@@ -180,6 +184,28 @@ function initializePrivacyToggle() {
       this.classList.remove('private');
       passwordSection.style.display = 'none';
       showNotification('Room is now public. Anyone can join!', 'info');
+    }
+
+    // notify backend about the change
+    if (window.currentGroupId) {
+      const formData = new URLSearchParams();
+      formData.append('group_id', window.currentGroupId);
+      formData.append('privacy', newPrivacy);
+
+      fetch('updatePrivacy.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success) {
+            showNotification(data.error || 'Failed to update privacy', 'error');
+          }
+        })
+        .catch(() => {
+          showNotification('Failed to update privacy', 'error');
+        });
     }
   });
 
