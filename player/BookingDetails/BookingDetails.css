@@ -567,13 +567,13 @@ body {
   transform: translateY(-1px);
 }
 
-.friend-btn.friends {
+.friend-btn.remove-friend {
   background: linear-gradient(135deg, var(--secondary), #66bb6a);
   color: white;
   border-color: transparent;
 }
 
-.friend-btn.friends:hover {
+.friend-btn.remove-friend:hover {
   background: linear-gradient(135deg, #1db954, var(--secondary));
 }
 
