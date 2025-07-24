@@ -1,5 +1,8 @@
 <?php
+session_start();
 require_once '../../db.php'; // adjust path as needed
+
+$currentUsername = $_SESSION['user_id'] ?? '';
 header('Content-Type: application/json');
 
 $bookingId = $_GET['booking_id'] ?? null;
@@ -76,6 +79,25 @@ $stmt2->execute();
 $playersResult = $stmt2->get_result();
 $players = [];
 while ($row = $playersResult->fetch_assoc()) {
+    // amount paid by the player
+    $paidStmt = $conn->prepare("SELECT COALESCE(SUM(amount),0) AS paid FROM payments WHERE booking_id=? AND username=? AND payment_status='completed'");
+    $paidStmt->bind_param("is", $bookingId, $row['username']);
+    $paidStmt->execute();
+    $paidData = $paidStmt->get_result()->fetch_assoc();
+    $row['paid_amount'] = $paidData['paid'] ?? 0;
+    $paidStmt->close();
+
+    // friendship status with current user
+    $isFriend = false;
+    if ($currentUsername && $row['username'] !== $currentUsername) {
+        $friendStmt = $conn->prepare("SELECT 1 FROM friends WHERE (user1=? AND user2=?) OR (user1=? AND user2=?) LIMIT 1");
+        $friendStmt->bind_param("ssss", $currentUsername, $row['username'], $row['username'], $currentUsername);
+        $friendStmt->execute();
+        $isFriend = $friendStmt->get_result()->num_rows > 0;
+        $friendStmt->close();
+    }
+    $row['is_friend'] = $isFriend;
+
     $players[] = $row;
 }
 

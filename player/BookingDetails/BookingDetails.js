@@ -42,6 +42,9 @@ function populateBookingDetails(booking) {
   document.getElementById("totalPrice").textContent = booking.total_price + " ₪";
   document.getElementById("bookingId").textContent = booking.booking_id;
 
+  // store group id globally for later updates
+  window.currentGroupId = booking.group_id;
+
   // ✅ عرض الخصوصية
   const privacyToggle = document.getElementById("privacyToggle");
   const passwordSection = document.getElementById("passwordSection");
@@ -97,14 +100,16 @@ function populatePlayerList(players) {
       buttonsHTML += `<button class="switch-host-btn">👑 Make Host</button>`;
     }
     if (!isCurrentUser) {
-      buttonsHTML += `<button class="friend-btn">👥 Add Friend</button>`;
+      const friendText = p.is_friend ? '🚫 Remove Friend' : '👥 Add Friend';
+      const friendClass = p.is_friend ? 'remove-friend' : 'add-friend';
+      buttonsHTML += `<button class="friend-btn ${friendClass}">${friendText}</button>`;
     }
 
     playerCard.innerHTML = `
       ${badgeHTML}
       <img class="player-image" src="${p.user_image}" alt="${p.username}" data-player="${p.username}">
       <div class="player-name">${p.username}</div>
-      <div class="player-status">${p.payment_status === "paid" ? "✅ Paid" : "💸 Not Paid"}</div>
+      <div class="player-status">${p.paid_amount} / ${p.price}</div>
       <div class="payment-amount" data-player="${p.username}">
         <span class="amount-value">${p.price}</span> 
       </div>
@@ -169,6 +174,7 @@ function initializePrivacyToggle() {
   // ✅ Host can toggle
   privacyToggle?.addEventListener('click', function () {
     window.isPrivate = !window.isPrivate;
+    const newPrivacy = window.isPrivate ? 'private' : 'public';
 
     if (window.isPrivate) {
       this.innerHTML = '<span class="privacy-status">Private</span><span class="privacy-icon">🔒</span>';
@@ -180,6 +186,32 @@ function initializePrivacyToggle() {
       this.classList.remove('private');
       passwordSection.style.display = 'none';
       showNotification('Room is now public. Anyone can join!', 'info');
+    }
+
+    // notify backend about the change
+    if (window.currentGroupId) {
+      const formData = new URLSearchParams();
+      formData.append('group_id', window.currentGroupId);
+      formData.append('privacy', newPrivacy);
+
+      fetch('updatePrivacy.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            if (data.password) {
+              document.getElementById('roomPassword').textContent = data.password;
+            }
+          } else {
+            showNotification(data.error || 'Failed to update privacy', 'error');
+          }
+        })
+        .catch(() => {
+          showNotification('Failed to update privacy', 'error');
+        });
     }
   });
 
@@ -287,7 +319,9 @@ function switchHost(newHostId) {
     }
     
     friendBtn.disabled = false;
-    friendBtn.innerHTML = '👥 Add Friend';
+    friendBtn.classList.remove('remove-friend');
+    friendBtn.classList.add('add-friend');
+    friendBtn.textContent = '👥 Add Friend';
   }
 
   const newHostCard = document.querySelector(`[data-player="${newHostId}"]`).closest('.player-card');
@@ -306,7 +340,8 @@ function switchHost(newHostId) {
     
     const friendBtn = newHostCard.querySelector('.friend-btn');
     friendBtn.disabled = true;
-    friendBtn.innerHTML = '👤 You';
+    friendBtn.classList.remove('add-friend', 'remove-friend');
+    friendBtn.textContent = '👤 You';
 
     showNotification('You are now the host!', 'success');
   }
@@ -314,15 +349,17 @@ function switchHost(newHostId) {
 
 function toggleFriend(playerId) {
   const friendBtn = document.querySelector(`[data-player="${playerId}"]`).closest('.player-card').querySelector('.friend-btn');
-  const isFriend = friendBtn.classList.contains('friends');
+  const isRemove = friendBtn.classList.contains('remove-friend');
 
-  if (isFriend) {
-    friendBtn.classList.remove('friends');
-    friendBtn.innerHTML = '👥 Add Friend';
+  if (isRemove) {
+    friendBtn.classList.remove('remove-friend');
+    friendBtn.classList.add('add-friend');
+    friendBtn.textContent = '👥 Add Friend';
     showNotification('Removed from friends', 'warning');
   } else {
-    friendBtn.classList.add('friends');
-    friendBtn.innerHTML = '✅ Friends';
+    friendBtn.classList.remove('add-friend');
+    friendBtn.classList.add('remove-friend');
+    friendBtn.textContent = '🚫 Remove Friend';
     showNotification('Added as friend!', 'success');
   }
 }
