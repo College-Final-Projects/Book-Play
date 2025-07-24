@@ -72,16 +72,24 @@
 
 .venue-image {
   height: 220px;
-  background: linear-gradient(45deg, #4fc3f7, #81c784);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 48px;
-  font-weight: 700;
   position: relative;
   overflow: hidden;
+  border-radius: var(--radius);
+  padding: 0;
+  background: none;
 }
+
+
+.venue-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
 
 .venue-image::before {
   content: '';

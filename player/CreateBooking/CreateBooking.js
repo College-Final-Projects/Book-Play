@@ -1,10 +1,10 @@
 let isPublic = true;
 let startTimePicker, endTimePicker, startDatePicker;
+let unavailableRanges = [];
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   initializeDateTimePickers();
   setupEventListeners();
-  setDefaultValues();
   updateSummary();
 });
 
@@ -12,7 +12,17 @@ function initializeDateTimePickers() {
   startDatePicker = flatpickr("#startDate", {
     minDate: "today",
     dateFormat: "Y-m-d",
-    onChange: updateSummary
+    onChange: ([selectedDate]) => {
+      updateEndTimeMinTime();
+      updateSummary();
+
+      if (facilityId && selectedDate) {
+        const formattedDate = selectedDate.getFullYear() + '-' +
+          String(selectedDate.getMonth() + 1).padStart(2, '0') + '-' +
+          String(selectedDate.getDate()).padStart(2, '0');
+        loadUnavailableRanges(facilityId, formattedDate);
+      }
+    }
   });
 
   startTimePicker = flatpickr("#startTime", {
@@ -50,14 +60,13 @@ if (facilityId) {
     .then(data => {
       if (data.success) {
         const facility = data.facility;
+        window.selectedFacilityPrice = facility.price;
 
-        // تعبئة معلومات البطاقة
         document.querySelector(".venue-image img").src = facility.image_url || "images/default.jpg";
         document.querySelector(".venue-title").textContent = facility.place_name;
         document.querySelector(".venue-location").textContent = `📍 ${facility.location}`;
         document.querySelector(".venue-price").innerHTML = `₪${facility.price} <span class="per">per hour</span>`;
 
-        // تلخيص السعر والاسم
         document.getElementById("summaryVenue").textContent = facility.place_name;
         document.getElementById("summaryRate").textContent = `₪${facility.price}/hour`;
       } else {
@@ -66,7 +75,6 @@ if (facilityId) {
     })
     .catch(err => console.error("Failed to fetch facility", err));
 }
-
 
 function toggleGroupType() {
   const btn = document.getElementById('groupTypeBtn');
@@ -91,7 +99,25 @@ function toggleGroupType() {
 }
 
 function updateEndTimeMinTime() {
+  const startDate = document.getElementById('startDate').value;
   const startTime = document.getElementById('startTime').value;
+
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+
+  if (startDate === todayStr) {
+    const currentTimeStr = now.getHours().toString().padStart(2, '0') + ':' +
+      Math.floor(now.getMinutes() / 30) * 30
+        .toString()
+        .padStart(2, '0');
+    startTimePicker.set('minTime', currentTimeStr);
+    if (startTime < currentTimeStr) {
+      startTimePicker.setDate(currentTimeStr, true);
+    }
+  } else {
+    startTimePicker.set('minTime', '00:00');
+  }
+
   if (startTime) {
     endTimePicker.set('minTime', startTime);
   }
@@ -101,6 +127,14 @@ function validateForm() {
   const startDate = document.getElementById('startDate').value;
   const startTime = document.getElementById('startTime').value;
   const endTime = document.getElementById('endTime').value;
+
+  const now = new Date();
+  const selectedStartFull = new Date(`${startDate}T${startTime}`);
+  if (selectedStartFull < now) {
+    alert("Start time cannot be in the past.");
+    return false;
+  }
+
   const playerCount = parseInt(document.getElementById('playerCount').value);
 
   if (!startDate || !startTime || !endTime || isNaN(playerCount)) {
@@ -118,9 +152,8 @@ function validateForm() {
     return false;
   }
 
-  // تحقق من أن مدة الحجز لا تقل عن ساعة واحدة
-  const start = new Date(`2000-01-01 ${startTime}`);
-  const end = new Date(`2000-01-01 ${endTime}`);
+  const start = new Date(`2000-01-01T${startTime}`);
+  const end = new Date(`2000-01-01T${endTime}`);
   const diffHours = (end - start) / (1000 * 60 * 60);
 
   if (diffHours < 1) {
@@ -133,9 +166,19 @@ function validateForm() {
     return false;
   }
 
-  return true;
+  for (const range of unavailableRanges) {
+    const rangeStart = new Date(`2000-01-01T${range.from}`);
+    const rangeEnd = new Date(`2000-01-01T${range.to}`);
 
+    if (start < rangeEnd && end > rangeStart) {
+      alert(`Selected time ${startTime} → ${endTime} overlaps with unavailable slot ${range.from} → ${range.to}`);
+      return false;
+    }
+  }
+
+  return true;
 }
+
 
 function handleFormSubmission(e) {
   e.preventDefault();
@@ -148,17 +191,40 @@ function handleFormSubmission(e) {
   button.textContent = 'Processing...';
   button.disabled = true;
 
-  setTimeout(() => {
-    button.textContent = 'Booking Confirmed! ✓';
-    button.style.background = 'linear-gradient(135deg, var(--success), #16a34a)';
+  const formData = new FormData();
+formData.append("facility_id", facilityId);
+formData.append("start_date", document.getElementById("startDate").value);
+formData.append("start_time", document.getElementById("startTime").value);
+formData.append("end_time", document.getElementById("endTime").value);
+formData.append("player_count", document.getElementById("playerCount").value);
+formData.append("group_type", isPublic ? "public" : "private");
+formData.append("group_password", isPublic ? "" : document.getElementById("groupPassword").value);
 
+fetch("CreateBookingAPI.php", {
+  method: "POST",
+  body: formData
+})
+.then(res => res.json())
+.then(data => {
+  if (data.success) {
+    alert(`Booking confirmed successfully!\nYour Booking ID is: ${data.booking_id}`);
     setTimeout(() => {
-      alert('Booking confirmed successfully!');
-      button.textContent = originalText;
-      button.disabled = false;
-      button.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+      window.location.href = "../MyBookings/MyBookings.php";
     }, 2000);
-  }, 1500);
+  } else {
+    alert("Error: " + data.message);
+  }
+})
+.catch(err => {
+  console.error("Booking error", err);
+  alert("An error occurred. Try again.");
+})
+.finally(() => {
+  button.textContent = originalText;
+  button.disabled = false;
+  button.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+});
+
 }
 
 function updateSummary() {
@@ -170,20 +236,26 @@ function updateSummary() {
   if (startDate) {
     const dateObj = new Date(startDate);
     document.getElementById('summaryDate').textContent =
-      dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+      dateObj.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
   }
 
   document.getElementById('summaryStartTime').textContent = startTime || '-';
   document.getElementById('summaryEndTime').textContent = endTime || '-';
 
   if (startTime && endTime) {
-    const start = new Date(`2000-01-01 ${startTime}`);
-    const end = new Date(`2000-01-01 ${endTime}`);
+    const start = new Date(`2000-01-01T${startTime}`);
+    const end = new Date(`2000-01-01T${endTime}`);
     const diffHours = (end - start) / (1000 * 60 * 60);
 
     if (diffHours > 0) {
       document.getElementById('summaryDuration').textContent = `${diffHours} hour${diffHours !== 1 ? 's' : ''}`;
-      document.getElementById('summaryTotal').textContent = `₪${diffHours * 120}`;
+      const price = window.selectedFacilityPrice || 0;
+document.getElementById('summaryTotal').textContent = `₪${diffHours * price}`;
     } else {
       document.getElementById('summaryDuration').textContent = '-';
       document.getElementById('summaryTotal').textContent = '₪0';
@@ -192,4 +264,63 @@ function updateSummary() {
 
   document.getElementById('summaryPlayers').textContent = playerCount || '0';
   document.getElementById('summaryGroupType').textContent = isPublic ? 'Public' : 'Private';
+}
+
+function loadUnavailableRanges(facilityId, bookingDate) {
+  fetch(`CreateBookingAPI.php?facility_id=${facilityId}&booking_date=${bookingDate}`)
+    .then(res => res.json())
+    .then(data => {
+      const container = document.querySelector('.unavailable-slots');
+      container.innerHTML = '';
+      unavailableRanges = [];
+
+      if (data.success && Array.isArray(data.unavailable_ranges)) {
+        unavailableRanges = mergeTimeRanges(data.unavailable_ranges);
+        unavailableRanges.forEach(range => {
+          const slot = document.createElement('div');
+          slot.className = 'unavailable-slot';
+          slot.textContent = `${range.from} → ${range.to}`;
+          container.appendChild(slot);
+        });
+        updateTimePickersWithUnavailableTimes(unavailableRanges);
+      } else {
+        container.innerHTML = '<div class="unavailable-slot">No unavailable slots</div>';
+        updateTimePickersWithUnavailableTimes([]);
+      }
+    })
+    .catch(err => {
+      console.error("Failed to load unavailable ranges", err);
+    });
+}
+
+function mergeTimeRanges(ranges) {
+  if (!ranges.length) return [];
+
+  const sorted = ranges.slice().sort((a, b) => a.from.localeCompare(b.from));
+  const merged = [sorted[0]];
+
+  for (let i = 1; i < sorted.length; i++) {
+    const last = merged[merged.length - 1];
+    const current = sorted[i];
+
+    if (current.from <= last.to) {
+      last.to = current.to > last.to ? current.to : last.to;
+    } else {
+      merged.push(current);
+    }
+  }
+
+  return merged;
+}
+
+function updateTimePickersWithUnavailableTimes(ranges) {
+  const disabled = ranges.map(range => {
+    return {
+      from: `2000-01-01T${range.from}`,
+      to: `2000-01-01T${range.to}`
+    };
+  });
+
+  startTimePicker.set('disable', disabled);
+  endTimePicker.set('disable', disabled);
 }

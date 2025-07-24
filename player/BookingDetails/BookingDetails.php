@@ -1,3 +1,5 @@
 <?php
-include 'BookingDetails.html';
+session_start();
+include 'BookingDetails.html'; 
+exit();
 ?>

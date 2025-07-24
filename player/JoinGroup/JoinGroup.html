@@ -13,7 +13,6 @@
     <div class="search-container">
       <div class="search-box-main">
         <input type="text" class="player-search" placeholder="🔍 Search for group by name..." id="playerSearch">
-        <button class="search-btn">Search</button>
       </div>
     </div>
   </section>
@@ -44,10 +43,6 @@
       <div class="filter-section">
         <h3>Sort by Price</h3>
         <label class="sort-option">
-          <input type="radio" name="price-sort" id="price-default" checked>
-          <span>Default</span>
-        </label>
-        <label class="sort-option">
           <input type="radio" name="price-sort" id="price-low">
           <span>Low to High</span>
         </label>
@@ -60,10 +55,6 @@
       <!-- Sort by Rating -->
       <div class="filter-section">
         <h3>Sort by Rating</h3>
-        <label class="sort-option">
-          <input type="radio" name="rating-sort" id="rating-default" checked>
-          <span>Default</span>
-        </label>
         <label class="sort-option">
           <input type="radio" name="rating-sort" id="rating-low">
           <span>Low to High</span>
@@ -78,10 +69,6 @@
       <div class="filter-section">
         <h3>Sort by Distance</h3>
         <label class="sort-option">
-          <input type="radio" name="distance-sort" id="distance-default" checked>
-          <span>Default</span>
-        </label>
-        <label class="sort-option">
           <input type="radio" name="distance-sort" id="distance-near">
           <span>Nearest First</span>
         </label>
@@ -93,189 +80,7 @@
     </aside>
 
     <!-- Venue Cards Section -->
-    <div class="content">
-      <!-- Public Group Card -->
-      <div class="venue-card" data-group-type="public">
-        <div class="venue-card-header">
-          <span class="group-badge public">PUBLIC</span>
-        </div>
-
-        <div class="venue-image">
-           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
-    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
-      
-      &#10084;
-    </div>
-        </div>
-
-        <div class="venue-info">
-          <h3 class="venue-title">Elite Basketball Team</h3>
-          <p class="venue-location">📍 Downtown Sports Complex, City Center</p>
-
-          <div class="venue-tags">
-            <span class="tag">basketball</span>
-            <span class="player-count">8/10 players</span>
-          </div>
-
-          <div class="venue-footer">
-            <span class="venue-price">₪25<span class="per">/person</span></span>
-            <button class="join-btn" onclick="joinGroup('public', 'Elite Basketball Team')">Join Group</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Private Group Card -->
-      <div class="venue-card" data-group-type="private" data-access-code="TENNIS123">
-        <div class="venue-card-header">
-          <span class="group-badge private">PRIVATE</span>
-        </div>
-
-        <div class="venue-image">
-           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
-    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
-      
-      &#10084;
-    </div>
-        </div>
-
-        <div class="venue-info">
-          <h3 class="venue-title">Pro Tennis Club</h3>
-          <p class="venue-location">📍 Uptown Tennis Center, North District</p>
-
-          <div class="venue-tags">
-            <span class="tag">tennis</span>
-            <span class="player-count">4/6 players</span>
-          </div>
-
-          <div class="venue-footer">
-            <span class="venue-price">₪45<span class="per">/person</span></span>
-            <button class="join-btn" onclick="joinGroup('private', 'Pro Tennis Club', 'TENNIS123')">Join Group</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Another Public Group Card -->
-      <div class="venue-card" data-group-type="public">
-        <div class="venue-card-header">
-          <span class="group-badge public">PUBLIC</span>
-        </div>
-
-        <div class="venue-image">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
-    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
-      
-      &#10084;
-    </div>
-        </div>
-
-        <div class="venue-info">
-          <h3 class="venue-title">Weekend Warriors FC</h3>
-          <p class="venue-location">📍 City Park Football Ground, East Side</p>
-
-          <div class="venue-tags">
-            <span class="tag">football</span>
-            <span class="player-count">18/22 players</span>
-          </div>
-
-          <div class="venue-footer">
-            <span class="venue-price">₪15<span class="per">/person</span></span>
-            <button class="join-btn" onclick="joinGroup('public', 'Weekend Warriors FC')">Join Group</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Another Private Group Card -->
-      <div class="venue-card" data-group-type="private" data-access-code="SWIM2024">
-        <div class="venue-card-header">
-          <span class="group-badge private">PRIVATE</span>
-        </div>
-
-        <div class="venue-image">
-           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
-    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
-      
-      &#10084;
-    </div>
-        </div>
-
-        <div class="venue-info">
-          <h3 class="venue-title">Aqua Masters Swimming</h3>
-          <p class="venue-location">📍 Premium Aquatic Center, West End</p>
-
-          <div class="venue-tags">
-            <span class="tag">swimming</span>
-            <span class="player-count">12/15 players</span>
-          </div>
-
-          <div class="venue-footer">
-            <span class="venue-price">₪35<span class="per">/person</span></span>
-            <button class="join-btn" onclick="joinGroup('private', 'Aqua Masters Swimming', 'SWIM2024')">Request Join</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Public Volleyball Group -->
-      <div class="venue-card" data-group-type="public">
-        <div class="venue-card-header">
-          <span class="group-badge public">PUBLIC</span>
-        </div>
-
-        <div class="venue-image">
-           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
-    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
-      
-      &#10084;
-    </div>
-        </div>
-
-        <div class="venue-info">
-          <h3 class="venue-title">Beach Volleyball Squad</h3>
-          <p class="venue-location">📍 Seaside Sports Complex, Marina</p>
-
-          <div class="venue-tags">
-            <span class="tag">volleyball</span>
-            <span class="player-count">10/12 players</span>
-          </div>
-
-          <div class="venue-footer">
-            <span class="venue-price">₪20<span class="per">/person</span></span>
-            <button class="join-btn" onclick="joinGroup('public', 'Beach Volleyball Squad')">Join Group</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Private Badminton Group -->
-      <div class="venue-card" data-group-type="private" data-access-code="BADMIN99">
-        <div class="venue-card-header">
-          <span class="group-badge private">PRIVATE</span>
-        </div>
-
-        <div class="venue-image">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a_4m4HqcMGhZt7FG7n1nGijKzrERPqAGEA&s " alt="Venue Image">
-    <div class="favorite-icon" onclick="event.stopPropagation(); toggleFavorite(this)">
-      
-      &#10084;
-    </div>
-        </div>
-
-        <div class="venue-info">
-          <h3 class="venue-title">Elite Badminton Club</h3>
-          <p class="venue-location">📍 Indoor Sports Arena, Central Plaza</p>
-
-          <div class="venue-tags">
-            <span class="tag">badminton</span>
-            <span class="player-count">6/8 players</span>
-          </div>
-
-          <div class="venue-footer">
-            <span class="venue-price">₪30<span class="per">/person</span></span>
-            <button class="join-btn" onclick="joinGroup('private', 'Elite Badminton Club', 'BADMIN99')">Request Join</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
+    <div class="content" id="groupsContainer"></div>
 
   <!-- Private Group Access Modal -->
   <div id="privateModal" class="modal">
