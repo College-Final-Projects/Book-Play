@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="BookingDetails.css" />
 </head>
 <body>
-
+<button id="backButton" class="back-button">← Back</button>
   <!-- Venue Information Section -->
   <section class="venue-section" >
     <div class="venue-banner">
@@ -46,17 +46,22 @@
       </div>
 
       <!-- Private Room Password -->
-      <div class="password-section" id="passwordSection" style="display: none;">
-        <div class="password-card">
-          <h3>🔒 Private Room Password</h3>
-          <div class="password-display">
-            <code id="roomPassword">BP2025-ELITE-9847</code>
-            <button class="copy-btn" id="copyPassword">📋 Copy</button>
-          </div>
-          <p class="password-note">Share this password with players to join the private room</p>
-        </div>
-      </div>
+<div class="password-section" id="passwordSection">
+  <div class="password-card">
+    <h3>🔒 Private Room Password</h3>
+    
+    <div class="password-display">
+      <input class="password-input" type="text" id="roomPassword" readonly />
+      <button class="copy-btn" id="copyPassword">📋 Copy</button>
+      <button class="copy-btn" id="editPasswordBtn" style="display: none;">✏️ Edit</button>
+      <button class="copy-btn" id="savePasswordBtn" style="display: none;">💾 Save</button>
     </div>
+    
+    <p class="password-note">Share this password with players to join the private room</p>
+  </div>
+</div>
+
+
   </section>
 
   <!-- Player List Section -->
@@ -89,22 +94,22 @@
           <h3 class="timer-title">Payment Deadline</h3>
           <div class="countdown-timer" id="countdown">
             <div class="time-unit">
-              <span class="time-value" id="hours">01</span>
+              <span class="time-value" id="hours"></span>
               <span class="time-label">Hours</span>
             </div>
             <div class="time-separator">:</div>
             <div class="time-unit">
-              <span class="time-value" id="minutes">45</span>
+              <span class="time-value" id="minutes"></span>
               <span class="time-label">Minutes</span>
             </div>
             <div class="time-separator">:</div>
             <div class="time-unit">
-              <span class="time-value" id="seconds">30</span>
+              <span class="time-value" id="seconds"></span>
               <span class="time-label">Seconds</span>
             </div>
           </div>
           <p class="timer-message">
-            You must pay at least <strong>20% ($<span id="minimumAmount">48.00</span>)</strong> of the total booking price before the timer expires, otherwise the booking will be automatically canceled.
+            You must pay at least <strong>20% ($<span id="minimumAmount"></span>)</strong> of the total booking price before the timer expires, otherwise the booking will be automatically canceled.
           </p>
         </div>
       </div>
