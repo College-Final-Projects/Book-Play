@@ -1,0 +1,344 @@
+/* Light Elegant Theme - FreshGlow UI for Admin - Responsive Version */
+
+:root {
+  --primary: #1e90ff;
+  --secondary: #22c55e;
+  --light-bg: #f8f6f0;
+  --card-bg: #ffffff;
+  --card-border: #d1d5db;
+  --text-main: #1e293b;
+  --muted-text: #6b7280;
+  --accent-glow: rgba(30, 144, 255, 0.3);
+  --radius: 0.75rem;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: 'Outfit', sans-serif;
+  background: linear-gradient(135deg, #e0f7fa, #d0f8ce);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  padding: 0 15px;
+}
+
+
+
+.header-bar {
+    width: 100%;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  .logo-title {
+    font-size: 32px;
+    font-weight: bold;
+    background: linear-gradient(to right, #1e90ff, #22c55e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .logo-title span {
+    color: #f472b6;
+  }
+
+.logo-title small {
+  font-size: 16px;
+  font-weight: normal;
+  color: var(--muted-text);
+  margin-left: 10px;
+  display: inline-block;
+}
+
+/* شبكة البطاقات */
+.admin-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+  padding: 0 20px 60px;
+  margin-bottom: 40px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* تصميم كل بطاقة */
+.glow-card {
+  width: 200px;
+  height: 200px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  color: var(--text-main);
+  box-shadow: 0 4px 12px rgba(30, 144, 255, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.glow-card img.icon {
+  width: 80px;
+  margin-bottom: 12px;
+  max-width: 100%;
+  height: auto;
+}
+
+.glow-card span {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-main);
+  text-align: center;
+}
+
+.glow-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(30, 144, 255, 0.15);
+}
+
+/* ألوان Glow حسب نوع البطاقة */
+.btn-VenueRequests { box-shadow: 0 0 12px #22c55e; }
+.btn-complaints    { box-shadow: 0 0 12px gold; }
+.btn-sports        { box-shadow: 0 0 12px #38bdf8; }
+.btn-logout        { box-shadow: 0 0 12px #f43f5e; }
+
+/* Footer */
+footer {
+  background-color: transparent;
+  padding: 20px;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted-text);
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 15px;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Media Queries */
+
+/* Large devices (desktops, less than 1200px) */
+@media screen and (max-width: 1200px) {
+  .admin-buttons {
+      gap: 30px;
+  }
+}
+
+/* Medium devices (tablets, less than 992px) */
+@media screen and (max-width: 992px) {
+  .logo-title {
+      font-size: 36px;
+      margin-bottom: 50px;
+  }
+  
+  .admin-title {
+      margin-top: 50px;
+  }
+  
+  .glow-card {
+      width: 180px;
+      height: 180px;
+  }
+  
+  .glow-card img.icon {
+      width: 70px;
+  }
+  
+  .admin-buttons {
+      gap: 25px;
+      padding-bottom: 50px;
+  }
+}
+
+/* Small devices (landscape phones, less than 768px) */
+@media screen and (max-width: 768px) {
+  .logo-title {
+      font-size: 30px;
+      margin-bottom: 40px;
+  }
+  
+  .logo-title small {
+      font-size: 14px;
+      margin-left: 5px;
+  }
+  
+  .admin-title {
+      margin-top: 40px;
+  }
+  
+  .glow-card {
+      width: 160px;
+      height: 160px;
+      padding: 15px;
+  }
+  
+  .glow-card img.icon {
+      width: 60px;
+      margin-bottom: 10px;
+  }
+  
+  .glow-card span {
+      font-size: 14px;
+  }
+  
+  .admin-buttons {
+      gap: 20px;
+      padding-bottom: 40px;
+      margin-bottom: 30px;
+  }
+}
+ .logo-title {
+    font-size: 32px;
+    font-weight: bold;
+    background: linear-gradient(to right, #1e90ff, #22c55e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .logo-title span {
+    color: #f472b6;
+  }
+  /* Profile dropdown */
+  .profile-container {
+  position: relative;
+  cursor: pointer;
+  z-index: 100;
+}
+.profile-container {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+  }
+.profile-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 6px var(--accent-glow);
+}
+
+  .profile-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: white;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+  min-width: 180px;
+  z-index: 101;
+}
+
+.profile-menu a {
+  padding: 12px 18px;
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+.profile-menu a:hover {
+  background-color: #f3f4f6;
+}
+
+.profile-menu.active {
+  display: flex;
+}
+ .profile-menu {
+    min-width: 160px;
+    right: -10px;
+  }
+  
+/* Extra small devices (portrait phones, less than 576px) */
+@media screen and (max-width: 576px) {
+  .logo-title {
+      font-size: 26px;
+      margin-bottom: 30px;
+  }
+  
+  .logo-title small {
+      font-size: 12px;
+      display: block;
+      margin-left: 0;
+      margin-top: 5px;
+  }
+  
+
+  
+  .admin-buttons {
+      gap: 15px;
+      padding-bottom: 30px;
+  }
+  
+  .glow-card {
+      width: calc(50% - 15px);
+      min-width: 140px;
+      height: 150px;
+      padding: 12px;
+  }
+  
+  .glow-card img.icon {
+      width: 50px;
+      margin-bottom: 8px;
+  }
+  
+  .glow-card span {
+      font-size: 13px;
+  }
+  
+  footer {
+      padding: 15px;
+      font-size: 12px;
+  }
+}
+
+/* Very small devices (small phones, less than 380px) */
+@media screen and (max-width: 380px) {
+  .logo-title {
+      font-size: 24px;
+  }
+  
+  .admin-buttons {
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+  }
+  
+  .glow-card {
+      width: 90%;
+      max-width: 200px;
+      height: 130px;
+  }
+}
+.username-display {
+  margin-left: 20px;
+  font-weight: 600;
+  color: var(--text-main);
+  font-size: 15px;
+}

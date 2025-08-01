@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard | Book&Play</title>
+  <link rel="stylesheet" href="HomePage.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="header-bar">
+    <div class="logo-title">BOOK&PLAY</div>
+  <div class="profile-container" onclick="toggleProfileMenu()">
+    <span id="usernameDisplay" class="username-display"></span>
+      <img
+          id="userProfileImage"
+          class="profile-icon"
+          src="../../uploads/users/default.jpg"
+          alt="Profile Image"
+        />
+      <div class="profile-menu" id="profileMenu">
+        <a href="../../EditProfile/EditProfile.php">Edit Profile</a>
+        <a href="../../logout.php">Logout</a>
+      </div>
+    </div>
+    
+  </div>
+
+
+  <!-- بطاقات المدير -->
+  <div class="admin-buttons">
+    <a href="../ManageVenueRequests/ManageVenueRequests.php" class="glow-card btn-VenueRequests">
+      <img src="../../Images/MangeVenue_icon.png" class="icon" alt="Venue">
+      <span>Manage Venue Requests</span>
+    </a>
+
+
+
+    <a href="../ReviewComplaints/ReviewComplaints.php" class="glow-card btn-complaints">
+      <img src="../../Images/Complaints_icon.png" class="icon" alt="Complaints">
+      <span>Review Complaints</span>
+    </a>
+
+    <a href="../MangeSports/MangeSports.php" class="glow-card btn-sports">
+      <img src="../../Images/MangeSport_icon.png" class="icon" alt="Edit Sports">
+      <span>Manage Sports</span>
+    </a>
+ </div>
+
+ <div class="admin-buttons">
+    <a href="../../User_Selection_Page/user-selection.php" class="glow-card btn-logout">
+      <img src="../../Images/back_icon.png" class="icon" alt="back to user selection">
+      <span>Back To User Selction Page</span>
+    </a>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      © 2025 Book&Play. All rights reserved.
+    </div>
+  </footer>
+    <script src="HomePage.js"></script>
+
+</body>
+</html>

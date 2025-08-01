@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Venue - Book&Play</title>
+  <link rel="stylesheet" href="../../../assets/css/global.css">
+  <link rel="stylesheet" href="../../../assets/css/components.css">
+  <link rel="stylesheet" href="../../../assets/css/layouts.css">
+  <link rel="stylesheet" href="../../../assets/css/responsive.css">
+  <link rel="stylesheet" href="CreateBooking.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+</head>
+
+<body>
+  <!-- Back Button -->
+  <div style="padding: 20px;">
+    <a href="../BookVenue/BookVenue.php" class="back-btn">
+      ← Back to Venues
+    </a>
+  </div>
+  <!-- Main Container -->
+  <div class="container">
+    <div class="booking-layout">
+      <!-- Left Column - Venue Info & Form -->
+      <div class="main-content">
+        <!-- Venue Info -->
+        <div class="venue-info">
+          <div class="venue-image">
+            <img src="images/default.jpg" alt="Venue Image">
+          </div>
+          <div class="venue-details">
+            <h2 class="venue-title">Elite Basketball Arena</h2>
+            <div class="venue-location">
+              📍 Downtown Sports Complex, City Center
+            </div>
+            <div class="venue-price">
+              <span class="per">per hour</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="booking-form">
+          <form id="bookingForm">
+            <!-- Date & Time Selection -->
+            <div class="form-section">
+              <h3 class="section-title">Select Date & Time</h3>
+              <div class="form-row three-columns">
+                <div class="form-group">
+                  <label class="form-label">Start Date</label>
+                  <input type="text" class="flatpickr-input" id="startDate" placeholder="Select start date" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Start Time</label>
+                  <input type="text" class="flatpickr-input" id="startTime" placeholder="Select start time" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">End Time</label>
+                  <input type="text" class="flatpickr-input" id="endTime" placeholder="Select end time" required>
+                </div>
+              </div>
+
+              <!-- Unavailable Time Slots -->
+              <div class="unavailable-section">
+                <div class="unavailable-header">
+                  <div class="unavailable-icon">⚠️</div>
+                  <div class="unavailable-title">Unavailable Time Slots</div>
+                </div>
+                <div class="unavailable-slots"></div>
+              </div>
+            </div>
+
+            <!-- Group Settings -->
+            <div class="form-section">
+              <h3 class="section-title">Group Settings</h3>
+
+              <div class="form-group">
+                <label class="form-label">Number of Players</label>
+                <div class="player-count-group">
+                  <input type="number" class="form-input" id="playerCount" min="0" max="50"
+                    placeholder="How many players will join? (Max 50)" required
+                    oninput="this.value = this.value.slice(0,2)" />
+                  <div class="player-count-note">Maximum 50 players</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Group Type</label>
+                <div class="group-type-controls">
+                  <button type="button" class="group-type-btn" id="groupTypeBtn" onclick="toggleGroupType()">
+                    <span id="groupTypeIcon">🌐</span>
+                    <span id="groupTypeText">Public Group</span>
+                  </button>
+                  <input type="password" class="form-input password-input" id="groupPassword"
+                    placeholder="Enter group password" style="display: none;">
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Warning -->
+            <div class="warning-section">
+              <div class="warning-header">
+                <div class="warning-icon">⏰</div>
+                <div class="warning-title">Payment Reminder</div>
+              </div>
+              <div class="warning-text">
+                <strong>Important:</strong> At least 20% of the total payment must be completed within one hour of
+                booking confirmation. Failure to complete payment within this timeframe will result in automatic booking
+                cancellation.
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Column - Booking Summary -->
+      <div class="booking-summary">
+        <h3 class="summary-title">Booking Summary</h3>
+
+        <div class="summary-content">
+          <div class="summary-item">
+            <span class="summary-label">Venue</span>
+            <span class="summary-value" id="summaryVenue">Elite Basketball Arena</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Date</span>
+            <span class="summary-value" id="summaryDate">-</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Start Time</span>
+            <span class="summary-value" id="summaryStartTime">-</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">End Time</span>
+            <span class="summary-value" id="summaryEndTime">-</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Duration</span>
+            <span class="summary-value" id="summaryDuration">-</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Players</span>
+            <span class="summary-value" id="summaryPlayers">50</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Group Type</span>
+            <span class="summary-value" id="summaryGroupType">Public</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Rate</span>
+            <span class="summary-value" id="summaryRate">₪120/hour</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Total</span>
+            <span class="summary-value" id="summaryTotal">₪0</span>
+          </div>
+        </div>
+
+        <button type="submit" class="book-button" form="bookingForm">
+          Confirm Booking
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+  <script src="CreateBooking.js"></script>
+</body>
+
+</html>

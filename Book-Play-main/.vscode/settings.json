@@ -1,0 +1,48 @@
+{
+    "background.editor": {
+        "useFront": true,
+        "style": {
+            "background-position": "100% 100%",  // image placed bottom right
+            "background-size": "cover",         // fills the editor area
+            "opacity": 0.6                      // editor image opacity
+        },
+        "styles": [
+            {},
+            {},
+            {}
+        ],
+        "images": [
+        ],
+        "interval": 0,
+        "random": false
+    },
+    "background.fullscreen": {
+        "images": [
+"https://cdn.wallpapersafari.com/38/10/BNyfqL.jpg"        ],
+        "opacity": 0.1,                         // lighter for fullscreen
+        "size": "cover",
+        "position": "center",
+        "interval": 0,
+        "random": false
+    },
+    "background.panel": {
+        "images": [
+            "file:///C:/Users/YourUsername/Pictures/vscode_bg.png"
+        ],
+        "opacity": 0.1,                         // panel background image
+        "size": "cover",
+        "position": "center",
+        "interval": 0,
+        "random": false
+    },
+    "background.sidebar": {
+        "images": [
+            "file:///C:/Users/YourUsername/Pictures/vscode_bg.png"
+        ],
+        "opacity": 0.1,                         // sidebar image overlay
+        "size": "cover",
+        "position": "center",
+        "interval": 0,
+        "random": false
+    }
+}

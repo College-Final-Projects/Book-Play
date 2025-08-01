@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Venue Requests</title>
+  <link rel="stylesheet" href="ManageVenueRequests.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="admin-navbar">
+    <div class="nav-container">
+      <h1 class="logo"> Book&play Admin Panel</h1>
+      <ul class="nav-links">
+        <li><a href="../HomePage/HomePage.php">HomePage</a></li>
+        <li><a href="../ManageVenueRequests/ManageVenueRequests.php" class="active">Manage Venue Requests</a></li>
+        <li><a href="../MangeSports/MangeSports.php">Manage Sports</a></li>
+        <li><a href="../ReviewComplaints/ReviewComplaints.php">Review Complaints</a></li>
+        <li><a href="../../logout.php" class="logout">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Cards Container - ديناميكي -->
+  <div class="cards-container" id="venueContainer"></div>
+
+  <!-- Modal Container -->
+  <div id="reportModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2 id="modalTitle">Venue Details</h2>
+      <p id="modalMessage" class="long-description"></p>
+      <div class="actions">
+        <button class="approve">Approve</button>
+        <button class="reject">Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="ManageVenueRequests.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Venue Details</title>
+    <link rel="stylesheet" href="VenueDetails.css" />
+  </head>
+  <body>
+    <div class="venue-card" id="venueCard">
+      <h2>Venue Details</h2>
+
+      <!-- Dynamic Content -->
+      <div class="info" id="placeName">
+        <strong>Place Name:</strong> Loading...
+      </div>
+      <div class="info" id="location">
+        <strong>Location:</strong> Loading...
+      </div>
+      <div class="info" id="description">
+        <strong>Description:</strong> Loading...
+      </div>
+      <div class="info" id="sportCategory">
+        <strong>Sport Category:</strong> Loading...
+      </div>
+      <div class="info" id="ownerUsername">
+        <strong>Owner Username:</strong> Loading...
+      </div>
+      <div class="info" id="ownerEmail">
+        <strong>Owner Email:</strong> Loading...
+      </div>
+      <!-- Venue Image -->
+      <div class="info" id="venueImage">
+        <img id="imagePreview" src="" alt="Venue Image" style="display: none" />
+      </div>
+    </div>
+
+    <!-- Back Button Centered -->
+    <div class="back-wrapper">
+      <button class="btn-back" onclick="history.back()">← Back</button>
+    </div>
+
+    <script src="VenueDetails.js"></script>
+  </body>
+</html>
