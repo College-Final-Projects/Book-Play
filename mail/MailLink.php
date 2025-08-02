@@ -48,25 +48,4 @@ function sendVerificationCode($to, $code) {
         return false;
     }
 }
-function sendEmail($to, $subject, $body) {
-    $mail = new PHPMailer(true);
-    try {
-        $mail->isSMTP();
-        $mail->Host = 'smtp.example.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'your-email@example.com';
-        $mail->Password = 'your-password';
-        $mail->SMTPSecure = 'tls';
-        $mail->Port = 587;
-
-        $mail->setFrom('your-email@example.com', 'Book&Play');
-        $mail->addAddress($to);
-        $mail->Subject = $subject;
-        $mail->Body = $body;
-
-        $mail->send();
-    } catch (Exception $e) {
-        error_log("Email Error: " . $mail->ErrorInfo);
-    }
-}
 ?>

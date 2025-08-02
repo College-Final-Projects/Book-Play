@@ -1,41 +1,18 @@
 <?php
-session_start();
-require_once '../../db.php'; // المسار حسب هيكل مشروعك
-header('Content-Type: application/json');
+require_once '../../db.php';
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'error' => 'User not logged in']);
+$groupId = $_POST['group_id'] ?? null;
+$username = $_POST['username'] ?? null;
+$price = $_POST['price'] ?? null;
+
+if (!$groupId || !$username || !is_numeric($price)) {
+    echo json_encode(['error' => 'Invalid input']);
     exit;
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
-$group_id = $data['group_id'] ?? null;
-$updates = $data['updates'] ?? [];
+$stmt = $conn->prepare("UPDATE group_members SET payment_amount = ? WHERE group_id = ? AND username = ?");
+$stmt->bind_param("dis", $price, $groupId, $username);
+$success = $stmt->execute();
 
-if (!$group_id || empty($updates)) {
-    echo json_encode(['success' => false, 'error' => 'Missing group_id or updates']);
-    exit;
-}
-
-// تأكد أن المستخدم هو فعلاً المضيف
-$hostCheck = $conn->prepare("SELECT created_by FROM groups WHERE group_id = ?");
-$hostCheck->bind_param("i", $group_id);
-$hostCheck->execute();
-$hostResult = $hostCheck->get_result();
-$host = $hostResult->fetch_assoc();
-
-if (!$host || $host['created_by'] !== $_SESSION['user_id']) {
-    echo json_encode(['success' => false, 'error' => 'Only the host can update prices']);
-    exit;
-}
-
-// تحديث الأسعار في قاعدة البيانات
-$stmt = $conn->prepare("UPDATE group_members SET required_payment = ? WHERE group_id = ? AND username = ?");
-foreach ($updates as $u) {
-    $stmt->bind_param("dis", $u['amount'], $group_id, $u['username']);
-    $stmt->execute();
-}
-
-
-echo json_encode(['success' => true]);
+echo json_encode(['success' => $success]);
 ?>
