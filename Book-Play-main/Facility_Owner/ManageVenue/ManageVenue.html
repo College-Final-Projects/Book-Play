@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book&Play - Venue Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="ManageVenue.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDZbnpmM7I-vaVXq6N0_hiJQmHNL5hpk&libraries=places,marker&callback=initializeApp"></script>
+
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="fresh-navbar">
+        <div class="logo">Book&Play</div>
+        <ul class="nav-links">
+            <li><a href="../HomePage/HomePage.php">HomePage</a></li>
+            <li><a href="../ManageVenue/ManageVenue.php" class="active">Manage Venue</a></li>
+            <li><a href="../Bookings/Bookings.php">Bookings</a></li>
+            <li><a href="../Analytics/Analytics.php">Analytics</a></li>
+            <li><a href="../Messages/Messages.php">Messages</a></li>
+            <li><a href="../../logout.php" class="logout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Manage Your Venues</h1>
+            <p class="page-subtitle">Control and optimize your sports facilities with ease</p>
+            <button class="add-venue-btn">Add New Venue +</button>
+        </div>
+
+        <!-- Search and Sort -->
+        <div class="search-sort-container">
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search venues by name">
+            </div>
+            <div class="sort-container">
+                <span class="sort-label">Sort By:</span>
+                <select class="sort-select" id="sortSelect">
+                        <option value="name">Name (A-Z)</option>
+                        <option value="name-desc">Name (Z-A)</option>
+
+                </select>
+            </div>
+             <div class="sort-container">
+                <select class="sort-select" id="sortbysport">
+                    
+                </select>
+            </div>
+        </div>
+
+        <!-- Venue Grid -->
+        <div class="venue-grid" id="venueGrid">
+            <!-- Venues will be dynamically populated here via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="venueModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h2 id="modalTitle">Add New Venue</h2>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="facility_id" id="facilityId" value="">
+                <input type="hidden" name="save_facility" value="1">
+                <!-- حقول مخفية لتخزين الإحداثيات -->
+                <input type="hidden" name="latitude" id="latitude" value="">
+                <input type="hidden" name="longitude" id="longitude" value="">
+                
+                <label>Venue Name</label>
+                <input type="text" name="place_name" id="placeName" placeholder="Enter venue name" required>
+          
+                <label>Sport Type</label>
+                <select name="sport_type" id="sportType" required>
+                    <!-- Sports will be populated via JavaScript -->
+                </select>
+          
+                <label>Venue Images</label>
+                <input type="file" id="venueImages" name="venueImages[]" accept="image/*" multiple>
+                <div id="imagePreview" class="image-preview-container"></div>
+          
+                <label>Description</label>
+                <textarea name="description" id="description" placeholder="Enter venue description"></textarea>
+          
+                <label>Hourly Price ($)</label>
+                <input type="number" name="price" id="price" placeholder="50" min="1" required>
+          
+                <div class="form-group">
+                    <label>Availability</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="is_available" id="isAvailable" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+          
+                <div class="form-group">
+                    <label for="locationInput">Location</label>
+                    <input type="text" id="locationInput" name="location" placeholder="Enter address or select on map">
+                    <div id="map" style="height: 300px; border-radius: 12px; margin-top: 10px;"></div>
+                    <p class="map-help">You can click on the map to set location or drag the marker for precise positioning</p>
+                </div>
+                  
+                <div class="modal-buttons">
+                    <button type="button" class="cancel-btn">Cancel</button>
+                    <button type="submit" class="save-btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Load the JavaScript file -->
+    <script src="ManageVenue.js"></script>
+</body>
+</html>

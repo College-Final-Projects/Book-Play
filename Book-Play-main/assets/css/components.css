@@ -1,0 +1,161 @@
+/* components.css */
+
+/* NAVBAR */
+.fresh-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--navbar-height);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, rgba(224, 247, 250, 0.95), rgba(208, 248, 206, 0.95));
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: 0 1px 3px var(--shadow-light), 0 1px 2px var(--shadow-medium);
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 20px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nav-links li a {
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--text-main);
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  transition: var(--transition);
+  box-shadow: 0 1px 3px var(--shadow-light);
+}
+
+.nav-links li a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow-light);
+  background: linear-gradient(to right, #4fc3f7, #81c784);
+  color: white;
+  border-color: transparent;
+}
+
+.nav-links li a.active {
+  color: white;
+  background: linear-gradient(to right, #4fc3f7, #81c784);
+  font-weight: 600;
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(30, 144, 255, 0.25);
+}
+
+.nav-links li a.logout {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  font-weight: 600;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.nav-links li a.logout:hover {
+  background: #dc2626;
+  color: white;
+  border-color: #dc2626;
+}
+
+/* SPORTS SCROLL */
+.sports-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, rgba(224, 247, 250, 0.4), rgba(208, 248, 206, 0.4));
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+
+.sports-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.sports-scroll::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+/* Make each sport-item clickable label */
+.sport-item {
+  flex-shrink: 0;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* Hide the checkbox input */
+.sport-checkbox {
+  display: none;
+}
+
+/* Base style for sport circle */
+.sport-circle {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: var(--transition);
+  border: 2px solid transparent;
+}
+
+/* Hover effect */
+.sport-circle:hover {
+  transform: translateY(-2px);
+  background: rgba(30, 144, 255, 0.05);
+  border-color: rgba(30, 144, 255, 0.2);
+}
+
+/* Selected effect when checkbox is checked */
+.sport-checkbox:checked + .sport-circle {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  box-shadow: 0 4px 12px rgba(30, 144, 255, 0.3);
+  border-color: rgba(30, 144, 255, 0.4);
+  transform: translateY(-2px);
+  position: relative;
+}
+
+/* Add check mark icon */
+.sport-checkbox:checked + .sport-circle::after {
+  content: "✓";
+  position: absolute;
+  top: 1px;
+  right: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+} 

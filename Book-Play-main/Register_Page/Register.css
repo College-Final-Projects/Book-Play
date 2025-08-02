@@ -1,0 +1,362 @@
+/* ===================== START: Global Styles ===================== */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap'); /* Import font */
+
+:root {
+  --primary: #1e90ff; /* Blue color */
+  --secondary: #22c55e; /* Green color */
+  --bg-light: #e0f7fa; /* Light blue background */
+  --bg-light2: #d0f8ce; /* Light green background */
+  --card-bg: rgba(255, 255, 255, 0.85); /* Card background with transparency */
+  --card-border: #d1d5db; /* Card border color */
+  --text-main: #0f172a; /* Main text color */
+  --text-muted: #64748b; /* Muted text color */
+  --shadow: 0 6px 20px rgba(30, 144, 255, 0.15); /* Box shadow */
+  --radius: 12px; /* Border radius */
+}
+
+* {
+  box-sizing: border-box; /* Include padding & border in width */
+}
+
+body {
+  margin: 0; /* Remove default margin */
+  font-family: 'Outfit', sans-serif; /* Use Outfit font */
+  background: linear-gradient(135deg, var(--bg-light), var(--bg-light2)); /* Gradient background */
+  display: flex; /* Flex layout */
+  align-items: center; /* Center items vertically */
+  justify-content: center; /* Center items horizontally */
+  min-height: 100vh; /* Full viewport height */
+  color: var(--text-main); /* Text color */
+  overflow-x: hidden; /* Hide horizontal overflow */
+  padding: 15px; /* Inner padding */
+}
+/* ===================== END: Global Styles ===================== */
+
+/* ===================== START: Register Container ===================== */
+.register-container {
+  background-color: var(--card-bg); /* Card background */
+  backdrop-filter: blur(10px); /* Blur effect */
+  display: flex; /* Flex layout */
+  border-radius: 20px; /* Rounded corners */
+  box-shadow: var(--shadow); /* Shadow */
+  overflow: hidden; /* Clip overflow */
+  width: 980px; /* Fixed width */
+  max-width: 100%; /* Responsive max width */
+  transition: all 0.3s ease; /* Smooth transition */
+  flex-direction: row; /* Horizontal layout */
+}
+
+.left-section,
+.right-section {
+  flex: 1; /* Equal width */
+  padding: 40px; /* Inner padding */
+  display: flex; /* Flex container */
+  flex-direction: column; /* Vertical stacking */
+  justify-content: center; /* Center content */
+}
+
+.right-section {
+  background: rgba(255, 255, 255, 0.15); /* Transparent white bg */
+  backdrop-filter: blur(10px); /* Blur effect */
+  text-align: center; /* Center text */
+  pointer-events: none; /* Disable interaction */
+  opacity: 0.6; /* Faded look */
+  transition: opacity 0.3s ease; /* Fade transition */
+  border-left: 1px solid rgba(255, 255, 255, 0.2); /* Divider line */
+  box-shadow: inset 0 0 40px rgba(30, 144, 255, 0.1); /* Inner glow */
+}
+
+.right-section.active {
+  pointer-events: auto; /* Enable interaction */
+  opacity: 1; /* Full opacity */
+}
+
+.right-section img {
+  width: 160px; /* Image width */
+  margin: 25px auto; /* Center image */
+  display: block; /* Block element */
+  filter: drop-shadow(0 0 10px rgba(30, 144, 255, 0.3)); /* Drop shadow */
+}
+/* ===================== END: Register Container ===================== */
+
+/* ===================== START: Typography and Headings ===================== */
+h2, h3 {
+  margin-bottom: 20px; /* Space below */
+  background: linear-gradient(to right, var(--primary), var(--secondary)); /* Gradient text */
+  -webkit-background-clip: text; /* Clip background to text */
+  background-clip: text; /* Standard background clip */
+  -webkit-text-fill-color: transparent; /* Hide text fill */
+}
+/* ===================== END: Typography and Headings ===================== */
+
+/* ===================== START: Form Fields ===================== */
+.input-group {
+  margin-bottom: 18px; /* Space between inputs */
+  text-align: left; /* Left-align labels */
+}
+
+.input-group label {
+  display: block; /* Block label */
+  margin-bottom: 6px; /* Space below label */
+  font-weight: 500; /* Medium bold */
+  color: var(--text-main); /* Label color */
+}
+
+input,
+button,
+select,
+textarea {
+  width: 100%; /* Full width */
+  padding: 12px; /* Inner space */
+  font-size: 15px; /* Font size */
+  border-radius: 8px; /* Rounded corners */
+  border: 1px solid var(--card-border); /* Border color */
+  background-color: #f8fafc; /* Input bg color */
+  color: var(--text-main); /* Input text color */
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted); /* Placeholder color */
+}
+/* ===================== END: Form Fields ===================== */
+
+
+/* ===================== START: Buttons ===================== */
+.submit-btn,
+.verify-btn,
+.back-btn {
+  background: linear-gradient(to right, var(--primary), var(--secondary)); /* Gradient bg */
+  color: white; /* White text */
+  border: none; /* No border */
+  cursor: pointer; /* Pointer cursor */
+  font-weight: bold; /* Bold text */
+  transition: 0.3s; /* Smooth effect */
+  margin-top: 10px; /* Space above */
+}
+
+.submit-btn:hover,
+.verify-btn:hover,
+.back-btn:hover {
+  transform: scale(1.03); /* Slight zoom */
+  box-shadow: 0 0 10px rgba(30, 144, 255, 0.3); /* Hover glow */
+}
+
+.back-btn {
+  background: transparent; /* Clear bg */
+  border: 2px solid var(--primary); /* Blue border */
+  color: var(--primary); /* Blue text */
+}
+
+.make-profile-btn {
+  font-family: 'Outfit', sans-serif; /* Font style */
+  text-decoration: none; /* No underline */
+  border: 2px solid var(--primary); /* Border */
+  padding: 12px 25px; /* Space inside */
+  border-radius: 25px; /* Rounded pill shape */
+  color: var(--primary); /* Text color */
+  margin-top: 20px; /* Space above */
+  transition: 0.3s; /* Smooth animation */
+  background: transparent; /* Clear background */
+}
+
+.make-profile-btn:hover {
+  background-color: var(--primary); /* Fill on hover */
+  color: white; /* Text turns white */
+}
+/* ===================== END: Buttons ===================== */
+
+
+
+/* ===================== START: Upload and Sports Selection ===================== */
+textarea {
+  resize: none; /* Disable resizing */
+}
+
+input[type="file"] {
+  background-color: #f0f9ff; /* Light blue */
+  color: var(--text-muted); /* Text color */
+  cursor: pointer; /* File upload cursor */
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  background-color: var(--primary); /* Button bg */
+  color: white; /* Text */
+  border: none; /* No border */
+  padding: 8px 14px; /* Inner padding */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: var(--secondary); /* Hover color */
+}
+
+.favorite-sports {
+  display: flex; /* Layout sports */
+  flex-wrap: wrap; /* Wrap lines */
+  gap: 10px; /* Space between items */
+  margin-top: 5px; /* Top space */
+}
+
+.sport-option input[type="checkbox"] {
+  display: none; /* Hide default box */
+}
+
+.sport-label {
+  display: inline-block; /* Inline block */
+  padding: 8px 15px; /* Padding */
+  background: transparent; /* Clear background */
+  color: var(--primary); /* Text color */
+  border: 2px solid var(--primary); /* Border */
+  border-radius: 20px; /* Rounded pill */
+  cursor: pointer; /* Pointer cursor */
+  transition: all 0.3s ease; /* Smooth effect */
+}
+
+.sport-label:hover {
+  transform: scale(1.05); /* Zoom on hover */
+}
+
+.sport-option input[type="checkbox"]:checked + .sport-label {
+  background: linear-gradient(to right, var(--primary), var(--secondary)); /* Selected bg */
+  color: white; /* White text */
+  border: none; /* Remove border */
+  box-shadow: 0 0 10px rgba(30, 144, 255, 0.3); /* Glow effect */
+}
+/* ===================== END: Upload and Sports Selection ===================== */
+
+
+
+/* ===================== START: Status Messages ===================== */
+.verification-message {
+  margin-top: 10px; /* Space above */
+  font-weight: bold; /* Bold text */
+}
+
+.success {
+  color: var(--secondary); /* Green success */
+}
+
+.error {
+  color: #ef4444; /* Red error */
+}
+/* ===================== END: Status Messages ===================== */
+
+
+
+/* ===================== START: Animations ===================== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0; /* Invisible */
+    transform: translateY(20px); /* Start lower */
+  }
+  to {
+    opacity: 1; /* Visible */
+    transform: translateY(0); /* Move to position */
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1); /* Normal size */
+    box-shadow: 0 0 0 0 rgba(30, 144, 255, 0.7); /* Start glow */
+  }
+  70% {
+    transform: scale(1.05); /* Slight grow */
+    box-shadow: 0 0 0 10px rgba(30, 144, 255, 0); /* Fade glow */
+  }
+  100% {
+    transform: scale(1); /* Back to normal */
+    box-shadow: 0 0 0 0 rgba(30, 144, 255, 0); /* Reset glow */
+  }
+}
+/* ===================== END: Animations ===================== */
+
+
+/* ===================== START: Profile Form Container ===================== */
+#profileFormContainer {
+  display: none; /* Hide by default */
+  position: fixed; /* Stay on screen */
+  top: 0; /* Top aligned */
+  left: 0; /* Left aligned */
+  width: 100vw; /* Full screen width */
+  height: 100vh; /* Full screen height */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  animation: fadeInUp 0.6s ease; /* Fade in animation */
+  background: linear-gradient(135deg, var(--bg-light), var(--bg-light2)); /* Background gradient */
+  z-index: 9999; /* Bring to front */
+}
+
+.profile-form {
+  background-color: var(--card-bg); /* Card background */
+  border: 1px solid var(--card-border); /* Border */
+  border-radius: var(--radius); /* Rounded corners */
+  box-shadow: var(--shadow); /* Shadow */
+  width: 90%; /* Responsive width */
+  max-width: 600px; /* Max width */
+  max-height: 90vh; /* Max height */
+  padding: 30px 40px; /* Inner padding */
+  text-align: center; /* Center text */
+  overflow-y: auto; /* Scroll if needed */
+}
+
+.error-message {
+  color: red; /* Error color */
+  font-size: 0.85em; /* Font size */
+  margin-top: 5px; /* Space above */
+  display: block; /* Block element */
+}
+.pulsing {
+  animation: pulse 1.5s infinite; /* Pulsing animation */
+}
+/* ===================== END: Profile Form Container ===================== */
+
+
+/* ===================== START: Responsive Media Queries ===================== */
+@media screen and (max-width: 768px) {
+  .register-container {
+    flex-direction: column; /* Stack vertically */
+    height: auto; /* Auto height */
+    margin: 20px 0; /* Top and bottom margin */
+  }
+
+  .left-section,
+  .right-section {
+    padding: 25px; /* Less padding */
+  }
+
+  .profile-form {
+    padding: 20px; /* Reduced padding */
+    width: 95%; /* Responsive width */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  body {
+    padding: 10px; /* Smaller padding */
+  }
+
+  .left-section,
+  .right-section {
+    padding: 20px 15px; /* Adjusted padding */
+  }
+
+  h2, h3 {
+    font-size: 1.5rem; /* Smaller font */
+  }
+
+  input,
+  button,
+  select,
+  textarea {
+    padding: 10px; /* Compact padding */
+    font-size: 14px; /* Smaller text */
+  }
+
+  .profile-form {
+    padding: 15px; /* Compact padding */
+  }
+}
+/* ===================== END: Responsive Media Queries ===================== */

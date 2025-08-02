@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Booking Details - Book&Play</title>
+  <link rel="stylesheet" href="../../../assets/css/global.css">
+  <link rel="stylesheet" href="../../../assets/css/components.css">
+  <link rel="stylesheet" href="../../../assets/css/layouts.css">
+  <link rel="stylesheet" href="../../../assets/css/responsive.css">
+  <link rel="stylesheet" href="BookingDetails.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Venue Information Section -->
+  <section class="venue-section" >
+    <div class="venue-banner">
+      <img src="" alt="Venue Image" class="venue-image" id="venueImage" />
+      <div class="venue-overlay">
+        <h1 class="venue-name" id="venueName"></h1>
+        <p class="venue-location" id="venueLocation"></p>
+      </div>
+    </div>
+
+    <div class="booking-info">
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="info-label">Booking Date</span>
+          <span class="info-value" id="bookingDate">Loading...</span>
+        </div>
+        <div class="info-card">
+          <span class="info-label">Time</span>
+          <span class="info-value" id="bookingTime">Loading...</span>
+        </div>
+        <div class="info-card">
+          <span class="info-label">Booking ID</span>
+          <span class="info-value" id="bookingId"></span>
+        </div>
+        <div class="info-card total-price">
+          <span class="info-label">Total Venue Price</span>
+          <span class="info-value">$<span id="totalPrice"></span></span>
+        </div>
+        <div class="info-card privacy-card">
+          <span class="info-label">Privacy</span>
+          <button class="privacy-toggle" id="privacyToggle">
+            <span class="privacy-status">Public</span>
+            <span class="privacy-icon">🌐</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Private Room Password -->
+      <div class="password-section" id="passwordSection" style="display: none;">
+        <div class="password-card">
+          <h3>🔒 Private Room Password</h3>
+          <div class="password-display">
+            <code id="roomPassword">BP2025-ELITE-9847</code>
+            <button class="copy-btn" id="copyPassword">📋 Copy</button>
+          </div>
+          <p class="password-note">Share this password with players to join the private room</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Player List Section -->
+  <section class="players-section">
+    <div class="section-header">
+      <h2 class="section-title">Players</h2>
+      <div class="host-controls" id="hostControls">
+        <button class="edit-prices-btn" id="editPricesBtn">✏ Edit Prices</button>
+        <button class="save-prices-btn" id="savePricesBtn" style="display: none;">💾 Save Changes</button>
+        <button class="cancel-edit-btn" id="cancelEditBtn" style="display: none;">❌ Cancel</button>
+      </div>
+    </div>
+
+    <div class="players-scroll-container">
+      <button class="scroll-arrow scroll-left" id="scrollLeft"><span>‹</span></button>
+
+      <!-- Player Cards will be injected here -->
+      <div class="players-horizontal-scroll" id="playersScroll"></div>
+
+      <button class="scroll-arrow scroll-right" id="scrollRight"><span>›</span></button>
+    </div>
+  </section>
+
+  <!-- Payment Reminder Section -->
+  <section class="payment-section">
+    <div class="payment-reminder">
+      <div class="timer-container">
+        <div class="timer-icon">⏰</div>
+        <div class="timer-content">
+          <h3 class="timer-title">Payment Deadline</h3>
+          <div class="countdown-timer" id="countdown">
+            <div class="time-unit">
+              <span class="time-value" id="hours">01</span>
+              <span class="time-label">Hours</span>
+            </div>
+            <div class="time-separator">:</div>
+            <div class="time-unit">
+              <span class="time-value" id="minutes">45</span>
+              <span class="time-label">Minutes</span>
+            </div>
+            <div class="time-separator">:</div>
+            <div class="time-unit">
+              <span class="time-value" id="seconds">30</span>
+              <span class="time-label">Seconds</span>
+            </div>
+          </div>
+          <p class="timer-message">
+            You must pay at least <strong>20% ($<span id="minimumAmount">48.00</span>)</strong> of the total booking price before the timer expires, otherwise the booking will be automatically canceled.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Action Buttons -->
+  <section class="actions-section">
+    <div class="action-buttons">
+      <button class="cancel-btn">Cancel Booking</button>
+      <button class="pay-btn">Pay Now</button>
+    </div>
+  </section>
+
+  <!-- Player Details Modal -->
+  <div class="modal-overlay" id="playerModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <div class="modal-header">
+        <img src="" alt="Player" class="modal-player-image" id="modalPlayerImage">
+        <div class="modal-player-info">
+          <h2 class="modal-player-name" id="modalPlayerName"></h2>
+          <p class="modal-player-role" id="modalPlayerRole"></p>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="profile-section">
+          <h3>Profile Information</h3>
+          <div class="profile-details">
+            <div class="detail-item">
+              <span class="detail-label">Member Since:</span>
+              <span class="detail-value" id="memberSince"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Games Played:</span>
+              <span class="detail-value" id="gamesPlayed"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Rating:</span>
+              <span class="detail-value" id="playerRating"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Favorite Sport:</span>
+              <span class="detail-value" id="favoriteSport"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Location:</span>
+              <span class="detail-value" id="playerLocation"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="BookingDetails.js"></script>
+</body>
+</html>
