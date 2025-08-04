@@ -71,7 +71,7 @@ function createVenueCard(venue) {
                     <span class="stars">${generateStars(venue.rating)}</span>
                     <span class="rating-text">${venue.rating}/5.0</span>
                 </div>
-             <button class="view-details-btn" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
+             <button class="view-details-btn" onclick="window.location.href='../VenueDetails/VenueDetails.php?facility_id=${venue.id}'">
   View Details
 </button>
 

@@ -1,0 +1,56 @@
+/* ===================== LOGIN PAGE SPECIFIC STYLES ===================== */
+
+/* Override body styles for login page (no navbar padding needed) */
+body {
+  padding-top: 0; /* Remove navbar padding for login page */
+  display: flex; /* Flex layout */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  overflow-x: hidden; /* Hide horizontal scroll */
+  position: relative; /* For absolute children */
+  padding: 10px; /* Outer padding */
+}
+
+/* ===================== LOGIN-SPECIFIC STYLES ===================== */
+
+/* Login-specific error message styling */
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Login-specific form validation styles */
+form input:invalid {
+  border-color: #ef4444;
+}
+
+form input:valid {
+  border-color: #10b981;
+}
+
+/* Login-specific loading state */
+form button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Login-specific focus states */
+form input:focus {
+  border-color: #1e90ff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(30, 144, 255, 0.2);
+}
+
+/* Login-specific hover effects */
+form button:hover:not(:disabled) {
+  transform: scale(1.03);
+  box-shadow: 0 0 15px rgba(30, 144, 255, 0.3);
+}
+
+/* Login-specific active states */
+form button:active:not(:disabled) {
+  transform: scale(0.98);
+}

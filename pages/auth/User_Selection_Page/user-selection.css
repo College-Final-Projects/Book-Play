@@ -1,0 +1,190 @@
+/* ===================== USER SELECTION PAGE SPECIFIC STYLES ===================== */
+
+/* Override body styles for user selection page (no navbar padding needed) */
+body {
+  padding-top: 0; /* Remove navbar padding for user selection page */
+  display: flex; /* Use Flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  flex-direction: column; /* Stack children vertically */
+  padding: 20px; /* Padding around content */
+}
+
+/* ===================== USER SELECTION-SPECIFIC LAYOUT ===================== */
+
+/* User selection container - unique to this page */
+.container {
+  text-align: center; /* Center align text */
+  padding: 40px; /* Inner padding */
+  background: var(--card-bg); /* Light transparent card background */
+  backdrop-filter: blur(14px); /* Blur effect */
+  border-radius: var(--radius); /* Rounded corners */
+  box-shadow: 0 0 30px rgba(30, 144, 255, 0.1); /* Subtle shadow */
+  max-width: 1100px; /* Max container width */
+  width: 95%; /* Responsive width */
+  border: 1px solid var(--card-border); /* Border color */
+  margin: 20px 0; /* Top and bottom margin */
+}
+
+.container h1 {
+  font-size: 32px; /* Main heading size */
+  margin-bottom: 10px; /* Space below heading */
+  background: linear-gradient(to right, var(--primary), var(--secondary)); /* Gradient text */
+  -webkit-background-clip: text; /* Clip text for gradient */
+  background-clip: text;
+  -webkit-text-fill-color: transparent; /* Make text transparent */
+}
+
+.container p {
+  font-size: 16px; /* Paragraph text size */
+  color: var(--muted-text); /* Muted text color */
+  margin-bottom: 30px; /* Space below paragraph */
+}
+
+/* ===================== USER SELECTION-SPECIFIC COMPONENTS ===================== */
+
+/* User options container */
+.user-options {
+  display: flex; /* Arrange cards in a row */
+  justify-content: center; /* Center cards */
+  gap: 30px; /* Space between cards */
+  flex-wrap: wrap; /* Wrap on small screens */
+}
+
+/* User card styling */
+.user-card {
+  background: #ffffffcc; /* Semi-transparent white */
+  backdrop-filter: blur(10px); /* Glass effect */
+  padding: 30px; /* Inner padding */
+  border-radius: var(--radius); /* Rounded corners */
+  width: 260px; /* Fixed width */
+  text-align: center; /* Center content */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: transform 0.3s, box-shadow 0.3s; /* Smooth hover effect */
+  box-shadow: 0 0 14px rgba(0,0,0,0.05); /* Subtle shadow */
+  border: 1px solid var(--card-border); /* Card border */
+  flex: 1 1 260px; /* Flex behavior */
+  min-width: 240px; /* Minimum width */
+  max-width: 320px; /* Maximum width */
+}
+
+.user-card img {
+  width: 170px; /* Image width */
+  height: 170px; /* Image height */
+  margin-bottom: 15px; /* Space below image */
+  filter: drop-shadow(0 0 12px rgba(23, 107, 190, 0.3)); /* Glow effect */
+  object-fit: contain; /* Keep aspect ratio */
+}
+
+.user-card h2 {
+  font-size: 20px; /* Card title size */
+  margin-bottom: 10px; /* Space below title */
+  background: linear-gradient(to right, var(--primary), var(--secondary)); /* Gradient text */
+  -webkit-background-clip: text; /* Clip background to text */
+  background-clip: text;
+  -webkit-text-fill-color: transparent; /* Transparent fill */
+}
+
+.user-card p {
+  font-size: 14px; /* Card description size */
+  color: var(--muted-text); /* Muted color */
+}
+
+/* ===================== USER SELECTION-SPECIFIC HOVER EFFECTS ===================== */
+
+.user-card.player:hover {
+  transform: scale(1.05); /* Zoom effect */
+  box-shadow: 0 0 60px rgba(30, 144, 255, 0.2); /* Blue shadow */
+}
+
+.user-card.owner:hover {
+  transform: scale(1.05); /* Zoom effect */
+  box-shadow: 0 0 60px rgba(34, 197, 94, 0.2); /* Green shadow */
+}
+
+.user-card.admin:hover {
+  transform: scale(1.05); /* Zoom effect */
+  box-shadow: 0 0 60px rgba(147, 51, 234, 0.2); /* Purple shadow */
+}
+
+.user-card.admin h2 {
+  background: linear-gradient(to right, var(--primary), var(--tertiary)); /* Admin title gradient */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.user-card.admin img {
+  filter: drop-shadow(0 0 12px rgba(147, 51, 234, 0.3)); /* Purple glow */
+}
+
+/* ===================== USER SELECTION-SPECIFIC RESPONSIVE ===================== */
+
+/* User selection-specific responsive adjustments */
+@media screen and (max-width: 992px) {
+  .container {
+    padding: 30px; /* Reduce padding */
+  }
+  .user-card {
+    padding: 25px; /* Reduce card padding */
+  }
+  .user-card img {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .container h1 {
+    font-size: 28px; /* Smaller heading */
+  }
+  .user-options {
+    gap: 20px; /* Reduce gap between cards */
+  }
+  .user-card {
+    flex: 1 1 200px;
+    min-width: 200px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .container {
+    padding: 25px 20px; /* Less padding */
+    width: 100%; /* Full width */
+  }
+  .container h1 {
+    font-size: 24px; /* Smaller heading */
+  }
+  .container p {
+    font-size: 14px; /* Smaller paragraph */
+    margin-bottom: 20px;
+  }
+  .user-card {
+    padding: 20px; /* Reduce card padding */
+    flex: 1 1 100%;
+    max-width: 260px;
+  }
+  .user-card img {
+    width: 130px;
+    height: 130px;
+  }
+  .user-card h2 {
+    font-size: 18px; /* Smaller title */
+  }
+  .user-card p {
+    font-size: 13px; /* Smaller text */
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .container {
+    padding: 20px 15px; /* Tighter padding */
+  }
+  .user-card {
+    padding: 15px; /* Smallest card padding */
+  }
+  .user-card img {
+    width: 110px;
+    height: 110px; /* Smallest image */
+  }
+}

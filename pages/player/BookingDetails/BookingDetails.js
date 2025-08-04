@@ -69,11 +69,8 @@ function populatePlayerList(players) {
   const container = document.getElementById("playersScroll");
   container.innerHTML = ""; // Clear old list
 
-  console.log("Current username:", currentUsername);
-  console.log("Players data:", players);
-
   players.forEach(p => {
-    console.log("🎯 Adding player card", p.username, "is_host:", p.is_host, "isCurrentUser:", p.username === currentUsername);
+    console.log("🎯 Adding player card", p.username);
     const isHost = p.is_host == "1";
     const isCurrentUser = p.username === currentUsername;
 
@@ -82,10 +79,8 @@ function populatePlayerList(players) {
 
     // Add style class
     if (isHost) {
-      console.log("👑 Adding host-player class to:", p.username);
       playerCard.classList.add("host-player"); // Orange background for host
     } else if (isCurrentUser) {
-      console.log("👤 Adding me-player class to:", p.username);
       playerCard.classList.add("me-player"); // Green background for "me"
     }
 

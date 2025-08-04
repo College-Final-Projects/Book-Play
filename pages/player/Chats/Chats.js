@@ -2,14 +2,9 @@ let currentChatUser = null; // المستخدم الحالي في الدردشة
 
 // عند تحميل الصفحة، جلب المحادثات
 window.addEventListener('DOMContentLoaded', () => {
-  console.log("Loading conversations...");
   fetch("fetch_conversations.php")
-    .then(response => {
-      console.log("Response status:", response.status);
-      return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-      console.log("Conversations data:", data);
       if (data.success) {
         const sidebar = document.getElementById("sidebar");
         sidebar.innerHTML = "";
@@ -21,28 +16,18 @@ window.addEventListener('DOMContentLoaded', () => {
           userDiv.onclick = () => loadChat(username);
           sidebar.appendChild(userDiv);
         });
-      } else {
-        console.error("Failed to load conversations:", data.message);
       }
-    })
-    .catch(error => {
-      console.error("Error loading conversations:", error);
     });
 });
 
 // تحميل المحادثة عند النقر
 function loadChat(username) {
-  console.log("Loading chat with:", username);
   currentChatUser = username;
   document.getElementById("chatHeader").textContent = username;
 
   fetch(`fetch_messages.php?chat_with=${encodeURIComponent(username)}`)
-    .then(res => {
-      console.log("Load chat response status:", res.status);
-      return res.json();
-    })
+    .then(res => res.json())
     .then(data => {
-      console.log("Load chat data:", data);
       const chatBody = document.getElementById("chatBody");
       chatBody.innerHTML = "";
 
@@ -58,12 +43,7 @@ function loadChat(username) {
           messageElement.textContent = msg.message_text;
           chatBody.appendChild(messageElement);
         });
-      } else {
-        console.error("Failed to load chat:", data.message);
       }
-    })
-    .catch(error => {
-      console.error("Error loading chat:", error);
     });
 }
 
@@ -74,12 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function sendMessage() {
     const message = messageInput.value.trim();
-    if (!message || !currentChatUser) {
-      console.log("Cannot send message - message:", message, "currentChatUser:", currentChatUser);
-      return;
-    }
-
-    console.log("Sending message to:", currentChatUser, "message:", message);
+    if (!message || !currentChatUser) return;
 
     fetch("send_message.php", {
       method: "POST",
@@ -89,12 +64,8 @@ document.addEventListener("DOMContentLoaded", () => {
         message: message
       })
     })
-      .then(res => {
-        console.log("Send message response status:", res.status);
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => {
-        console.log("Send message response:", data);
         if (data.success) {
           const chatBody = document.getElementById("chatBody");
           const msg = document.createElement("p");
@@ -102,15 +73,9 @@ document.addEventListener("DOMContentLoaded", () => {
           msg.textContent = message;
           chatBody.appendChild(msg);
           messageInput.value = "";
-          console.log("Message sent successfully");
         } else {
-          console.error("Failed to send message:", data.message);
-          alert("❌ Failed to send message: " + data.message);
+          alert("❌ Failed to send message.");
         }
-      })
-      .catch(error => {
-        console.error("Error sending message:", error);
-        alert("❌ Error sending message: " + error.message);
       });
   }
 

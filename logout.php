@@ -10,6 +10,6 @@ session_unset();
 session_destroy();
 
 // أعد التوجيه إلى صفحة تسجيل الدخول
-header("Location: Login_Page/Login.php");
+header("Location: pages/auth/Login_Page/Login.php");
 exit;
 ?>

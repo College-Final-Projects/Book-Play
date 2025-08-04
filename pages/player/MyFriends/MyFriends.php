@@ -1,6 +1,5 @@
 <?php
-session_start();
-include  '../../../components/navbar.php';
-include  '../../../components/sports-scroll.php';
+include  '../navbar.html';
+include  '../sportsScroll.html';
 include  'MyFriends.html';
 ?>

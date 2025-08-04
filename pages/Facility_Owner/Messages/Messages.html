@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Messages | Book&Play</title>
+  <link rel="stylesheet" href="Messages.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+
+<div>
+  <h1 class="my-friends-title">My Friends :</h1>
+</div>
+
+<div class="main-container" id="chatSection">
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+   
+  </div>
+
+  <!-- Chat Area -->
+  <div class="chat-section">
+    <div class="chat-header" id="chatHeader">
+      Select a user
+    </div>
+    <div class="chat-body" id="chatBody">
+      <p class="message left" style="display: none;"></p>
+      <p class="message right" style="display: none;"></p>
+    </div>
+   <div class="chat-input">
+  <input type="text" id="messageInput" placeholder="Type a message...">
+  <button id="sendButton">Send</button>
+</div>
+  </div>
+</div>
+
+<script>
+  const sessionUsername = "<?php echo $_SESSION['user_id']; ?>";
+</script>
+<script src="Messages.js" defer></script>
+</body>
+</html>

@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!adminBtn) return; // Exit if the button doesn't exist
 
   // Check admin status and if a request has already been submitted
-  fetch("../../admin_actions.php?action=check")
+  fetch("../../../admin_actions.php?action=check")
     .then((res) => res.json())
     .then((data) => {
       // Hide the button if the user is an admin
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
           );
         } else {
           // Send admin request
-          fetch("../../admin_actions.php", {
+          fetch("../../../admin_actions.php", {
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const imgElement = document.getElementById("userProfileImage");
       const usernameSpan = document.getElementById("usernameDisplay");
       if (imgElement && data.image) {
-        imgElement.src = `../../uploads/users/${data.image}`;
+        imgElement.src = `../../../uploads/users/${data.image}`;
       }
       if (usernameSpan && data.username) {
         usernameSpan.textContent = data.username;

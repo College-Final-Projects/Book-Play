@@ -14,7 +14,7 @@ function filterVenuesBySports(sports = [], searchTerm = "") {
   sports.forEach(sport => params.append("sports[]", sport));
   if (searchTerm) params.append("search", searchTerm);
 
-  fetch("./fetch_venues.php?" + params.toString())
+  fetch("fetch_venues.php?" + params.toString())
     .then(res => res.json())
     .then(data => {
       if (!data.success) {
@@ -80,7 +80,7 @@ function sortVenues(venues, sortOptions) {
 }
 
 function toggleFavorite(iconElement, facilityId) {
-  fetch('./toggle_favorite.php', {
+  fetch('toggle_favorite.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ facility_id: facilityId })
@@ -117,9 +117,15 @@ function renderVenues(venues) {
 
     const isFavorited = venue.is_favorite ? 'active' : '';
 
+    // Handle image URL - provide fallback if missing
+    const imageUrl = venue.image_url && venue.image_url.trim() !== '' 
+      ? venue.image_url 
+      : '../../Images/staduim_icon.png';
+      
+    
     card.innerHTML = `
       <div class="venue-image">
-        <img src="${venue.image_url}" alt="Venue Image">
+        <img src="../${imageUrl}" alt="Venue Image" onerror="this.src='../../Images/staduim_icon.png'">
         <div class="favorite-icon ${isFavorited}" onclick="event.stopPropagation(); toggleFavorite(this, ${venue.facilities_id})">&#10084;</div>
       </div>
       <div class="venue-content">

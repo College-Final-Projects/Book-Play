@@ -1,0 +1,666 @@
+/* ===================== CSS VARIABLES ===================== */
+:root {
+    /* Primary Colors */
+    --primary: #1e90ff;
+    --primary-alt: #00bcd4;
+    --secondary: #22c55e;
+    --secondary-alt: #4caf50;
+    --accent: #f59e0b;
+    --danger: #ef4444;
+    --danger-alt: #f44336;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(to right, #4fc3f7, #81c784);
+    --gradient-secondary: linear-gradient(to right, #00bcd4, #4caf50);
+    --gradient-danger: linear-gradient(to right, #f44336, #ff7961);
+    --gradient-success: linear-gradient(to right, #4caf50, #81c784);
+    --gradient-bg: linear-gradient(to bottom right, #e0f7fa, #d0f8ce);
+    --gradient-navbar: linear-gradient(to right, #e0f7fa, #d0f8ce);
+    
+    /* Text Colors */
+    --text-main: #0f172a;
+    --text-secondary: #1e293b;
+    --text-muted: #6b7280;
+    --text-light: #9ca3af;
+    
+    /* Background Colors */
+    --background: #f8fafc;
+    --light-bg: #f8f6f0;
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-bg-alt: rgba(255, 255, 255, 0.8);
+    --card-bg-blur: rgba(255, 255, 255, 0.6);
+    
+    /* Borders & Shadows */
+    --card-border: #d1d5db;
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --radius: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 6px 20px rgba(30, 144, 255, 0.1);
+    --shadow-lg: 0 0 30px rgba(0, 128, 128, 0.2);
+    --shadow-xl: 0 0 40px rgba(0, 150, 136, 0.25);
+    
+    /* Layout */
+    --container-max-width: 1200px;
+    --navbar-height: 80px;
+    
+    /* Transitions */
+    --transition: all 0.3s ease;
+    --transition-fast: all 0.2s ease;
+  }
+  
+  /* ===================== GLOBAL RESET & BASE STYLES ===================== */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--gradient-bg);
+    color: var(--text-main);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  
+  /* ===================== TYPOGRAPHY ===================== */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.5em;
+  }
+  
+  h1 { font-size: 2.5rem; }
+  h2 { 
+    font-size: 2rem;
+    text-align: center;
+    background: var(--gradient-secondary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  h3 { font-size: 1.75rem; }
+  h4 { font-size: 1.5rem; }
+  h5 { font-size: 1.25rem; }
+  h6 { font-size: 1rem; }
+  
+  p {
+    margin-bottom: 1rem;
+  }
+  
+  /* ===================== NAVBAR STYLES ===================== */
+  .admin-navbar,
+  .facility-owner-navbar,
+  .fresh-navbar {
+    background: var(--gradient-navbar);
+    box-shadow: var(--shadow);
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+  }
+  
+  .nav-container {
+    max-width: var(--container-max-width);
+    margin: auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+    background: var(--gradient-secondary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+  
+  .nav-links li a {
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 10px 18px;
+    border-radius: var(--radius);
+    transition: var(--transition);
+    color: var(--text-main);
+    background: var(--card-bg-blur);
+    backdrop-filter: blur(6px);
+    display: inline-block;
+    text-align: center;
+  }
+  
+  .nav-links li a:hover,
+  .nav-links li a.active {
+    background: var(--gradient-primary);
+    color: white;
+    transform: translateY(-1px);
+  }
+  
+  .nav-links li a.logout {
+    background: rgba(244, 67, 54, 0.15);
+    color: var(--danger-alt);
+    font-weight: 600;
+  }
+  
+  .nav-links li a.logout:hover {
+    background: var(--danger-alt);
+    color: white;
+  }
+  
+  /* Mobile Menu Toggle */
+  .menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    cursor: pointer;
+  }
+  
+  .menu-toggle span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background-color: var(--text-main);
+    border-radius: 3px;
+    transition: var(--transition);
+  }
+  
+  /* ===================== CARD STYLES ===================== */
+  .card,
+  .fresh-card,
+  .venue-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    padding: 25px;
+    margin: 20px auto;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    transition: var(--transition);
+  }
+  
+  .fresh-card {
+    width: 95%;
+    max-width: 1000px;
+    animation: fadeInUp 0.4s ease;
+  }
+  
+  .venue-card {
+    max-width: 700px;
+    width: 95%;
+    margin-top: 60px;
+  }
+  
+  .card:hover,
+  .fresh-card:hover,
+  .venue-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 150, 136, 0.3);
+  }
+  
+  /* ===================== BUTTON STYLES ===================== */
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius);
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    min-width: 100px;
+  }
+  
+  .btn:hover {
+    transform: translateY(-2px) scale(1.05);
+  }
+  
+  .btn.primary,
+  .btn-view {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+  }
+  
+  .btn.secondary,
+  .btn.green,
+  .btn.accept,
+  .btn-resolve {
+    background: var(--gradient-success);
+    color: white;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+  }
+  
+  .btn.blue {
+    background: var(--primary);
+    color: white;
+  }
+  
+  .btn.danger,
+  .btn.delete,
+  .btn-remove {
+    background: var(--gradient-danger);
+    color: white;
+    box-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
+  }
+  
+  .btn-back {
+    background: var(--gradient-primary);
+    color: white;
+    font-size: 20px;
+    padding: 16px 36px;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    box-shadow: 0 0 20px rgba(79, 195, 247, 0.4);
+  }
+  
+  .btn-back:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 0 25px rgba(129, 199, 132, 0.5);
+  }
+  
+  /* ===================== TABLE STYLES ===================== */
+  table,
+  .fresh-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+    border: 1px solid #e2e8f0;
+  }
+  
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  th, td,
+  .fresh-table th,
+  .fresh-table td {
+    padding: 14px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    background-color: var(--card-bg);
+  }
+  
+  th {
+    background-color: #f1f5f9;
+    font-weight: 600;
+  }
+  
+  /* ===================== FORM STYLES ===================== */
+  input, textarea, select {
+    padding: 12px;
+    font-size: 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    color: var(--text-main);
+    transition: var(--transition);
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+  }
+  
+  .add-sport-form {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .add-sport-form input {
+    width: 250px;
+    max-width: 100%;
+  }
+  
+  /* ===================== MODAL STYLES ===================== */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-content {
+    background: white;
+    margin: auto;
+    padding: 30px;
+    border-radius: var(--radius-xl);
+    width: 80%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    animation: modalFadeIn 0.3s ease;
+  }
+  
+  @keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .close,
+  .close-btn {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #999;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f1f1;
+    border-radius: 50%;
+    transition: var(--transition);
+  }
+  
+  .close:hover,
+  .close-btn:hover {
+    color: #333;
+    background: #e0e0e0;
+    transform: scale(1.1);
+  }
+  
+  /* Modal Images */
+  .modal-content .images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+  
+  .modal-content .images img {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+  
+  /* ===================== UTILITY CLASSES ===================== */
+  .container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .text-center { text-align: center; }
+  .text-left { text-align: left; }
+  .text-right { text-align: right; }
+  
+  .hidden { display: none; }
+  .visible { display: block; }
+  
+  .mt-1 { margin-top: 0.25rem; }
+  .mt-2 { margin-top: 0.5rem; }
+  .mt-3 { margin-top: 1rem; }
+  .mt-4 { margin-top: 1.5rem; }
+  .mt-5 { margin-top: 3rem; }
+  
+  .mb-1 { margin-bottom: 0.25rem; }
+  .mb-2 { margin-bottom: 0.5rem; }
+  .mb-3 { margin-bottom: 1rem; }
+  .mb-4 { margin-bottom: 1.5rem; }
+  .mb-5 { margin-bottom: 3rem; }
+  
+  /* ===================== MESSAGE STYLES ===================== */
+  .message-box {
+    margin: 10px 0;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 8px;
+    display: none;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .message-success {
+    color: green;
+    background-color: #e3f9e5;
+    border: 1px solid #8bd48b;
+  }
+  
+  .message-error,
+  .error-message {
+    color: var(--danger-alt);
+    background-color: #ffebee;
+    border: 1px solid #ffcdd2;
+    font-weight: 500;
+    text-align: center;
+    padding: 15px;
+    border-radius: var(--radius);
+  }
+  
+  /* ===================== ANIMATIONS ===================== */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* ===================== RESPONSIVE DESIGN ===================== */
+  
+  /* Large devices (desktops, less than 1200px) */
+  @media screen and (max-width: 1200px) {
+    .fresh-card, .venue-card {
+      padding: 25px;
+      width: 95%;
+    }
+  }
+  
+  /* Medium devices (tablets, less than 992px) */
+  @media screen and (max-width: 992px) {
+    .nav-container {
+      padding: 0 15px;
+    }
+    
+    .nav-links li a {
+      padding: 8px 14px;
+      font-size: 14px;
+    }
+    
+    .logo {
+      font-size: 22px;
+    }
+    
+    .fresh-card, .venue-card {
+      padding: 20px;
+    }
+    
+    .fresh-table th, .fresh-table td,
+    th, td {
+      padding: 12px 10px;
+      font-size: 14px;
+    }
+    
+    .btn {
+      padding: 10px 15px;
+      font-size: 13px;
+    }
+  }
+  
+  /* Small devices (landscape phones, less than 768px) */
+  @media screen and (max-width: 768px) {
+    body {
+      padding: 15px;
+    }
+    
+    .nav-container {
+      justify-content: center;
+      flex-direction: column;
+    }
+    
+    .nav-links {
+      width: 100%;
+      justify-content: center;
+      margin-top: 15px;
+    }
+    
+    .fresh-card, .venue-card {
+      padding: 20px 15px;
+      width: 100%;
+      margin-top: 40px;
+    }
+    
+    h2 {
+      font-size: 24px;
+    }
+    
+    .btn-back {
+      font-size: 18px;
+      padding: 14px 30px;
+    }
+    
+    .add-sport-form {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .add-sport-form input {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+  
+  /* Extra small devices (portrait phones, less than 576px) */
+  @media screen and (max-width: 576px) {
+    body {
+      padding: 10px;
+    }
+    
+    /* Mobile navbar */
+    .menu-toggle {
+      display: flex;
+      position: absolute;
+      right: 20px;
+      top: 20px;
+    }
+    
+    .nav-container {
+      flex-direction: column;
+      align-items: center;
+      padding-top: 15px;
+    }
+    
+    .nav-links {
+      flex-direction: column;
+      width: 100%;
+      gap: 8px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+    }
+    
+    .nav-links.active {
+      max-height: 500px;
+    }
+    
+    .nav-links li {
+      width: 100%;
+    }
+    
+    .nav-links li a {
+      text-align: center;
+      width: 100%;
+    }
+    
+    .fresh-card, .venue-card {
+      padding: 15px 10px;
+      margin-top: 30px;
+    }
+    
+    h2 {
+      font-size: 20px;
+    }
+    
+    .btn {
+      width: 100%;
+      max-width: 300px;
+    }
+    
+    .btn-back {
+      font-size: 16px;
+      padding: 12px 25px;
+      width: 80%;
+      max-width: 250px;
+    }
+    
+    .fresh-table th, .fresh-table td,
+    th, td {
+      padding: 8px 5px;
+      font-size: 12px;
+    }
+    
+    .modal-content {
+      padding: 15px;
+      width: 95%;
+    }
+  }
+  
+  /* ===================== PRINT STYLES ===================== */
+  @media print {
+    .nav-links,
+    .btn,
+    .modal,
+    .menu-toggle {
+      display: none !important;
+    }
+    
+    body {
+      padding: 0;
+      background: white;
+    }
+    
+    .card, .fresh-card, .venue-card {
+      box-shadow: none;
+      border: 1px solid #ddd;
+    }
+  }

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../../db.php';
+require_once '../../db.php';
 $_SESSION['previous_page'] = $_SERVER['PHP_SELF'];
 
 // ✅ 1. التحقق من الطلب لجلب صورة المستخدم

@@ -1,3 +1,444 @@
 /* layouts.css */
 
-/* Layout patterns, grids, and containers will be added here */ 
+/* ===================== COMMON LAYOUT PATTERNS ===================== */
+
+/* Header Layout */
+.header-bar {
+  width: 100%;
+  padding: 20px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  box-sizing: border-box;
+}
+
+/* Logo Layout */
+.logo-title {
+  font-size: 32px;
+  font-weight: bold;
+  background: linear-gradient(to right, #1e90ff, #22c55e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+}
+
+.logo-title span {
+  color: #f472b6;
+}
+
+/* Profile Container Layout */
+.profile-container {
+  position: relative;
+  cursor: pointer;
+  z-index: 100;
+}
+
+/* Regular Navbar Layout */
+.fresh-navbar {
+  display: flex;
+  align-items: center;
+}
+
+.fresh-navbar .nav-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.fresh-navbar .nav-links {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 20px;
+  align-items: center;
+}
+
+.fresh-navbar .nav-links li {
+  margin: 0;
+}
+
+.fresh-navbar .nav-links a {
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.fresh-navbar .nav-links a:hover {
+  background-color: rgba(30, 144, 255, 0.1);
+  color: var(--primary);
+}
+
+.fresh-navbar .nav-links a.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+.fresh-navbar .nav-links a.logout {
+  background-color: #f43f5e;
+  color: white;
+}
+
+.fresh-navbar .nav-links a.logout:hover {
+  background-color: #e11d48;
+}
+
+/* Admin Navbar Layout */
+.admin-navbar {
+  display: flex;
+  align-items: center;
+}
+
+.admin-navbar .nav-links {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 20px;
+  align-items: center;
+}
+
+.admin-navbar .nav-links li {
+  margin: 0;
+}
+
+.admin-navbar .nav-links a {
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.admin-navbar .nav-links a:hover {
+  background-color: rgba(30, 144, 255, 0.1);
+  color: var(--primary);
+}
+
+.admin-navbar .nav-links a.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+.admin-navbar .nav-links a.logout {
+  background-color: #f43f5e;
+  color: white;
+}
+
+.admin-navbar .nav-links a.logout:hover {
+  background-color: #e11d48;
+}
+
+.profile-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 6px var(--accent-glow);
+}
+
+.profile-menu {
+  position: fixed;
+  top: 70px;
+  right: 30px;
+  background-color: white;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+  min-width: 180px;
+  z-index: 101;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.profile-menu a {
+  padding: 12px 18px;
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+.profile-menu a:hover {
+  background-color: #f3f4f6;
+}
+
+.profile-menu.active {
+  display: flex;
+}
+
+/* Button Container Layouts */
+.main-buttons {
+  display: flex;
+  gap: 30px;
+  margin-top: 60px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 90%;
+  max-width: 800px;
+}
+
+.secondary-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 30px;
+  margin: 60px auto;
+  width: 90%;
+  max-width: 800px;
+}
+
+.admin-buttons {
+  display: flex;
+  gap: 30px;
+  margin-top: 60px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 90%;
+  max-width: 800px;
+}
+
+/* Card Layout */
+.glow-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  color: var(--text-main);
+  box-shadow: 0 4px 12px rgba(30, 144, 255, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.main-buttons .glow-card {
+  width: 200px;
+  height: 200px;
+}
+
+.glow-card img.icon {
+  width: 80px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.glow-card span {
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.glow-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(30, 144, 255, 0.15);
+}
+
+/* Footer Layout */
+footer {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--card-border);
+  padding: 20px;
+  text-align: center;
+  margin-top: auto;
+}
+
+.footer-content {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* Container Layout */
+.container {
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 30px 25px;
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(30, 144, 255, 0.15);
+  width: 90%;
+  max-width: 420px;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid #d1d5db;
+  text-align: center;
+  color: #1e293b;
+  margin: 20px auto;
+}
+
+/* Form Layout */
+form {
+  width: 100%;
+}
+
+form input {
+  width: 100%;
+  padding: 14px;
+  margin: 12px 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #1e293b;
+  font-size: 15px;
+  transition: border 0.3s ease;
+  box-sizing: border-box;
+}
+
+form input:focus {
+  border-color: #1e90ff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(30, 144, 255, 0.2);
+}
+
+/* Button Layout */
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(to right, #1e90ff, #22c55e);
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 10px rgba(30, 144, 255, 0.2);
+}
+
+button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 15px rgba(30, 144, 255, 0.3);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Logo Layout (for forms) */
+.logo {
+  font-size: 28px;
+  font-weight: bold;
+  background: linear-gradient(to right, #1e90ff, #22c55e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+/* Slogan Layout */
+.slogan {
+  margin-top: 20px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.slogan a {
+  color: #1e90ff;
+  text-decoration: none;
+}
+
+.slogan a:hover {
+  text-decoration: underline;
+}
+
+/* Background Icons Layout */
+.bg-icons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.bg-icons img {
+  position: absolute;
+  width: 15%;
+  max-width: 260px;
+  opacity: 0.15;
+  pointer-events: none;
+  animation: float 12s ease-in-out infinite;
+}
+
+/* Icon Positions */
+.icon1 { top: 5%; left: 2%; filter: drop-shadow(0 0 20px #38bdf8); }
+.icon2 { top: 35%; left: 2%; filter: drop-shadow(0 0 20px #22c55e); }
+.icon3 { bottom: 5%; left: 2%; filter: drop-shadow(0 0 20px #94a3b8); }
+.icon4 { top: 5%; right: 2%; filter: drop-shadow(0 0 20px #60a5fa); }
+.icon5 { top: 35%; right: 2%; filter: drop-shadow(0 0 20px #34d399); }
+.icon6 { bottom: 5%; right: 2%; filter: drop-shadow(0 0 20px #94a3b8); }
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Floating Admin Button */
+.floating-admin-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #facc15, #fef08a);
+  color: #1e293b;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(250, 204, 21, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+.floating-admin-btn:hover {
+  background: linear-gradient(135deg, #eab308, #fde047);
+  box-shadow: 0 6px 16px rgba(250, 204, 21, 0.6);
+}
+
+/* Username Display */
+.username-display {
+  margin-right: 10px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+/* Fade In Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.main-buttons,
+.secondary-buttons,
+.admin-buttons {
+  animation: fadeInUp 0.6s ease-out;
+} 

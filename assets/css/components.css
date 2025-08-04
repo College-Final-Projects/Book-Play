@@ -80,6 +80,73 @@
   border-color: #dc2626;
 }
 
+/* FACILITY OWNER NAVBAR */
+.facility-owner-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--navbar-height);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, rgba(224, 247, 250, 0.95), rgba(208, 248, 206, 0.95));
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: 0 1px 3px var(--shadow-light), 0 1px 2px var(--shadow-medium);
+}
+
+.facility-owner-navbar .nav-links {
+  list-style: none;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.facility-owner-navbar .nav-links li a {
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--text-main);
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  transition: var(--transition);
+  box-shadow: 0 1px 3px var(--shadow-light);
+}
+
+.facility-owner-navbar .nav-links li a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow-light);
+  background: linear-gradient(to right, #4fc3f7, #81c784);
+  color: white;
+  border-color: transparent;
+}
+
+.facility-owner-navbar .nav-links li a.active {
+  color: white;
+  background: linear-gradient(to right, #4fc3f7, #81c784);
+  font-weight: 600;
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(30, 144, 255, 0.25);
+}
+
+.facility-owner-navbar .nav-links li a.logout {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  font-weight: 600;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.facility-owner-navbar .nav-links li a.logout:hover {
+  background: #dc2626;
+  color: white;
+  border-color: #dc2626;
+}
+
 /* SPORTS SCROLL */
 .sports-scroll {
   display: flex;

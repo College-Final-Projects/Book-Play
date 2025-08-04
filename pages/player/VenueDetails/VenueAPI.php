@@ -1,6 +1,6 @@
 <?php
 // VenueAPI.php - returns facility details + comments
-require_once '../../../db.php';
+require_once '../../db.php';
 header('Content-Type: application/json');
 
 $facilityId = $_GET['facility_id'] ?? null;

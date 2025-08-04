@@ -1,4 +1,49 @@
-/* MyFriends Page Specific Styles */
+/* MyFriends.css - FreshGlow UI Style */
+
+/* Color Variables */
+:root {
+    --primary: #1e90ff;
+    --secondary: #22c55e;
+    --bg-light: #e0f7fa;
+    --bg-secondary: #d0f8ce;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --card-border: rgba(209, 213, 219, 0.6);
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --text-light: #94a3b8;
+    --shadow-light: rgba(30, 144, 255, 0.08);
+    --shadow-medium: rgba(0, 0, 0, 0.08);
+    --shadow-strong: rgba(0, 0, 0, 0.15);
+    --radius: 12px;
+    --radius-medium: 10px;
+    --radius-small: 8px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --border-subtle: rgba(0, 0, 0, 0.06);
+    --navbar-height: 80px;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, var(--bg-light), var(--bg-secondary));
+    background-attachment: fixed;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    color: var(--text-main);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    padding-top: var(--navbar-height);
+}
 
 /* NAVBAR */
 
