@@ -1,5 +1,5 @@
 <?php
-require_once '../../../db.php';
+require_once '../../db.php'; // adjust path as needed
 header('Content-Type: application/json');
 
 $bookingId = $_GET['booking_id'] ?? null;

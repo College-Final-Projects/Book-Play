@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../../db.php';
+require_once '../../db.php'; // عدّل حسب مشروعك
 
 header('Content-Type: application/json');
 

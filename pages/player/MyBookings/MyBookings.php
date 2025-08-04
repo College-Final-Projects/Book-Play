@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../../db.php';
+require_once '../../db.php';
 
 // Check if this is an AJAX request using query string
 if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
@@ -34,8 +34,8 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
 }
 
 // Not AJAX request? Load full HTML page
-include '../../../components/navbar.php';
+include '../navbar.html';
 include 'MyBookings.html';
 exit;
 
-?> 
+?>

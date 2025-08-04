@@ -1,4 +1,22 @@
-/* MyBookings Page Specific Styles */
+/* Color Variables */
+:root {
+  --status-cancelled: #ef4444;
+
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+/* Main Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
 
 /* Page Header */
 .page-header {
@@ -287,4 +305,4 @@
     width: 50px;
     height: 50px;
   }
-} 
+}

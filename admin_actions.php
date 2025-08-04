@@ -2,7 +2,7 @@
 session_start();
 require_once 'db.php';
 
-$username = $_SESSION['user_id'] ?? '';
+$username = $_SESSION['username'] ?? '';
 
 if (!$username) {
   echo json_encode(["success" => false, "message" => "Not logged in"]);

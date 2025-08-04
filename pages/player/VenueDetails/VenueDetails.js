@@ -155,40 +155,13 @@ function closeReportModal() {
 function submitReport() {
   const reason = document.getElementById("reason").value;
   const details = document.getElementById("details").value;
-  const params = new URLSearchParams(window.location.search);
-  const facilityId = params.get('facility_id');
-  
   if (!reason) {
     alert("Please select a reason.");
     return;
   }
-
-  fetch('SubmitReport.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-      facility_id: facilityId, 
-      reason: reason, 
-      details: details 
-    })
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        alert("Thank you for your report!");
-        closeReportModal();
-        // Clear the form
-        document.getElementById("reason").value = "";
-        document.getElementById("details").value = "";
-        document.getElementById("charCounter").textContent = "0 / 100";
-      } else {
-        alert("Failed to submit report: " + data.message);
-      }
-    })
-    .catch(err => {
-      console.error("Report submission error:", err);
-      alert("An error occurred while submitting your report.");
-    });
+  console.log("Submitted Report:", { reason, details });
+  alert("Thank you for your report!");
+  closeReportModal();
 }
 
 // Submit review

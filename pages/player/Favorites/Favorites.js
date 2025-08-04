@@ -1,42 +1,5 @@
-// Sample favorite venues data
-const favoriteVenues = [
-    {
-        id: 1,
-        name: "Elite Sports Complex",
-        sport: "Basketball",
-        location: "Downtown Plaza",
-        rating: 4.8,
-        image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=200&fit=crop",
-        isFavorite: true
-    },
-    {
-        id: 2,
-        name: "Ocean View Tennis Club",
-        sport: "Tennis",
-        location: "Marina District",
-        rating: 4.6,
-        image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=200&fit=crop",
-        isFavorite: true
-    },
-    {
-        id: 3,
-        name: "City Football Arena",
-        sport: "Football",
-        location: "Sports Center",
-        rating: 4.9,
-        image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=200&fit=crop",
-        isFavorite: true
-    },
-    {
-        id: 4,
-        name: "Aqua Fitness Center",
-        sport: "Swimming",
-        location: "Health District",
-        rating: 4.7,
-        image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=200&fit=crop",
-        isFavorite: true
-    }
-];
+// Global variable to store favorite venues
+let favoriteVenues = [];
 
 // Generate star rating HTML
 function generateStars(rating) {
@@ -67,17 +30,34 @@ function createVenueCard(venue) {
                 <h3 class="venue-name">${venue.name}</h3>
                 <span class="sport-type">${venue.sport}</span>
                 <div class="location">📍 ${venue.location}</div>
-                <div class="rating">
-                    <span class="stars">${generateStars(venue.rating)}</span>
-                    <span class="rating-text">${venue.rating}/5.0</span>
+                <div class="price">💰 $${venue.price}</div>
+                <div class="availability ${venue.is_available ? 'available' : 'unavailable'}">
+                    ${venue.is_available ? '✅ Available' : '❌ Unavailable'}
                 </div>
-             <button class="view-details-btn" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
-  View Details
-</button>
-
+                <button class="view-details-btn" onclick="viewDetails(${venue.id})">
+                    View Details
+                </button>
             </div>
         </div>
     `;
+}
+
+// Fetch favorites from server
+async function fetchFavorites() {
+    try {
+        const response = await fetch('Favorites.php?action=get_favorites');
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to fetch favorites');
+        }
+        
+        favoriteVenues = data;
+        loadFavorites();
+    } catch (error) {
+        console.error('Error fetching favorites:', error);
+        showError('Failed to load favorites. Please try again.');
+    }
 }
 
 // Load and display favorite venues
@@ -99,34 +79,60 @@ function loadFavorites() {
 }
 
 // Toggle favorite status
-function toggleFavorite(venueId) {
-    const venueIndex = favoriteVenues.findIndex(v => v.id === venueId);
-    
-    if (venueIndex !== -1) {
-        // Remove from favorites with smooth animation
-        const card = document.querySelector(`[onclick="toggleFavorite(${venueId})"]`).closest('.venue-card');
-        card.style.opacity = '0';
-        card.style.transform = 'scale(0.8)';
+async function toggleFavorite(venueId) {
+    try {
+        const response = await fetch('../BookVenue/toggle_favorite.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `facility_id=${venueId}`
+        });
         
-        setTimeout(() => {
-            favoriteVenues.splice(venueIndex, 1);
-            loadFavorites();
-        }, 300);
+        if (response.ok) {
+            // Remove from local array and update display
+            favoriteVenues = favoriteVenues.filter(v => v.id !== venueId);
+            
+            // Remove card with animation
+            const card = document.querySelector(`[onclick="toggleFavorite(${venueId})"]`).closest('.venue-card');
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.8)';
+            
+            setTimeout(() => {
+                loadFavorites();
+            }, 300);
+        } else {
+            throw new Error('Failed to remove from favorites');
+        }
+    } catch (error) {
+        console.error('Error toggling favorite:', error);
+        alert('Failed to remove from favorites. Please try again.');
     }
 }
 
 // View venue details
 function viewDetails(venueId) {
-    const venue = favoriteVenues.find(v => v.id === venueId);
-    if (venue) {
-        alert(`Viewing details for: ${venue.name}\n\nThis would normally navigate to the venue details page.`);
-        // In a real app, you would navigate to: window.location.href = `venue-details.html?id=${venueId}`;
-    }
+    window.location.href = `../VenueDetails/VenueDetails.php?id=${venueId}`;
+}
+
+// Show error message
+function showError(message) {
+    const grid = document.getElementById('favoritesGrid');
+    const emptyState = document.getElementById('emptyState');
+    
+    grid.style.display = 'none';
+    emptyState.style.display = 'block';
+    emptyState.innerHTML = `
+        <div class="empty-icon">⚠️</div>
+        <h3>Error</h3>
+        <p>${message}</p>
+        <button onclick="fetchFavorites()" class="retry-btn">Retry</button>
+    `;
 }
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', function() {
-    loadFavorites();
+    fetchFavorites();
 });
 
 // Add some interactive effects

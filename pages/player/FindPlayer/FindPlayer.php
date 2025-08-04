@@ -1,6 +1,15 @@
 <?php
-include'../../../components/navbar.php';
-include'../../../components/sports-scroll.php';
-include 'FindPlayer.html';
+session_start();
+require_once '../../../db.php';
 
+// Check if user is logged in
+if (!isset($_SESSION['username'])) {
+    session_unset();
+    session_destroy();
+    header('Location: ../../../pages/auth/Login/Login.php');
+    exit();
+}
+
+include '../navbar.html';
+include 'FindPlayer.html';
 ?>

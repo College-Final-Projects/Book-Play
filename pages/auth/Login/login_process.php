@@ -43,12 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['role'] = $role;
 
                 if ($role === 'owner') {
-                    $_SESSION['user_id'] = $user['owner_email'];
-                    $_SESSION['user_name'] = 'Administrator';
+                    $_SESSION['username'] = $user['owner_email'];
+                    $_SESSION['fullname'] = 'Administrator';
                     $response['redirect'] = '../../../Owner/Owner.php';
                 } else {
-                    $_SESSION['user_id'] = $user['username'];
-                    $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
+                    $_SESSION['username'] = $user['username'];
+                    $_SESSION['fullname'] = $user['first_name'] . ' ' . $user['last_name'];
                     $response['redirect'] = '../UserSelection/UserSelection.php';
                 }
 

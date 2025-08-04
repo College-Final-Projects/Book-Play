@@ -1,34 +1,78 @@
-/* FindPlayer Page Specific Styles */
+/* FindPlayer.css - Matching Global Style */
+
+/* Import global variables */
+:root {
+    --primary: #1e90ff;
+    --secondary: #22c55e;
+    --bg-light: #e0f7fa;
+    --bg-secondary: #d0f8ce;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --card-border: rgba(209, 213, 219, 0.6);
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --text-light: #94a3b8;
+    --shadow-light: rgba(30, 144, 255, 0.08);
+    --shadow-medium: rgba(0, 0, 0, 0.08);
+    --shadow-strong: rgba(0, 0, 0, 0.15);
+    --radius: 12px;
+    --radius-medium: 10px;
+    --radius-small: 8px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --border-subtle: rgba(0, 0, 0, 0.06);
+    --navbar-height: 80px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, var(--bg-light), var(--bg-secondary));
+    background-attachment: fixed;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    color: var(--text-main);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    padding-top: var(--navbar-height);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
 
 /* Search Section */
 .search-section {
     display: flex;
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
     align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
 }
 
 .search-bar {
     flex: 1;
     position: relative;
     background: var(--card-bg);
-    border-radius: var(--radius);
+    border-radius: 24px;
     padding: 4px;
     box-shadow: 0 2px 8px var(--shadow-light), 0 1px 3px var(--shadow-medium);
     border: 1px solid var(--border-subtle);
     backdrop-filter: blur(12px);
-    max-width: 500px;
 }
 
 .search-bar input {
     width: calc(100% - 50px);
-    padding: 12px 16px;
+    padding: 14px 20px;
     border: none;
     outline: none;
     background: transparent;
-    font-size: 14px;
+    font-size: 15px;
     color: var(--text-main);
     font-weight: 500;
 }
@@ -81,8 +125,8 @@
 .availability-section {
     background: var(--card-bg);
     border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 24px;
+    padding: 24px;
+    margin-bottom: 32px;
     box-shadow: 0 2px 8px var(--shadow-light), 0 1px 3px var(--shadow-medium);
     border: 1px solid var(--border-subtle);
     backdrop-filter: blur(12px);
@@ -92,15 +136,37 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
     flex-wrap: wrap;
+    gap: 16px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
     gap: 12px;
+}
+
+.collapse-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: var(--transition);
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.collapse-btn:hover {
+    color: var(--primary);
+    background: rgba(30, 144, 255, 0.1);
 }
 
 .availability-controls {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     flex-wrap: wrap;
 }
 
@@ -183,10 +249,86 @@ input:checked + .slider:before {
     transform: translateX(24px);
 }
 
+/* Availability Status Styles */
+.availability-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.availability-status.available {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--secondary);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.availability-status.unavailable {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Save Button Styles */
+.save-availability-btn {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(30, 144, 255, 0.2);
+    margin-top: 16px;
+}
+
+.save-availability-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(30, 144, 255, 0.4), 0 4px 12px var(--shadow-medium);
+}
+
+.save-availability-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--primary);
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .days-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
 }
 
 .day-card {

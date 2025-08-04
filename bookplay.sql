@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Jul 24, 2025 at 02:56 PM
+-- Generation Time: Aug 03, 2025 at 10:49 AM
 -- Server version: 11.5.2-MariaDB
 -- PHP Version: 8.4.0
 
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `bookings` (
   `end_time` time DEFAULT NULL,
   `status` enum('pending','confirmed','cancelled') DEFAULT 'pending',
   `Total_Price` int(11) NOT NULL,
-  `Payed` int(11) DEFAULT 0,
+  `Paid` int(11) DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`booking_id`),
   KEY `facilities_id` (`facilities_id`),
@@ -108,6 +108,7 @@ CREATE TABLE IF NOT EXISTS `group_members` (
   `group_id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
   `payment_amount` decimal(10,0) NOT NULL DEFAULT 0,
+  `required_payment` decimal(10,2) NOT NULL DEFAULT 0.00,
   PRIMARY KEY (`group_id`,`username`),
   KEY `username` (`username`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_general_ci;
@@ -312,6 +313,25 @@ CREATE TABLE IF NOT EXISTS `user_favorite_sports` (
   `sport_id` int(11) NOT NULL,
   PRIMARY KEY (`username`,`sport_id`),
   KEY `sport_id` (`sport_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_general_ci;
+COMMIT;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_availability`
+--
+
+DROP TABLE IF EXISTS `user_availability`;
+CREATE TABLE IF NOT EXISTS `user_availability` (
+  `username` varchar(50) NOT NULL,
+  `day_of_week` int(1) NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `is_available` tinyint(1) DEFAULT 1,
+  PRIMARY KEY (`username`, `day_of_week`, `start_time`),
+  KEY `day_of_week` (`day_of_week`),
+  FOREIGN KEY (`username`) REFERENCES `users`(`username`) ON DELETE CASCADE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_general_ci;
 COMMIT;
 

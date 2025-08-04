@@ -1,5 +1,5 @@
 <?php
-require_once '../../../db.php';
+require_once '../../db.php';
 
 $groupId = $_POST['group_id'] ?? null;
 $newHost = $_POST['username'] ?? null;

@@ -79,4 +79,4 @@ document.addEventListener('DOMContentLoaded', function () {
         const date = new Date(dateStr);
         return date.toLocaleDateString(undefined, options);
     }
-}); 
+});

@@ -396,12 +396,6 @@ input[type="radio"], input[type="checkbox"] {
   color: var(--text-muted);
 }
 
-.distance {
-  font-size: 14px;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
-
 .book-btn {
   background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
   color: white;
@@ -600,12 +594,14 @@ input[type="radio"], input[type="checkbox"] {
 
 
 .favorite-icon {
-  position: absolute;
-  top: 12px;
+    top: 12px;
   right: 12px;
-  font-size: 24px;
-  color: rgba(255, 255, 255, 0.8);
-  text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+  position: absolute;
+  bottom: 10px; /* now it goes to the bottom of image */
+  right: 15px;
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.8); /* always visible on every image */
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.6); /* glow effect for better contrast */
   cursor: pointer;
   transition: 0.3s ease;
   z-index: 2;
@@ -619,9 +615,16 @@ input[type="radio"], input[type="checkbox"] {
   color: red;
   text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
 }
-
 .venue-rating {
   font-size: 14px;
-  color: #FFD700;
+  color: #FFD700; /* ذهبية */
   margin-bottom: 5px;
+}
+.favorite-icon.active {
+  color: red;
+}
+.favorite-icon {
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
 }

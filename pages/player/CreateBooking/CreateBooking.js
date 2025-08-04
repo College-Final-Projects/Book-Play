@@ -267,40 +267,29 @@ document.getElementById('summaryTotal').textContent = `₪${diffHours * price}`;
 }
 
 function loadUnavailableRanges(facilityId, bookingDate) {
-  console.log("Loading unavailable ranges for facility:", facilityId, "date:", bookingDate);
-  
   fetch(`CreateBookingAPI.php?facility_id=${facilityId}&booking_date=${bookingDate}`)
     .then(res => res.json())
     .then(data => {
-      console.log("Unavailable ranges response:", data);
       const container = document.querySelector('.unavailable-slots');
       container.innerHTML = '';
       unavailableRanges = [];
 
       if (data.success && Array.isArray(data.unavailable_ranges)) {
         unavailableRanges = mergeTimeRanges(data.unavailable_ranges);
-        console.log("Merged unavailable ranges:", unavailableRanges);
-        
-        if (unavailableRanges.length > 0) {
-          unavailableRanges.forEach(range => {
-            const slot = document.createElement('div');
-            slot.className = 'unavailable-slot';
-            slot.textContent = `${range.from} → ${range.to}`;
-            container.appendChild(slot);
-          });
-        } else {
-          container.innerHTML = '<div class="unavailable-slot">No unavailable slots for this date</div>';
-        }
+        unavailableRanges.forEach(range => {
+          const slot = document.createElement('div');
+          slot.className = 'unavailable-slot';
+          slot.textContent = `${range.from} → ${range.to}`;
+          container.appendChild(slot);
+        });
         updateTimePickersWithUnavailableTimes(unavailableRanges);
       } else {
-        container.innerHTML = '<div class="unavailable-slot">No unavailable slots for this date</div>';
+        container.innerHTML = '<div class="unavailable-slot">No unavailable slots</div>';
         updateTimePickersWithUnavailableTimes([]);
       }
     })
     .catch(err => {
       console.error("Failed to load unavailable ranges", err);
-      const container = document.querySelector('.unavailable-slots');
-      container.innerHTML = '<div class="unavailable-slot">Error loading unavailable slots</div>';
     });
 }
 

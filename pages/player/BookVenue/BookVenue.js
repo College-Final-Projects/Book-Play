@@ -14,7 +14,7 @@ function filterVenuesBySports(sports = [], searchTerm = "") {
   sports.forEach(sport => params.append("sports[]", sport));
   if (searchTerm) params.append("search", searchTerm);
 
-  fetch("./fetch_venues.php?" + params.toString())
+  fetch("fetch_venues.php?" + params.toString())
     .then(res => res.json())
     .then(data => {
       if (!data.success) {
@@ -80,7 +80,7 @@ function sortVenues(venues, sortOptions) {
 }
 
 function toggleFavorite(iconElement, facilityId) {
-  fetch('./toggle_favorite.php', {
+  fetch('toggle_favorite.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ facility_id: facilityId })
@@ -106,7 +106,7 @@ function renderVenues(venues) {
     const card = document.createElement("div");
     card.className = "venue-card";
     card.onclick = () => {
-      window.location.href = `../VenueDetails/VenueDetails.php?facility_id=${venue.facilities_id}`;
+      window.location.href = `http://localhost/book-Play/player/VenueDetails/VenueDetails.php?facility_id=${venue.facilities_id}`;
     };
 
     const ratingValue = parseFloat(venue.avg_rating) || 0;

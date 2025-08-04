@@ -1,4 +1,25 @@
-/* CreateBooking Page Specific Styles */
+/* CSS Variables for themes */
+
+
+
+
+
+:root {
+  --primary: #1e90ff;
+  --secondary: #4fc3f7;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --card-bg: rgba(255, 255, 255, 0.9);
+  --card-border: rgba(0, 0, 0, 0.1);
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --radius: 12px;
+  --radius-small: 8px;
+  --transition: all 0.2s ease;
+}
 
 .back-btn {
   display: inline-flex;

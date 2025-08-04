@@ -7,47 +7,33 @@ function toggleFavorite(element) {
 }
 
 window.onload = function () {
-  // Try to get user location, but don't block if it fails
   getUserLocation().then(location => {
     userLocation = location;
-    loadGroups();
-  }).catch(err => {
-    console.log("Location access denied, loading groups without distance calculation");
-    userLocation = null;
-    loadGroups();
+
+    fetch("JoinGroupAPI.php")
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.groups)) {
+          allGroups = data.groups.map(group => ({
+            ...group,
+            distance: calculateDistance(
+              userLocation.lat,
+              userLocation.lng,
+              parseFloat(group.latitude),
+              parseFloat(group.longitude)
+            )
+          }));
+          renderGroups(allGroups);
+        } else {
+          console.error("Invalid response format:", data);
+        }
+      })
+      .catch(err => console.error("Failed to fetch groups:", err));
   });
 };
 
-function loadGroups() {
-      fetch("./JoinGroupAPI.php")
-    .then(res => res.json())
-    .then(data => {
-      if (data.success && Array.isArray(data.groups)) {
-        allGroups = data.groups.map(group => ({
-          ...group,
-          distance: userLocation ? calculateDistance(
-            userLocation.lat,
-            userLocation.lng,
-            parseFloat(group.latitude),
-            parseFloat(group.longitude)
-          ) : null
-        }));
-        renderGroups(allGroups);
-      } else {
-        console.error("Invalid response format:", data);
-      }
-    })
-    .catch(err => {
-      console.error("Failed to fetch groups:", err);
-    });
-}
-
 function renderGroups(groups) {
   const container = document.getElementById("groupsContainer");
-  if (!container) {
-    console.error("groupsContainer not found!");
-    return;
-  }
   container.innerHTML = "";
 
   groups.forEach(group => {
@@ -67,7 +53,7 @@ function renderGroups(groups) {
         <span class="group-badge ${group.privacy}">${group.privacy.toUpperCase()}</span>
       </div>
       <div class="venue-image">
-        <img src="${group.image_url}" alt="Venue Image" onerror="this.src='../../../Images/staduim_icon.png'">
+        <img src="${group.image_url.replace(/\\/g, "/")}" alt="Venue Image">
       </div>
       <div class="venue-info">
         <h3 class="venue-title">${group.group_name}</h3>
@@ -76,11 +62,11 @@ function renderGroups(groups) {
           <span class="tag">${group.SportCategory}</span>
           <span class="player-count">
             ⭐ ${group.rating ? parseFloat(group.rating).toFixed(1) : "N/A"} |
-            📍 ${group.distance ? group.distance.toFixed(2) + " km" : "Location blocked"}
+            📍 ${group.distance ? group.distance.toFixed(2) + " km" : "N/A"}
           </span>
         </div>
         <div class="venue-footer">
-          <span class="venue-price">${group.price === 'Free' ? 'Free' : '₪' + group.price}<span class="per">${group.price === 'Free' ? '' : '/person'}</span></span>
+          <span class="venue-price">₪${group.price}<span class="per">/person</span></span>
           <button class="join-btn" data-group='${groupDataEncoded}' onclick="handleJoinClick(this)">Join Group</button>
         </div>
       </div>
@@ -164,27 +150,20 @@ function getUserLocation() {
 }
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
-  // Wait for Google Maps to load
-  if (typeof google !== 'undefined' && google.maps && google.maps.geometry) {
-    const point1 = new google.maps.LatLng(lat1, lon1);
-    const point2 = new google.maps.LatLng(lat2, lon2);
-    return google.maps.geometry.spherical.computeDistanceBetween(point1, point2) / 1000;
-  } else {
-    // Fallback to manual calculation if Google Maps not loaded
-    function toRad(x) {
-      return x * Math.PI / 180;
-    }
-    const R = 6371;
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) ** 2 +
-      Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) ** 2;
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
+  function toRad(x) {
+    return x * Math.PI / 180;
   }
+
+  const R = 6371;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
 }
 
 // ✅ Search

@@ -5,10 +5,9 @@ if (!isset($_SESSION['user_id'])) {
     session_unset();
     // Destroy the session completely
     session_destroy();
-    header('Location: ../../../Login_Page/Login.php');
+    header('Location: ../../Login_Page/Login.php');
     exit();
 }
-include'../../../components/navbar.php';
-include'Chats.html';
+include 'Chats.html';
 exit();
 ?>

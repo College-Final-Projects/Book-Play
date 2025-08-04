@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../../db.php';
+require_once '../../db.php'; // غيّر المسار حسب مشروعك
 
 header('Content-Type: application/json');
 
@@ -10,9 +10,6 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $currentUser = $_SESSION['user_id'];
-
-// Add debugging
-error_log("Current user: " . $currentUser);
 
 $sql = "SELECT DISTINCT 
            CASE 
@@ -32,8 +29,4 @@ while ($row = $result->fetch_assoc()) {
     $chatUsers[] = $row['chat_partner'];
 }
 
-// Add debugging
-error_log("Found chat users: " . json_encode($chatUsers));
-
 echo json_encode(["success" => true, "users" => $chatUsers]);
-?>
