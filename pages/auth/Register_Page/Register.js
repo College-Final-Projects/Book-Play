@@ -48,7 +48,7 @@ window.goBack = function(e) {
     codeSection.style.display = "none"; // Hide code verification
     registerForm.style.display = "block"; // Show registration form
   } else {
-    window.location.href = '../Login_Page/login.php'; // Redirect to login page
+    window.location.href = '../Login_Page/Login.php'; // Redirect to login page
   }
 };
 

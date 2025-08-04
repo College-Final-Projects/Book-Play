@@ -1,9 +1,5 @@
 <?php
-<<<<<<< HEAD
-require_once '../../db.php'; // adjust path as needed
-=======
 require_once '../../../db.php'; // adjust path as needed
->>>>>>> 959a443ed196a3edef798af351ee8d74e088b501
 header('Content-Type: application/json');
 
 $bookingId = $_GET['booking_id'] ?? null;
@@ -65,6 +61,7 @@ $playersSql = "
   JOIN group_members gm ON g.group_id = gm.group_id
   JOIN users u ON gm.username = u.username
   WHERE g.booking_id = ?
+  ORDER BY is_host DESC, u.username ASC
 ";
 
 $stmt2 = $conn->prepare($playersSql);
@@ -79,7 +76,26 @@ $stmt2->bind_param("i", $bookingId);
 $stmt2->execute();
 $playersResult = $stmt2->get_result();
 $players = [];
+
+// ✅ Ensure only one host and fix image paths
+$hostFound = false;
 while ($row = $playersResult->fetch_assoc()) {
+    // Fix player image path
+    if ($row['user_image'] && !empty($row['user_image'])) {
+        $row['user_image'] = '../../../uploads/users/' . $row['user_image'];
+    } else {
+        $row['user_image'] = '../../../uploads/users/default.jpg';
+    }
+    
+    // Ensure only one host
+    if ($row['is_host'] == 1) {
+        if ($hostFound) {
+            $row['is_host'] = 0; // Convert additional hosts to regular players
+        } else {
+            $hostFound = true;
+        }
+    }
+    
     $players[] = $row;
 }
 
@@ -90,12 +106,20 @@ $intervalInSeconds = ($end->getTimestamp() - $start->getTimestamp());
 $hours = $intervalInSeconds / 3600;
 $totalPrice = round($booking['price'] * $hours, 2);
 
+// ✅ Fix venue image path
+$venueImage = '';
+if ($booking['image_url'] && !empty($booking['image_url'])) {
+    $venueImage = '../../../uploads/venues/' . str_replace('\\', '/', $booking['image_url']);
+} else {
+    $venueImage = '../../../Images/staduim_icon.png'; // Default image
+}
+
 // ✅ إرسال البيانات كاملة
 echo json_encode([
   'booking' => [
     'place_name' => $booking['group_name'],
     'venue_location' => $booking['venue_location'],
-    'venue_image' => str_replace('\\', '/', $booking['image_url']),
+    'venue_image' => $venueImage,
     'booking_date' => $booking['booking_date'],
     'booking_time' => $booking['start_time'] . ' - ' . $booking['end_time'],
     'booking_id' => $booking['booking_id'],

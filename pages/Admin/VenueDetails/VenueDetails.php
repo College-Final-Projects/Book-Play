@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id']) || $result->fetch_assoc()['is_admin'] != 1) {
     session_unset();
     // Destroy the session completely
     session_destroy();
-    header('Location: ../../Login_Page/Login.php');
+    header('Location: ../../auth/Login_Page/Login.php');
     exit();
 }
 include '../navbar.php';

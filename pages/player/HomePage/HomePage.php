@@ -5,7 +5,7 @@ $_SESSION['previous_page'] = $_SERVER['PHP_SELF'];
 
 // ✅ 1. التحقق من الطلب لجلب صورة المستخدم
 if (isset($_GET['action']) && $_GET['action'] === 'get_user_image') {
-    $username = $_SESSION['username'] ?? '';
+    $username = $_SESSION['user_id'] ?? '';
 
     if (!$username) {
         echo json_encode(['error' => 'Not logged in']);
@@ -25,14 +25,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_user_image') {
 }
 
 // ✅ 2. التحقق من تسجيل الدخول وتحميل الصفحة
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['user_id'])) {
     session_unset();
     session_destroy();
-<<<<<<< HEAD
-    header('Location: ../../auth/Login/Login.php');
-=======
-    header('Location: ../../../auth/Login_Page/Login.php');
->>>>>>> 959a443ed196a3edef798af351ee8d74e088b501
+    header('Location: ../../auth/Login_Page/Login.php');
     exit();
 }
 

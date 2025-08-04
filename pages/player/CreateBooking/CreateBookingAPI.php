@@ -3,6 +3,20 @@ session_start();
 require_once '../../../db.php';
 header('Content-Type: application/json');
 
+// Add debugging
+error_log("=== CREATEBOOKINGAPI.PHP DEBUG START ===");
+error_log("Request method: " . $_SERVER['REQUEST_METHOD']);
+error_log("Session user_id: " . ($_SESSION['user_id'] ?? 'null'));
+
+// Check database connection
+if ($conn->connect_error) {
+    error_log("❌ Database connection failed: " . $conn->connect_error);
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit;
+}
+
+error_log("✅ Database connection successful");
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_SESSION['user_id'])) {
         echo json_encode(["success" => false, "message" => "User not logged in"]);
@@ -84,12 +98,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $facility_id = $_GET['facility_id'] ?? null;
 $booking_date = $_GET['booking_date'] ?? null;
 
+error_log("GET request - facility_id: " . $facility_id . ", booking_date: " . $booking_date);
+
 if (!$facility_id) {
+    error_log("❌ Missing facility_id in GET request");
     echo json_encode(["success" => false, "message" => "Missing facility_id"]);
     exit;
 }
 
 if ($booking_date) {
+    error_log("Fetching unavailable ranges for date: " . $booking_date);
     $stmt = $conn->prepare("SELECT start_time, end_time FROM bookings WHERE facilities_id = ? AND booking_date = ?");
     $stmt->bind_param("is", $facility_id, $booking_date);
     $stmt->execute();
@@ -103,18 +121,24 @@ if ($booking_date) {
         ];
     }
 
+    error_log("✅ Found " . count($unavailable) . " unavailable ranges");
     echo json_encode(["success" => true, "unavailable_ranges" => $unavailable]);
     exit;
 }
 
+error_log("Fetching facility details for ID: " . $facility_id);
 $stmt = $conn->prepare("SELECT * FROM sportfacilities WHERE facilities_id = ?");
 $stmt->bind_param("i", $facility_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($facility = $result->fetch_assoc()) {
+    error_log("✅ Facility found: " . $facility['place_name']);
     echo json_encode(["success" => true, "facility" => $facility]);
 } else {
+    error_log("❌ Facility not found for ID: " . $facility_id);
     echo json_encode(["success" => false, "message" => "Facility not found"]);
 }
+
+error_log("=== CREATEBOOKINGAPI.PHP DEBUG END ===");
 ?>

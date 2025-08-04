@@ -1,5 +1,8 @@
 /* ===================== USER SELECTION PAGE SPECIFIC STYLES ===================== */
+:root{
+    --tertiary: #9333ea; /* Purple for Admin */
 
+}
 /* Override body styles for user selection page (no navbar padding needed) */
 body {
   padding-top: 0; /* Remove navbar padding for user selection page */
@@ -108,7 +111,7 @@ body {
 }
 
 .user-card.admin h2 {
-  background: linear-gradient(to right, var(--primary), var(--tertiary)); /* Admin title gradient */
+  background: linear-gradient(to right, var(--primary), var(--tertiary)); /* Purple for Admin */
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;

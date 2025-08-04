@@ -6,6 +6,25 @@ function toggleFavorite(element) {
   element.classList.toggle("active");
 }
 
+// ✅ Filter venues by selected sports
+function filterVenuesBySports(selectedSports) {
+  if (!selectedSports || selectedSports.length === 0) {
+    renderGroups(allGroups);
+    return;
+  }
+  
+  const filtered = allGroups.filter(group => 
+    selectedSports.includes(group.SportCategory)
+  );
+  renderGroups(filtered);
+}
+
+// ✅ View Booking Details (for image clicks)
+function viewBookingDetails(booking_id) {
+  const url = `../BookingDetails/BookingDetails.php?booking_id=${encodeURIComponent(booking_id)}&view_only=true`;
+  window.location.href = url;
+}
+
 window.onload = function () {
   getUserLocation().then(location => {
     userLocation = location;
@@ -53,11 +72,7 @@ function renderGroups(groups) {
         <span class="group-badge ${group.privacy}">${group.privacy.toUpperCase()}</span>
       </div>
       <div class="venue-image">
-<<<<<<< HEAD
-        <img src="${group.image_url.replace(/\\/g, "/")}" alt="Venue Image">
-=======
-        <img src="../${group.image_url.replace(/\\/g, "/")}" alt="Venue Image">
->>>>>>> 959a443ed196a3edef798af351ee8d74e088b501
+        <img src="${group.image_url.replace(/\\/g, "/")}" alt="Venue Image" onclick="viewBookingDetails(${group.booking_id})" style="cursor: pointer;">
       </div>
       <div class="venue-info">
         <h3 class="venue-title">${group.group_name}</h3>

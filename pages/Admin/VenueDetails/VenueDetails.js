@@ -57,10 +57,10 @@ function displayVenueDetails(venue) {
   // Update the image if available
   const imagePreview = document.getElementById("imagePreview");
   if (venue.image_url && venue.image_url.trim() !== "") {
-    imagePreview.src = venue.image_url;
+    imagePreview.src = `../../../uploads/venues/${venue.image_url}`;
     imagePreview.style.display = "block";
   } else {
-    imagePreview.src = "../../assets/images/no-image.jpg"; // Default image
+    imagePreview.src = "../../../Images/staduim_icon.png"; // Default image
     imagePreview.style.display = "block";
   }
 

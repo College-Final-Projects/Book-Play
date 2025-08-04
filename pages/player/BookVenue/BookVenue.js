@@ -50,27 +50,52 @@ function filterVenuesBySports(sports = [], searchTerm = "") {
 }
 
 function sortVenues(venues, sortOptions) {
+  // First filter by availability if needed
   if (sortOptions.available === "Available") {
-    venues = venues.filter(v => v.available);
+    venues = venues.filter(v => v.available === 1 || v.available === true);
   }
 
+  // Sort venues based on selected options
   venues.sort((a, b) => {
-    if (sortOptions.distance === "distance-near" && a.distance !== b.distance) {
-      return a.distance - b.distance;
-    } else if (sortOptions.distance === "distance-far" && a.distance !== b.distance) {
-      return b.distance - a.distance;
+    // Distance sorting (highest priority)
+    if (sortOptions.distance === "distance-near") {
+      if (a.distance !== undefined && b.distance !== undefined) {
+        return a.distance - b.distance;
+      }
+    } else if (sortOptions.distance === "distance-far") {
+      if (a.distance !== undefined && b.distance !== undefined) {
+        return b.distance - a.distance;
+      }
     }
 
-    if (sortOptions.rating === "rating-high" && a.avg_rating !== b.avg_rating) {
-      return b.avg_rating - a.avg_rating;
-    } else if (sortOptions.rating === "rating-low" && a.avg_rating !== b.avg_rating) {
-      return a.avg_rating - b.avg_rating;
+    // Rating sorting
+    if (sortOptions.rating === "rating-high") {
+      const ratingA = parseFloat(a.avg_rating) || 0;
+      const ratingB = parseFloat(b.avg_rating) || 0;
+      if (ratingA !== ratingB) {
+        return ratingB - ratingA;
+      }
+    } else if (sortOptions.rating === "rating-low") {
+      const ratingA = parseFloat(a.avg_rating) || 0;
+      const ratingB = parseFloat(b.avg_rating) || 0;
+      if (ratingA !== ratingB) {
+        return ratingA - ratingB;
+      }
     }
 
-    if (sortOptions.price === "price-low" && a.price !== b.price) {
-      return a.price - b.price;
-    } else if (sortOptions.price === "price-high" && a.price !== b.price) {
-      return b.price - a.price;
+    // Price sorting
+    if (sortOptions.price === "price-low") {
+      const priceA = parseFloat(a.price) || 0;
+      const priceB = parseFloat(b.price) || 0;
+      if (priceA !== priceB) {
+        return priceA - priceB;
+      }
+    } else if (sortOptions.price === "price-high") {
+      const priceA = parseFloat(a.price) || 0;
+      const priceB = parseFloat(b.price) || 0;
+      if (priceA !== priceB) {
+        return priceB - priceA;
+      }
     }
 
     return 0;
@@ -106,7 +131,7 @@ function renderVenues(venues) {
     const card = document.createElement("div");
     card.className = "venue-card";
     card.onclick = () => {
-      window.location.href = `http://localhost/book-Play/player/VenueDetails/VenueDetails.php?facility_id=${venue.facilities_id}`;
+      window.location.href = `../VenueDetails/VenueDetails.php?facility_id=${venue.facilities_id}`;
     };
 
     const ratingValue = parseFloat(venue.avg_rating) || 0;
@@ -117,15 +142,9 @@ function renderVenues(venues) {
 
     const isFavorited = venue.is_favorite ? 'active' : '';
 
-    // Handle image URL - provide fallback if missing
-    const imageUrl = venue.image_url && venue.image_url.trim() !== '' 
-      ? venue.image_url 
-      : '../../Images/staduim_icon.png';
-      
-    
     card.innerHTML = `
       <div class="venue-image">
-        <img src="../${imageUrl}" alt="Venue Image" onerror="this.src='../../Images/staduim_icon.png'">
+        <img src="../../../uploads/venues/${venue.image_url}" alt="Venue Image">
         <div class="favorite-icon ${isFavorited}" onclick="event.stopPropagation(); toggleFavorite(this, ${venue.facilities_id})">&#10084;</div>
       </div>
       <div class="venue-content">

@@ -62,7 +62,7 @@ if (facilityId) {
         const facility = data.facility;
         window.selectedFacilityPrice = facility.price;
 
-        document.querySelector(".venue-image img").src = facility.image_url || "images/default.jpg";
+        document.querySelector(".venue-image img").src = `../../../uploads/venues/${facility.image_url}` || "images/default.jpg";
         document.querySelector(".venue-title").textContent = facility.place_name;
         document.querySelector(".venue-location").textContent = `📍 ${facility.location}`;
         document.querySelector(".venue-price").innerHTML = `₪${facility.price} <span class="per">per hour</span>`;

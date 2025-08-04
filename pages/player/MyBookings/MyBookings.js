@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="booking-card">
                 <div class="booking-header">
                     <div class="venue-image">
-                        <img src="${booking.image_url}" alt="${booking.place_name}">
+                        <img src="../../../uploads/venues/${booking.image_url}" alt="${booking.place_name}">
                     </div>
                     <div class="booking-info">
                         <div class="venue-name">${booking.place_name}</div>
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                     <div class="booking-price">₪${booking.Total_Price}</div>
                     <div class="booking-actions">
-                        <button class="action-btn">View Details</button>
+                        <button class="action-btn" onclick="viewBookingDetails(${booking.booking_id})">View Details</button>
                     </div>
                 </div>
             </div>
@@ -79,4 +79,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const date = new Date(dateStr);
         return date.toLocaleDateString(undefined, options);
     }
+
+    // Function to navigate to booking details page
+    window.viewBookingDetails = function(bookingId) {
+        if (!bookingId) {
+            alert("Booking ID not available");
+            return;
+        }
+        window.location.href = `../BookingDetails/BookingDetails.php?booking_id=${bookingId}`;
+    };
 });

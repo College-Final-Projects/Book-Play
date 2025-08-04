@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const imgElement = document.getElementById("userProfileImage");
       const usernameSpan = document.getElementById("usernameDisplay");
       if (imgElement && data.image) {
-        imgElement.src = `../../uploads/users/${data.image}`;
+        imgElement.src = `../../../uploads/users/${data.image}`;
       }
       if (usernameSpan && data.username) {
         usernameSpan.textContent = data.username;

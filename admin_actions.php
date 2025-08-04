@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once 'db.php';
+require_once '../../../db.php';
 
-$username = $_SESSION['username'] ?? '';
+$username = $_SESSION['user_id'] ?? '';
 
 if (!$username) {
   echo json_encode(["success" => false, "message" => "Not logged in"]);

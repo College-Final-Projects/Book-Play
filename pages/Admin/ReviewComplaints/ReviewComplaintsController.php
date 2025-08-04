@@ -1,6 +1,13 @@
 <?php
+session_start();
 require_once '../../../db.php';
 header('Content-Type: application/json');
+
+// Add debugging
+error_log("=== REVIEWCOMPLAINTS CONTROLLER DEBUG START ===");
+error_log("Request method: " . $_SERVER['REQUEST_METHOD']);
+error_log("Session user_id: " . ($_SESSION['user_id'] ?? 'null'));
+error_log("Action: " . ($_POST['action'] ?? $_GET['action'] ?? 'none'));
 
 // تحديد نوع العملية المطلوبة
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
@@ -8,19 +15,33 @@ $action = $_POST['action'] ?? $_GET['action'] ?? '';
 switch ($action) {
    case 'get_place_reports':
     $reports = [];
-    // Get all data including the message field for report details
-    $sql = "SELECT * FROM reports WHERE username != ? ORDER BY created_at DESC";
+    error_log("Fetching place reports...");
+    
+    // Get venue reports specifically (type = 'report_place')
+    // Exclude reports where the admin is the venue owner to prevent conflicts of interest
+    $sql = "SELECT r.*, sf.owner_username 
+            FROM reports r
+            LEFT JOIN sportfacilities sf ON r.facilities_id = sf.facilities_id
+            WHERE r.type = 'report_place' 
+            AND (sf.owner_username IS NULL OR sf.owner_username != ?)
+            ORDER BY r.created_at DESC";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $_SESSION['user_id']);
     $stmt->execute();
     $result = $stmt->get_result();
 
+    error_log("Query executed. Found " . $result->num_rows . " reports");
+
     if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             $reports[] = $row;
+            error_log("Report found: ID=" . $row['report_id'] . ", Type=" . $row['type'] . ", Username=" . $row['username'] . ", Venue Owner=" . $row['owner_username']);
         }
+    } else {
+        error_log("No reports found in database");
     }
 
+    error_log("Returning " . count($reports) . " reports");
     echo json_encode($reports);
     break;
     
@@ -90,4 +111,6 @@ switch ($action) {
         echo json_encode(['error' => 'Invalid action']);
         break;
 }
+
+error_log("=== REVIEWCOMPLAINTS CONTROLLER DEBUG END ===");
 ?>

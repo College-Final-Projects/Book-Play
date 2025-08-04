@@ -1,10 +1,6 @@
 <?php
 header('Content-Type: application/json');
-<<<<<<< HEAD
-include '../../db.php';
-=======
 include '../../../db.php';
->>>>>>> 959a443ed196a3edef798af351ee8d74e088b501
 
 $query = "
   SELECT 
@@ -28,6 +24,13 @@ $result = mysqli_query($conn, $query);
 $groups = [];
 
 while ($row = mysqli_fetch_assoc($result)) {
+  // Fix image path to include the correct uploads directory
+  if ($row['image_url'] && !empty($row['image_url'])) {
+    $row['image_url'] = '../../../uploads/venues/' . $row['image_url'];
+  } else {
+    $row['image_url'] = '../../../Images/staduim_icon.png'; // Default image
+  }
+  
   $groups[] = $row;
 }
 

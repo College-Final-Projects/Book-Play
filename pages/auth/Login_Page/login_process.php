@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($role === 'owner') {
                     $_SESSION['user_id'] = $user['owner_email'];
                     $_SESSION['user_name'] = 'Administrator';
-                    $response['redirect'] = '../../pages/Owner/Owner.php';
+                    $response['redirect'] = '../../Owner/Owner.php';
                 } else {
                     $_SESSION['user_id'] = $user['username'];
                     $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];

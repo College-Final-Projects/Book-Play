@@ -20,24 +20,20 @@
     <!-- 📅 Availability Section -->
     <div class="availability-section">
       <div class="availability-header">
-        <div class="header-left">
-          <h3>Your Availability</h3>
-          <button class="collapse-btn" id="collapseBtn">▼</button>
-        </div>
+        <h3>Your Availability</h3>
         <div class="availability-controls">
           <button class="select-all-btn" id="selectAllBtn">Select Everyday</button>
           <div class="toggle-container">
             <span>Available to Play</span>
             <label class="toggle">
-              <input type="checkbox" id="availableToggle" />
+              <input type="checkbox" id="availableToggle" checked />
               <span class="slider"></span>
             </label>
           </div>
-          <button class="save-availability-btn" id="saveAvailabilityBtn">💾 Save Availability</button>
         </div>
       </div>
 
-      <div class="days-container" id="daysContainer">
+      <div class="days-container">
         <!-- Day Cards -->
         <div class="day-card" data-day="sunday">
           <div class="day-header">
@@ -97,12 +93,13 @@
       <div class="players-grid" id="playersGrid">
         
         <!-- Player Card 1 -->
-        <div class="player-card" onclick="openPlayerModal('Messi', 'messi@example.com', '36', 'Male', '+972-50-123-4567', 'Tel Aviv', 'https://fcb-abj-pre.s3.amazonaws.com/img/jugadors/MESSI.jpg')">
+        <div class="player-card" onclick="openPlayerModal('Messi', 'messi@example.com', 'Soccer', '36', 'Male', '+972-50-123-4567', 'Tel Aviv', 'https://fcb-abj-pre.s3.amazonaws.com/img/jugadors/MESSI.jpg')">
           <div class="player-image">
             <img src="https://fcb-abj-pre.s3.amazonaws.com/img/jugadors/MESSI.jpg" alt="Messi" />
           </div>
           <div class="player-details">
             <h4 class="player-name">Messi</h4>
+            <p class="player-sport">Sport: Soccer</p>
             <p class="player-location">2.5 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('Messi')">Add Friend</button>
@@ -112,12 +109,13 @@
         </div>
 
         <!-- Player Card 2 -->
-        <div class="player-card" onclick="openPlayerModal('Sarah', 'sarah@example.com', '28', 'Female', '+972-50-765-4321', 'Tel Aviv', 'https://thumbs.dreamstime.com/b/female-playing-tennis-waiting-ball-38898405.jpg')">
+        <div class="player-card" onclick="openPlayerModal('Sarah', 'sarah@example.com', 'Tennis', '28', 'Female', '+972-50-765-4321', 'Tel Aviv', 'https://thumbs.dreamstime.com/b/female-playing-tennis-waiting-ball-38898405.jpg')">
           <div class="player-image">
             <img src="https://thumbs.dreamstime.com/b/female-playing-tennis-waiting-ball-38898405.jpg" alt="Sarah" />
           </div>
           <div class="player-details">
             <h4 class="player-name">Sarah</h4>
+            <p class="player-sport">Sport: Tennis</p>
             <p class="player-location">1.8 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('Sarah')">Add Friend</button>
@@ -127,12 +125,13 @@
         </div>
 
         <!-- Player Card 3 -->
-        <div class="player-card" onclick="openPlayerModal('Michael', 'michael@example.com', '24', 'Male', '+972-50-234-5678', 'Haifa', 'https://images.unsplash.com/photo-1546525848-3ce03ca516f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
+        <div class="player-card" onclick="openPlayerModal('Michael', 'michael@example.com', 'Basketball', '24', 'Male', '+972-50-234-5678', 'Haifa', 'https://images.unsplash.com/photo-1546525848-3ce03ca516f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
           <div class="player-image">
             <img src="https://images.unsplash.com/photo-1546525848-3ce03ca516f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Michael" />
           </div>
           <div class="player-details">
             <h4 class="player-name">Michael</h4>
+            <p class="player-sport">Sport: Basketball</p>
             <p class="player-location">5.2 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('Michael')">Add Friend</button>
@@ -142,12 +141,13 @@
         </div>
 
         <!-- Player Card 4 -->
-        <div class="player-card" onclick="openPlayerModal('Emma', 'emma@example.com', '22', 'Female', '+972-50-345-6789', 'Netanya', 'https://images.unsplash.com/photo-1530549387789-4c1017266635?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
+        <div class="player-card" onclick="openPlayerModal('Emma', 'emma@example.com', 'Swimming', '22', 'Female', '+972-50-345-6789', 'Netanya', 'https://images.unsplash.com/photo-1530549387789-4c1017266635?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
           <div class="player-image">
             <img src="https://images.unsplash.com/photo-1530549387789-4c1017266635?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Emma" />
           </div>
           <div class="player-details">
             <h4 class="player-name">Emma</h4>
+            <p class="player-sport">Sport: Swimming</p>
             <p class="player-location">3.7 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('Emma')">Add Friend</button>
@@ -157,12 +157,13 @@
         </div>
 
         <!-- Player Card 5 -->
-        <div class="player-card" onclick="openPlayerModal('David', 'david@example.com', '30', 'Male', '+972-50-456-7890', 'Jerusalem', 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
+        <div class="player-card" onclick="openPlayerModal('David', 'david@example.com', 'Running', '30', 'Male', '+972-50-456-7890', 'Jerusalem', 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
           <div class="player-image">
             <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="David" />
           </div>
           <div class="player-details">
             <h4 class="player-name">David</h4>
+            <p class="player-sport">Sport: Running</p>
             <p class="player-location">8.1 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('David')">Add Friend</button>
@@ -172,12 +173,13 @@
         </div>
 
         <!-- Player Card 6 -->
-        <div class="player-card" onclick="openPlayerModal('Luna', 'luna@example.com', '26', 'Female', '+972-50-567-8901', 'Eilat', 'https://images.unsplash.com/photo-1594736797933-d0fce0ba4d2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
+        <div class="player-card" onclick="openPlayerModal('Luna', 'luna@example.com', 'Volleyball', '26', 'Female', '+972-50-567-8901', 'Eilat', 'https://images.unsplash.com/photo-1594736797933-d0fce0ba4d2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
           <div class="player-image">
             <img src="https://images.unsplash.com/photo-1594736797933-d0fce0ba4d2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Luna" />
           </div>
           <div class="player-details">
             <h4 class="player-name">Luna</h4>
+            <p class="player-sport">Sport: Volleyball</p>
             <p class="player-location">4.3 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('Luna')">Add Friend</button>
@@ -187,12 +189,13 @@
         </div>
 
         <!-- Player Card 7 -->
-        <div class="player-card" onclick="openPlayerModal('James', 'james@example.com', '29', 'Male', '+972-50-678-9012', 'Be er Sheva', 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
+        <div class="player-card" onclick="openPlayerModal('James', 'james@example.com', 'Cycling', '29', 'Male', '+972-50-678-9012', 'Be er Sheva', 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
           <div class="player-image">
             <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="James" />
           </div>
           <div class="player-details">
             <h4 class="player-name">James</h4>
+            <p class="player-sport">Sport: Cycling</p>
             <p class="player-location">6.8 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('James')">Add Friend</button>
@@ -202,12 +205,13 @@
         </div>
 
         <!-- Player Card 8 -->
-        <div class="player-card" onclick="openPlayerModal('Sophia', 'sophia@example.com', '25', 'Female', '+972-50-789-0123', 'Herzliya', 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
+        <div class="player-card" onclick="openPlayerModal('Sophia', 'sophia@example.com', 'Yoga', '25', 'Female', '+972-50-789-0123', 'Herzliya', 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
           <div class="player-image">
             <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Sophia" />
           </div>
           <div class="player-details">
             <h4 class="player-name">Sophia</h4>
+            <p class="player-sport">Sport: Yoga</p>
             <p class="player-location">2.1 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('Sophia')">Add Friend</button>
@@ -217,12 +221,13 @@
         </div>
 
         <!-- Player Card 9 -->
-        <div class="player-card" onclick="openPlayerModal('Alex', 'alex@example.com', '27', 'Male', '+972-50-890-1234', 'Ashdod', 'https://images.unsplash.com/photo-1549476464-37392f717541?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
+        <div class="player-card" onclick="openPlayerModal('Alex', 'alex@example.com', 'Boxing', '27', 'Male', '+972-50-890-1234', 'Ashdod', 'https://images.unsplash.com/photo-1549476464-37392f717541?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
           <div class="player-image">
             <img src="https://images.unsplash.com/photo-1549476464-37392f717541?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Alex" />
           </div>
           <div class="player-details">
             <h4 class="player-name">Alex</h4>
+            <p class="player-sport">Sport: Boxing</p>
             <p class="player-location">7.5 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('Alex')">Add Friend</button>
@@ -232,12 +237,13 @@
         </div>
 
         <!-- Player Card 10 -->
-        <div class="player-card" onclick="openPlayerModal('Maya', 'maya@example.com', '31', 'Female', '+972-50-901-2345', 'Rishon LeZion', 'https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
+        <div class="player-card" onclick="openPlayerModal('Maya', 'maya@example.com', 'Pilates', '31', 'Female', '+972-50-901-2345', 'Rishon LeZion', 'https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
           <div class="player-image">
             <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Maya" />
           </div>
           <div class="player-details">
             <h4 class="player-name">Maya</h4>
+            <p class="player-sport">Sport: Pilates</p>
             <p class="player-location">3.2 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('Maya')">Add Friend</button>
@@ -247,12 +253,13 @@
         </div>
 
         <!-- Player Card 11 -->
-        <div class="player-card" onclick="openPlayerModal('Oliver', 'oliver@example.com', '35', 'Male', '+972-50-012-3456', 'Caesarea', 'https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
+        <div class="player-card" onclick="openPlayerModal('Oliver', 'oliver@example.com', 'Golf', '35', 'Male', '+972-50-012-3456', 'Caesarea', 'https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
           <div class="player-image">
             <img src="https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Oliver" />
           </div>
           <div class="player-details">
             <h4 class="player-name">Oliver</h4>
+            <p class="player-sport">Sport: Golf</p>
             <p class="player-location">9.4 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('Oliver')">Add Friend</button>
@@ -262,12 +269,13 @@
         </div>
 
         <!-- Player Card 12 -->
-        <div class="player-card" onclick="openPlayerModal('Zoe', 'zoe@example.com', '23', 'Female', '+972-50-123-4567', 'Tiberias', 'https://images.unsplash.com/photo-1522163723043-478ef79a5bb4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
+        <div class="player-card" onclick="openPlayerModal('Zoe', 'zoe@example.com', 'Rock Climbing', '23', 'Female', '+972-50-123-4567', 'Tiberias', 'https://images.unsplash.com/photo-1522163723043-478ef79a5bb4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
           <div class="player-image">
             <img src="https://images.unsplash.com/photo-1522163723043-478ef79a5bb4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Zoe" />
           </div>
           <div class="player-details">
             <h4 class="player-name">Zoe</h4>
+            <p class="player-sport">Sport: Rock Climbing</p>
             <p class="player-location">12.1 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('Zoe')">Add Friend</button>
@@ -277,12 +285,13 @@
         </div>
 
         <!-- Player Card 13 -->
-        <div class="player-card" onclick="openPlayerModal('Ryan', 'ryan@example.com', '26', 'Male', '+972-50-234-5678', 'Ashkelon', 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
+        <div class="player-card" onclick="openPlayerModal('Ryan', 'ryan@example.com', 'Surfing', '26', 'Male', '+972-50-234-5678', 'Ashkelon', 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
           <div class="player-image">
             <img src="https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Ryan" />
           </div>
           <div class="player-details">
             <h4 class="player-name">Ryan</h4>
+            <p class="player-sport">Sport: Surfing</p>
             <p class="player-location">15.7 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('Ryan')">Add Friend</button>
@@ -292,12 +301,13 @@
         </div>
 
         <!-- Player Card 14 -->
-        <div class="player-card" onclick="openPlayerModal('Aria', 'aria@example.com', '24', 'Female', '+972-50-345-6789', 'Kfar Saba', 'https://images.unsplash.com/photo-1594736797933-d0fce0ba4d2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
+        <div class="player-card" onclick="openPlayerModal('Aria', 'aria@example.com', 'Badminton', '24', 'Female', '+972-50-345-6789', 'Kfar Saba', 'https://images.unsplash.com/photo-1594736797933-d0fce0ba4d2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
           <div class="player-image">
             <img src="https://images.unsplash.com/photo-1594736797933-d0fce0ba4d2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Aria" />
           </div>
           <div class="player-details">
             <h4 class="player-name">Aria</h4>
+            <p class="player-sport">Sport: Badminton</p>
             <p class="player-location">4.9 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('Aria')">Add Friend</button>
@@ -307,12 +317,13 @@
         </div>
 
         <!-- Player Card 15 -->
-        <div class="player-card" onclick="openPlayerModal('Ethan', 'ethan@example.com', '32', 'Male', '+972-50-456-7890', 'Ramat Gan', 'https://images.unsplash.com/photo-1555597408-51bc5d65bedf?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
+        <div class="player-card" onclick="openPlayerModal('Ethan', 'ethan@example.com', 'Martial Arts', '32', 'Male', '+972-50-456-7890', 'Ramat Gan', 'https://images.unsplash.com/photo-1555597408-51bc5d65bedf?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80')">
           <div class="player-image">
             <img src="https://images.unsplash.com/photo-1555597408-51bc5d65bedf?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Ethan" />
           </div>
           <div class="player-details">
             <h4 class="player-name">Ethan</h4>
+            <p class="player-sport">Sport: Martial Arts</p>
             <p class="player-location">6.3 km away</p>
             <div class="player-actions">
               <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('Ethan')">Add Friend</button>
@@ -354,7 +365,6 @@
             <span class="info-label">Favorite Sport:</span>
             <span class="info-value" id="modalSport">-</span>
           </div>
-
           <div class="info-row">
             <span class="info-label">Age:</span>
             <span class="info-value" id="modalAge">-</span>

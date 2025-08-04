@@ -17,13 +17,19 @@ function fetchBookingDetails() {
         return;
       }
 
-      window.players = data.players; // ✅ set before using
+      window.players = data.players; // ✅ Set players globally
+      window.currentGroupId = data.booking.group_id; // ✅ Set group ID globally
 
       populateBookingDetails(data.booking);
       populatePlayerList(data.players);
       
-      // ✅ now safe to call
+      // ✅ Initialize privacy toggle after data is loaded
       initializePrivacyToggle();
+      
+      // ✅ Test if privacy toggle can be manually enabled
+      setTimeout(() => {
+        testPrivacyToggle();
+      }, 1000);
     })
     .catch(err => {
       console.error(err);
@@ -69,7 +75,12 @@ function populatePlayerList(players) {
   const container = document.getElementById("playersScroll");
   container.innerHTML = ""; // Clear old list
 
-  players.forEach(p => {
+  // Remove duplicate players based on username
+  const uniquePlayers = players.filter((player, index, self) => 
+    index === self.findIndex(p => p.username === player.username)
+  );
+
+  uniquePlayers.forEach(p => {
     console.log("🎯 Adding player card", p.username);
     const isHost = p.is_host == "1";
     const isCurrentUser = p.username === currentUsername;
@@ -96,7 +107,7 @@ function populatePlayerList(players) {
 
     // Buttons
     let buttonsHTML = "";
-    if (!isCurrentUser && currentUsername === getHostUsername(players)) {
+    if (!isCurrentUser && currentUsername === getHostUsername(uniquePlayers)) {
       buttonsHTML += `<button class="switch-host-btn">👑 Make Host</button>`;
     }
     if (!isCurrentUser) {
@@ -120,7 +131,11 @@ function populatePlayerList(players) {
 
   // Show or hide host controls
   const hostControls = document.getElementById("hostControls");
-  if (getHostUsername(players) === currentUsername) {
+  const currentHost = getHostUsername(uniquePlayers);
+  
+  console.log("🎯 Host controls check:", { currentUsername, currentHost, isHost: currentUsername === currentHost });
+  
+  if (currentHost === currentUsername) {
     hostControls.style.display = "flex";
   } else {
     hostControls.style.display = "none";
@@ -144,8 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
   window.originalPrices = {};
   window.currentHost = "1";
   
-  // Initialize all functions
-  initializePrivacyToggle();
+  // Initialize all functions (except privacy toggle - called after data load)
   initializeScrolling();
   initializeEditPrices();
   initializePlayerActions();
@@ -158,19 +172,55 @@ function initializePrivacyToggle() {
   const passwordSection = document.getElementById('passwordSection');
   const copyPasswordBtn = document.getElementById('copyPassword');
 
-  // ✅ Ensure boolean
-  const isHost = !!window.players?.find(p => p.username === currentUsername && p.is_host == "1");
-
-  // If not host, disable
-  if (!isHost) {
-    privacyToggle.disabled = true;
-    privacyToggle.style.cursor = "not-allowed";
-    privacyToggle.style.opacity = "0.6";
+  if (!privacyToggle) {
+    console.log("❌ Privacy toggle element not found");
     return;
   }
 
+  // ✅ Check if current user is the host
+  const isHost = window.players && window.players.find(p => 
+    p.username === currentUsername && p.is_host == "1"
+  );
+
+  console.log("🔍 Host check:", { 
+    currentUsername, 
+    players: window.players, 
+    isHost,
+    playersLength: window.players ? window.players.length : 0,
+    privacyToggleFound: !!privacyToggle
+  });
+
+  // If not host, disable
+  if (!isHost) {
+    console.log("❌ Not host - disabling privacy toggle");
+    privacyToggle.disabled = true;
+    privacyToggle.style.cursor = "not-allowed";
+    privacyToggle.style.opacity = "0.6";
+    privacyToggle.style.pointerEvents = "none";
+    return;
+  }
+
+  console.log("✅ Is host - enabling privacy toggle");
+
+  // ✅ Enable the toggle for host
+  privacyToggle.disabled = false;
+  privacyToggle.style.cursor = "pointer";
+  privacyToggle.style.opacity = "1";
+  privacyToggle.style.pointerEvents = "auto";
+
+  // ✅ Remove any existing event listeners to prevent duplicates
+  const newToggle = privacyToggle.cloneNode(true);
+  privacyToggle.parentNode.replaceChild(newToggle, privacyToggle);
+  
+  // ✅ Get the new reference
+  const freshToggle = document.getElementById('privacyToggle');
+
   // ✅ Host can toggle
-  privacyToggle?.addEventListener('click', function () {
+  freshToggle.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("🔒 Privacy toggle clicked");
+    
     window.isPrivate = !window.isPrivate;
     const newPrivacy = window.isPrivate ? 'private' : 'public';
 
@@ -201,9 +251,12 @@ function initializePrivacyToggle() {
         .then(data => {
           if (!data.success) {
             showNotification(data.error || 'Failed to update privacy', 'error');
+          } else {
+            console.log("✅ Privacy updated successfully");
           }
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error("❌ Privacy update failed:", error);
           showNotification('Failed to update privacy', 'error');
         });
     }
@@ -287,6 +340,25 @@ function initializePlayerActions() {
 }
 
 function initializeActionButtons() {
+  // Hide action buttons if in view-only mode (from JoinGroup image click)
+  if (window.viewOnly) {
+    const actionButtons = document.querySelector('.action-buttons');
+    if (actionButtons) {
+      actionButtons.style.display = 'none';
+    }
+    
+    // Also hide payment reminder section in view-only mode
+    const paymentSection = document.querySelector('.payment-section');
+    if (paymentSection) {
+      paymentSection.style.display = 'none';
+    }
+    
+    // Update page title to indicate view-only mode
+    document.title = 'View Booking Details - Book&Play';
+    
+    return;
+  }
+  
   document.querySelector('.pay-btn')?.addEventListener('click', handlePayNow);
   document.querySelector('.cancel-btn')?.addEventListener('click', handleCancelBooking);
 }
@@ -461,3 +533,53 @@ function showNotification(message, type = 'info') {
     setTimeout(() => notification.remove(), 300);
   }, 4000);
 }
+
+// ✅ View Booking Details (for image clicks)
+function viewBookingDetails(booking_id) {
+  const url = `../BookingDetails/BookingDetails.php?booking_id=${encodeURIComponent(booking_id)}&view_only=true`;
+  window.location.href = url;
+}
+
+// ✅ Test function to manually test privacy toggle
+function testPrivacyToggle() {
+  console.log("🧪 Testing privacy toggle manually");
+  const privacyToggle = document.getElementById('privacyToggle');
+  if (privacyToggle) {
+    privacyToggle.disabled = false;
+    privacyToggle.style.cursor = "pointer";
+    privacyToggle.style.opacity = "1";
+    console.log("✅ Privacy toggle enabled for testing");
+  } else {
+    console.log("❌ Privacy toggle element not found");
+  }
+}
+
+// ✅ Go back function
+function goBack() {
+  if (window.viewOnly) {
+    // If in view-only mode, go back to JoinGroup
+    window.location.href = '../JoinGroup/JoinGroup.php';
+  } else {
+    // Otherwise, go back to previous page
+    window.history.back();
+  }
+}
+
+window.onload = function () {
+  console.log("✅ BookingDetails.js is loaded");
+  
+  // Initialize variables (move to global scope)
+  window.isPrivate = false;
+  window.isEditingPrices = false;
+  window.timeRemaining = 6330; // 1:45:30
+  window.originalPrices = {};
+  window.currentHost = "1";
+  
+  // Initialize all functions
+  initializePrivacyToggle();
+  initializeScrolling();
+  initializeEditPrices();
+  initializePlayerActions();
+  initializeActionButtons();
+  startCountdown();
+};
