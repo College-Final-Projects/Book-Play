@@ -1,0 +1,252 @@
+/* ===================== EDIT PROFILE PAGE SPECIFIC STYLES ===================== */
+
+/* Override body styles for edit profile page (no navbar padding needed) */
+body {
+  padding-top: 0; /* Remove navbar padding for edit profile page */
+  display: flex; /* Enable flexbox */
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+  min-height: 100vh; /* Full screen height */
+  padding: 20px; /* Add padding */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* ===================== EDIT PROFILE-SPECIFIC LAYOUT ===================== */
+
+/* Profile form container - unique to this page */
+.profile-form {
+  background-color: var(--card-bg); /* Card background */
+  border: 1px solid var(--card-border); /* Border color */
+  border-radius: var(--radius); /* Rounded corners */
+  box-shadow: var(--shadow); /* Apply shadow */
+  width: 90%; /* Responsive width */
+  max-width: 600px; /* Max width */
+  max-height: 90vh; /* Max height of form */
+  padding: 30px 40px; /* Internal padding */
+  text-align: center; /* Center text */
+  animation: fadeInUp 0.6s ease forwards; /* Fade in effect */
+  overflow-y: auto; /* Enable vertical scroll */
+}
+
+.profile-form h3 {
+  background: linear-gradient(to right, var(--primary), var(--secondary)); /* Gradient text */
+  -webkit-background-clip: text; /* For Safari */
+  background-clip: text; /* Clip background to text */
+  -webkit-text-fill-color: transparent; /* Transparent fill */
+  margin-bottom: 20px; /* Space below heading */
+  font-size: clamp(1.5rem, 5vw, 2rem); /* Responsive font */
+}
+
+/* ===================== EDIT PROFILE-SPECIFIC COMPONENTS ===================== */
+
+/* Input group styling */
+.input-group {
+  margin-bottom: 18px; /* Space between fields */
+  text-align: left; /* Left align labels */
+}
+
+.input-group label {
+  display: block; /* Make label take full width */
+  margin-bottom: 6px; /* Space below label */
+  font-weight: 500; /* Medium weight */
+  color: var(--text-main); /* Label color */
+  font-size: clamp(0.875rem, 2vw, 1rem); /* Responsive font */
+}
+
+/* Form input overrides for edit profile */
+input,
+button,
+select,
+textarea {
+  width: 100%; /* Full width */
+  padding: 12px; /* Internal padding */
+  font-size: clamp(0.875rem, 2vw, 0.9375rem); /* Responsive font */
+  border-radius: 8px; /* Rounded edges */
+  border: 1px solid var(--card-border); /* Border color */
+  background-color: #f8fafc; /* Light background */
+  color: var(--text-main); /* Text color */
+  box-sizing: border-box; /* Include padding in size */
+}
+
+/* Number input specific styles */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none; /* Remove spin button */
+  margin: 0; /* Remove margin */
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox fix */
+}
+
+/* Placeholder styling */
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted); /* Placeholder color */
+}
+
+/* Button styling for edit profile */
+.submit-btn,
+#backBtn {
+  background: linear-gradient(to right, var(--primary), var(--secondary)); /* Gradient button */
+  color: white; /* White text */
+  border: none; /* Remove border */
+  cursor: pointer; /* Pointer cursor */
+  font-weight: bold; /* Bold text */
+  margin-top: 10px; /* Space above */
+  transition: 0.3s; /* Smooth transition */
+  padding: clamp(10px, 3vw, 14px); /* Responsive padding */
+  font-size: clamp(0.875rem, 2vw, 1rem); /* Responsive font */
+}
+
+.submit-btn:hover,
+#backBtn:hover {
+  transform: scale(1.03); /* Slight zoom on hover */
+  box-shadow: 0 0 10px rgba(30, 144, 255, 0.3); /* Glow effect */
+}
+
+#backBtn {
+  background: transparent; /* Transparent button */
+  border: 2px solid var(--primary); /* Blue border */
+  color: var(--primary); /* Blue text */
+}
+
+/* Textarea specific styling */
+textarea {
+  resize: none; /* Disable resize */
+  font-family: 'Outfit', sans-serif; /* Set font */
+  min-height: 100px; /* Minimum height */
+}
+
+/* File input specific styling */
+input[type="file"] {
+  background-color: #f0f9ff; /* Light background */
+  color: var(--text-muted); /* Text color */
+  border: 1px solid var(--card-border); /* Border */
+  border-radius: 8px; /* Rounded */
+  padding: 8px; /* Padding */
+  cursor: pointer; /* Pointer cursor */
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  background-color: var(--primary); /* Blue background */
+  color: white; /* White text */
+  border: none; /* No border */
+  padding: 8px 14px; /* Padding */
+  border-radius: 5px; /* Rounded button */
+  cursor: pointer; /* Pointer cursor */
+  margin-right: 8px; /* Space to the right */
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem); /* Responsive font */
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: var(--secondary); /* Change to green on hover */
+  color: white; /* Keep text white */
+}
+
+/* Readonly input styling */
+input[readonly] {
+  background-color: #f1f5f9; /* Gray background */
+  cursor: not-allowed; /* Disable cursor */
+}
+
+/* Favorite sports styling */
+.favorite-sports {
+  display: flex; /* Use flexbox */
+  flex-wrap: wrap; /* Allow wrapping */
+  gap: 10px; /* Spacing between items */
+  margin-top: 5px; /* Space on top */
+}
+
+.sport-option input[type="checkbox"] {
+  display: none; /* Hide actual checkbox */
+}
+
+.sport-label {
+  display: inline-block; /* Allow padding */
+  padding: 8px 15px; /* Internal spacing */
+  background: transparent; /* Transparent bg */
+  color: var(--primary); /* Blue text */
+  border: 2px solid var(--primary); /* Border */
+  border-radius: 20px; /* Pill shape */
+  cursor: pointer; /* Pointer cursor */
+  transition: all 0.3s ease; /* Smooth transition */
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem); /* Responsive font */
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.sport-label:hover {
+  transform: scale(1.05); /* Slight zoom on hover */
+}
+
+.sport-option input[type="checkbox"]:checked + .sport-label {
+  background: linear-gradient(to right, var(--primary), var(--secondary)); /* Highlight */
+  color: white; /* White text */
+  border: none; /* Remove border */
+  box-shadow: 0 0 10px rgba(30, 144, 255, 0.3); /* Glow effect */
+}
+
+/* ===================== EDIT PROFILE-SPECIFIC ANIMATIONS ===================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0; /* Start invisible */
+    transform: translateY(20px); /* Move up */
+  }
+  to {
+    opacity: 1; /* Fully visible */
+    transform: translateY(0); /* Normal position */
+  }
+}
+
+/* ===================== EDIT PROFILE-SPECIFIC RESPONSIVE ===================== */
+
+/* Edit profile-specific responsive adjustments */
+@media screen and (max-width: 768px) {
+  .profile-form {
+    padding: 20px 25px; /* Reduce padding */
+    width: 95%; /* Adjust width */
+  }
+
+  .favorite-sports {
+    justify-content: center; /* Center content */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .profile-form {
+    padding: 15px 20px; /* Smaller padding */
+    width: 100%; /* Full width */
+  }
+
+  input,
+  button,
+  select,
+  textarea {
+    padding: 10px; /* Smaller padding */
+  }
+
+  .sport-label {
+    padding: 6px 12px; /* Smaller buttons */
+    font-size: 0.75rem; /* Smaller font */
+  }
+}
+
+/* Fix for iOS devices to prevent zooming when focusing on inputs */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important; /* Prevent zoom */
+  }
+}
+
+/* Ensure form stays on screen on smaller viewports */
+@media screen and (max-height: 700px) {
+  body {
+    align-items: flex-start; /* Align top */
+    padding-top: 20px; /* Add top padding */
+  }
+
+  .profile-form {
+    max-height: calc(100vh - 40px); /* Adjust height */
+  }
+}

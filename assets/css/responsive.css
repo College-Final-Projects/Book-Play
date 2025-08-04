@@ -1,3 +1,410 @@
 /* responsive.css */
 
-/* Media queries and responsive styles will be added here */ 
+/* ===================== COMMON RESPONSIVE BREAKPOINTS ===================== */
+
+/* Large devices (laptops/desktops, up to 1200px) */
+@media screen and (max-width: 1200px) {
+  /* Common grid adjustments */
+  .secondary-buttons,
+  .admin-buttons {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 25px;
+  }
+  
+  /* Button container adjustments */
+  .main-buttons {
+    gap: 25px;
+  }
+}
+
+/* Medium devices (tablets, up to 992px) */
+@media screen and (max-width: 992px) {
+  /* Logo adjustments */
+  .logo-title {
+    font-size: 28px;
+  }
+  
+  /* Button adjustments */
+  .main-buttons {
+    gap: 20px;
+  }
+  
+  .main-buttons .glow-card,
+  .glow-card {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .glow-card img.icon {
+    width: 70px;
+  }
+  
+  .secondary-buttons,
+  .admin-buttons {
+    gap: 20px;
+  }
+}
+
+/* Small devices (landscape phones, up to 768px) */
+@media screen and (max-width: 768px) {
+  /* Header adjustments */
+  .header-bar {
+    padding: 15px 20px;
+  }
+  
+  .logo-title {
+    font-size: 26px;
+  }
+  
+  /* Navbar adjustments */
+  .fresh-navbar .nav-links,
+  .admin-navbar .nav-links {
+    gap: 10px;
+  }
+  
+  .fresh-navbar .nav-links a,
+  .admin-navbar .nav-links a {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+  
+  /* Button container adjustments */
+  .main-buttons {
+    margin-top: 40px;
+    gap: 15px;
+  }
+  
+  .main-buttons .glow-card,
+  .glow-card {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .secondary-buttons,
+  .admin-buttons {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    margin: 40px auto;
+    gap: 15px;
+  }
+  
+  .glow-card {
+    width: 140px;
+    height: 140px;
+    padding: 15px;
+  }
+  
+  .glow-card img.icon {
+    width: 60px;
+    margin-bottom: 8px;
+  }
+  
+  .glow-card span {
+    font-size: 14px;
+  }
+  
+  /* Profile menu adjustments */
+  .profile-menu {
+    min-width: 160px;
+    right: -10px;
+  }
+}
+
+/* Extra small devices (phones, up to 576px) */
+@media screen and (max-width: 576px) {
+  /* Navbar adjustments */
+  .fresh-navbar .nav-links,
+  .admin-navbar .nav-links {
+    gap: 8px;
+  }
+  
+  .fresh-navbar .nav-links a,
+  .admin-navbar .nav-links a {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+  
+  /* Hide some nav items on very small screens */
+  .fresh-navbar .nav-links li:nth-child(3),
+  .fresh-navbar .nav-links li:nth-child(4),
+  .fresh-navbar .nav-links li:nth-child(5),
+  .admin-navbar .nav-links li:nth-child(3),
+  .admin-navbar .nav-links li:nth-child(4) {
+    display: none;
+  }
+}
+@media screen and (max-width: 576px) {
+  /* Header adjustments */
+  .header-bar {
+    padding: 15px;
+    justify-content: center;
+  }
+  
+  .logo-title {
+    font-size: 24px;
+    text-align: center;
+  }
+  
+  .profile-container {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+  }
+  
+  /* Button container adjustments */
+  .main-buttons {
+    margin-top: 30px;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .main-buttons .glow-card {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .secondary-buttons,
+  .admin-buttons {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 30px auto;
+  }
+  
+  .glow-card {
+    width: 100%;
+    height: 130px;
+    padding: 10px;
+  }
+  
+  .glow-card img.icon {
+    width: 50px;
+    margin-bottom: 5px;
+  }
+  
+  .glow-card span {
+    font-size: 13px;
+  }
+  
+  /* Footer adjustments */
+  footer {
+    padding: 15px;
+    font-size: 12px;
+  }
+}
+
+/* Very small devices (small phones, up to 380px) */
+@media screen and (max-width: 380px) {
+  .logo-title {
+    font-size: 22px;
+  }
+  
+  .main-buttons .glow-card {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .secondary-buttons,
+  .admin-buttons {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+/* Extra very small devices (tiny phones, up to 350px) */
+@media screen and (max-width: 350px) {
+  .logo-title {
+    font-size: 20px;
+  }
+  
+  .main-buttons .glow-card {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .glow-card {
+    width: 100%;
+    height: 120px;
+    padding: 8px;
+  }
+  
+  .glow-card img.icon {
+    width: 40px;
+    margin-bottom: 4px;
+  }
+  
+  .glow-card span {
+    font-size: 12px;
+  }
+  
+  .header-bar {
+    padding: 10px;
+  }
+  
+  .profile-container {
+    top: 10px;
+    right: 10px;
+  }
+  
+  .profile-icon {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* ===================== HEIGHT-BASED MEDIA QUERIES ===================== */
+
+/* Short screens (height-based) */
+@media screen and (max-height: 600px) {
+  body {
+    align-items: flex-start;
+    padding: 20px 10px;
+  }
+  
+  .container {
+    margin-top: 10px;
+  }
+}
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  body {
+    padding: 10px;
+  }
+  
+  .container {
+    padding: 15px;
+    margin: 10px auto;
+    max-width: 460px;
+  }
+}
+
+/* ===================== FORM-SPECIFIC RESPONSIVE ===================== */
+
+/* Form responsive adjustments */
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 25px 20px;
+  }
+  
+  .logo {
+    font-size: 24px;
+  }
+  
+  form input,
+  button {
+    padding: 12px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 20px 15px;
+    width: 95%;
+    margin: 15px auto;
+  }
+  
+  .logo {
+    font-size: 22px;
+  }
+  
+  form input,
+  button {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .slogan {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .container {
+    padding: 15px 10px;
+    width: 98%;
+    margin: 10px auto;
+  }
+  
+  .logo {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  form input,
+  button {
+    padding: 8px;
+    font-size: 13px;
+  }
+  
+  .slogan {
+    font-size: 11px;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .container {
+    padding: 15px 10px;
+    border-radius: 15px;
+    margin: 10px auto;
+  }
+  
+  .logo {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+  
+  form input {
+    margin: 8px 0;
+  }
+}
+
+/* ===================== BACKGROUND ICONS RESPONSIVE ===================== */
+
+@media screen and (max-width: 768px) {
+  .bg-icons img {
+    width: 20%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .bg-icons img {
+    width: 25%;
+  }
+  
+  .icon2,
+  .icon5 {
+    display: none; /* Hide some icons on small screen */
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .bg-icons img {
+    width: 30%;
+  }
+  
+  .icon1,
+  .icon3,
+  .icon4,
+  .icon6 {
+    opacity: 0.08; /* Further reduce visibility */
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .icon1,
+  .icon3,
+  .icon4,
+  .icon6 {
+    opacity: 0.1; /* Reduce visibility */
+  }
+}
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .bg-icons img {
+    opacity: 0.08; /* Lower visibility */
+  }
+  
+  .icon2,
+  .icon5 {
+    display: none;
+  }
+} 

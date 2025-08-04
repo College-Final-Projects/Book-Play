@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Venue Analytics | Book&Play</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Analytics.css">
+</head>
+<body>
+
+
+<!-- Page Content -->
+<div class="container">
+  <!-- Page Header Section -->
+  <div class="page-header">
+    <h1 class="page-title">Analytics My Venues</h1>
+    <p class="page-subtitle">View and control all your venue reservations with clarity and ease</p>
+  </div>
+
+  <!-- Search and Sort Section -->
+  <div class="search-sort-container">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search venues by name">
+    </div>
+    
+    <div class="sort-container">
+      <span class="sort-label">Sort By:</span>
+      <select class="sort-select" id="sortSelect">
+        <option value="name">Name (A-Z)</option>
+        <option value="name-desc">Name (Z-A)</option>
+      </select>
+      <select class="sort-select" id="sportSelect">
+        <option value="all">All Sport</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Venue Cards Section -->
+  <div id="cardSection" class="main-content">
+    <div class="card-grid" id="venueCards">
+      <!-- Venue cards will be injected here by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Booking Details Section -->
+  <div id="bookingPage" class="container booking-page" style="display:none;">
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+      <h3>🗓 Months</h3>
+      <button class="month-btn" onclick="showMonth('January')">January</button>
+      <button class="month-btn" onclick="showMonth('February')">February</button>
+      <button class="month-btn" onclick="showMonth('March')">March</button>
+      <button class="month-btn" onclick="showMonth('April')">April</button>
+      <button class="month-btn" onclick="showMonth('May')">May</button>
+      <button class="month-btn" onclick="showMonth('June')">June</button>
+      <button class="month-btn" onclick="showMonth('July')">July</button>
+      <button class="month-btn" onclick="showMonth('August')">August</button>
+      <button class="month-btn" onclick="showMonth('September')">September</button>
+      <button class="month-btn" onclick="showMonth('October')">October</button>
+      <button class="month-btn" onclick="showMonth('November')">November</button>
+      <button class="month-btn" onclick="showMonth('December')">December</button>
+      <button class="month-btn" onclick="showMonth('All')">All</button>
+      
+      <select id="yearSelect" onchange="showMonth(currentMonth)">
+        <option>2025</option>
+        <option>2024</option>
+        <option>2023</option>
+      </select>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <button class="back-btn" onclick="goBack()">← Back to Venues</button>
+      
+      <h2 id="venueTitle" style="margin-top: 30px;">Bookings for ...</h2>
+      
+      <div id="dayButtons" class="day-button-group" style="margin-top: 20px;"></div>
+
+      <!-- Data Table Container -->
+      <div id="pdfContent">
+        <table>
+          <thead>
+            <tr>
+              <th>Date 📅</th>
+              <th>Bookings 👥</th>
+              <th>Total (₪) 💰</th>
+            </tr>
+          </thead>
+          <tbody id="dailyBookingTable"></tbody>
+        </table>
+        
+        <div class="summary" id="summaryRow"></div>
+      </div>
+      
+      <button class="view-button" onclick="downloadPDF()" style="margin-top: 20px;">📄 Download as PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<script src="Analytics.js" defer></script>
+
+</body>
+</html>

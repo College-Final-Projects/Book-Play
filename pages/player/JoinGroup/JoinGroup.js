@@ -53,7 +53,11 @@ function renderGroups(groups) {
         <span class="group-badge ${group.privacy}">${group.privacy.toUpperCase()}</span>
       </div>
       <div class="venue-image">
+<<<<<<< HEAD
         <img src="${group.image_url.replace(/\\/g, "/")}" alt="Venue Image">
+=======
+        <img src="../${group.image_url.replace(/\\/g, "/")}" alt="Venue Image">
+>>>>>>> 959a443ed196a3edef798af351ee8d74e088b501
       </div>
       <div class="venue-info">
         <h3 class="venue-title">${group.group_name}</h3>

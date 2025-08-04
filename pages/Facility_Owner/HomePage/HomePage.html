@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book&Play - Facility Owner</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="HomePage.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header-bar">
+      <div class="logo-title">BOOK&PLAY</div>
+      <div class="profile-container" onclick="toggleProfileMenu()">
+        <span id="usernameDisplay" class="username-display"></span>
+        <img
+          id="userProfileImage"
+          class="profile-icon"
+          src="../../../uploads/users/default.jpg"
+          alt="Profile Image"
+        />
+
+        <div class="profile-menu" id="profileMenu">
+          <a href="../.././auth/EditProfile/EditProfile.php">Edit Profile</a>
+          <a href="../../../logout.php">Logout</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Buttons (Top Row - 3 cards) -->
+    <div class="main-buttons">
+      <div
+        class="glow-card btn-venue"
+        onclick="window.location.href='../ManageVenue/ManageVenue.php'"
+      >
+        <img
+          src="../../../Images/Venue_icon (2).png"
+          alt="Venue Icon"
+          class="icon"
+          width="32"
+          height="32"
+        />
+        <span>Manage Venue</span>
+      </div>
+      <div
+        class="glow-card btn-bookings"
+        onclick="window.location.href='../Bookings/Bookings.php'"
+      >
+        <img
+          src="../../../Images/MangeVenue_icon.png"
+          alt="Bookings Icon"
+          class="icon"
+          width="32"
+          height="32"
+        />
+        <span>Bookings</span>
+      </div>
+      <div
+        class="glow-card btn-analytics"
+        onclick="window.location.href='../Analytics/Analytics.php'"
+      >
+        <img
+          src="../../../Images/cash.png"
+          alt="Analytics Icon"
+          class="icon"
+          width="32"
+          height="32"
+        />
+        <span>Analytics</span>
+      </div>
+    </div>
+
+    <!-- Secondary Buttons (Bottom Row - 2 cards) -->
+    <div class="secondary-buttons">
+      <div
+        class="glow-card btn-messages"
+        onclick="window.location.href='../Messages/Messages.php'"
+      >
+        <img
+          src="../../../Images/chat_icon.png"
+          alt="Messages Icon"
+          class="icon"
+          width="32"
+          height="32"
+        />
+        <span>Messages</span>
+      </div>
+
+      <div
+        class="glow-card btn-switch"
+        onclick="window.location.href='../../auth/User_Selection_Page/user-selection.php'"
+      >
+        <img
+          src="../../../Images/BackToUserSelecionRed.png"
+          alt="Enter Icon"
+          class="icon"
+          width="32"
+          height="32"
+        />
+        <span>Back To User Selection Page</span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">© 2025 Book&Play. All rights reserved.</div>
+    </footer>
+
+    <!-- Floating Admin Button -->
+    <button class="floating-admin-btn" id="adminRequestBtn">
+      Request Admin Access
+    </button>
+
+    <script src="HomePage.js"></script>
+  </body>
+</html>

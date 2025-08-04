@@ -34,9 +34,16 @@ function createVenueCard(venue) {
                 <div class="availability ${venue.is_available ? 'available' : 'unavailable'}">
                     ${venue.is_available ? '✅ Available' : '❌ Unavailable'}
                 </div>
+<<<<<<< HEAD
                 <button class="view-details-btn" onclick="viewDetails(${venue.id})">
                     View Details
                 </button>
+=======
+             <button class="view-details-btn" onclick="window.location.href='../VenueDetails/VenueDetails.php?facility_id=${venue.id}'">
+  View Details
+</button>
+
+>>>>>>> 959a443ed196a3edef798af351ee8d74e088b501
             </div>
         </div>
     `;

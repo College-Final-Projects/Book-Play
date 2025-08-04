@@ -1,0 +1,152 @@
+
+
+/* Large devices (desktops, less than 1200px) */
+@media screen and (max-width: 1200px) {
+  .venue-card {
+    width: calc(33.333% - 20px);
+    min-width: 240px;
+  }
+}
+
+/* Medium devices (tablets, less than 992px) */
+@media screen and (max-width: 992px) {
+  .venue-card {
+    width: calc(50% - 20px);
+    min-width: 240px;
+  }
+  
+  .nav-links li a {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+  
+  .logo {
+    font-size: 22px;
+  }
+  
+  .modal-content {
+    padding: 25px;
+  }
+}
+
+/* Small devices (landscape phones, less than 768px) */
+@media screen and (max-width: 768px) {
+  .nav-container {
+    justify-content: center;
+    flex-direction: column;
+  }
+  
+  .nav-links {
+    width: 100%;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  
+  .venue-card {
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .modal-content .images img {
+    width: 100px;
+    height: 70px;
+  }
+  
+  .modal-content {
+    padding: 20px;
+  }
+  
+  .close {
+    right: 15px;
+    top: 15px;
+  }
+}
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media screen and (max-width: 576px) {
+  /* Hamburger menu implementation */
+  .menu-toggle {
+    display: flex;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+  
+  .nav-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .nav-links {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+  }
+  
+  .nav-links.active {
+    max-height: 400px;
+  }
+  
+  .nav-links li {
+    width: 100%;
+  }
+  
+  .nav-links li a {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .cards-container {
+    padding: 30px 15px;
+  }
+  
+  .venue-card {
+    padding: 15px;
+  }
+  
+  .venue-card h3 {
+    font-size: 18px;
+  }
+  
+  .actions button {
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .modal-content {
+    padding: 15px;
+    border-radius: 15px;
+  }
+  
+  .modal-content h2 {
+    font-size: 20px;
+  }
+  
+  .modal-content .images img {
+    width: 80px;
+    height: 60px;
+  }
+  
+  .long-description {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+/* JavaScript to handle the mobile menu toggle */
+/* Add this to your JS file:
+document.addEventListener('DOMContentLoaded', function() {
+  const menuToggle = document.querySelector('.menu-toggle');
+  const navLinks = document.querySelector('.nav-links');
+  
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener('click', function() {
+      navLinks.classList.toggle('active');
+    });
+  }
+});
+*/

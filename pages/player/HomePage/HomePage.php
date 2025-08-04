@@ -28,7 +28,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_user_image') {
 if (!isset($_SESSION['username'])) {
     session_unset();
     session_destroy();
+<<<<<<< HEAD
     header('Location: ../../auth/Login/Login.php');
+=======
+    header('Location: ../../../auth/Login_Page/Login.php');
+>>>>>>> 959a443ed196a3edef798af351ee8d74e088b501
     exit();
 }
 

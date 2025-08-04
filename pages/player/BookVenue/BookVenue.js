@@ -117,9 +117,15 @@ function renderVenues(venues) {
 
     const isFavorited = venue.is_favorite ? 'active' : '';
 
+    // Handle image URL - provide fallback if missing
+    const imageUrl = venue.image_url && venue.image_url.trim() !== '' 
+      ? venue.image_url 
+      : '../../Images/staduim_icon.png';
+      
+    
     card.innerHTML = `
       <div class="venue-image">
-        <img src="${venue.image_url}" alt="Venue Image">
+        <img src="../${imageUrl}" alt="Venue Image" onerror="this.src='../../Images/staduim_icon.png'">
         <div class="favorite-icon ${isFavorited}" onclick="event.stopPropagation(); toggleFavorite(this, ${venue.facilities_id})">&#10084;</div>
       </div>
       <div class="venue-content">

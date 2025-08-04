@@ -1,6 +1,10 @@
 <?php
 header('Content-Type: application/json');
+<<<<<<< HEAD
 include '../../db.php';
+=======
+include '../../../db.php';
+>>>>>>> 959a443ed196a3edef798af351ee8d74e088b501
 
 $query = "
   SELECT 

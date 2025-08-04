@@ -139,12 +139,15 @@ body {
     margin-bottom: 24px;
     flex-wrap: wrap;
     gap: 16px;
+<<<<<<< HEAD
 }
 
 .header-left {
     display: flex;
     align-items: center;
     gap: 12px;
+=======
+>>>>>>> 959a443ed196a3edef798af351ee8d74e088b501
 }
 
 .collapse-btn {

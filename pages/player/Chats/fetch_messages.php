@@ -1,6 +1,10 @@
 <?php
 session_start();
+<<<<<<< HEAD
 require_once '../../db.php'; // عدّل حسب مشروعك
+=======
+require_once '../../../db.php'; // عدّل حسب مشروعك
+>>>>>>> 959a443ed196a3edef798af351ee8d74e088b501
 
 header('Content-Type: application/json');
 
