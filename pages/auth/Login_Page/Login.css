@@ -1,56 +1,67 @@
-/* ===================== LOGIN PAGE SPECIFIC STYLES ===================== */
+/**
+ * Login Page CSS Styles
+ * 
+ * This file contains login-specific styles that override global styles
+ * and provide custom styling for the login form and page layout.
+ * 
+ * @author BOOK-PLAY Development Team
+ * @version 1.0
+ * @since 2025
+ */
+
+/* ===== LOGIN PAGE LAYOUT OVERRIDES ===== */
 
 /* Override body styles for login page (no navbar padding needed) */
 body {
-  padding-top: 0; /* Remove navbar padding for login page */
-  display: flex; /* Flex layout */
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  overflow-x: hidden; /* Hide horizontal scroll */
-  position: relative; /* For absolute children */
-  padding: 10px; /* Outer padding */
+  padding-top: 0;           /* Remove navbar padding for login page */
+  display: flex;            /* Flex layout for centering */
+  justify-content: center;  /* Center horizontally */
+  align-items: center;      /* Center vertically */
+  overflow-x: hidden;       /* Hide horizontal scroll */
+  position: relative;       /* For absolute positioned children */
+  padding: 10px;            /* Outer padding for mobile */
 }
 
-/* ===================== LOGIN-SPECIFIC STYLES ===================== */
+/* ===== LOGIN FORM STYLES ===== */
 
-/* Login-specific error message styling */
+/* Error message styling for login form */
 .error-message {
-  color: red;
-  font-weight: bold;
-  margin-top: 10px;
-  text-align: center;
+  color: red;               /* Red color for errors */
+  font-weight: bold;        /* Bold text for emphasis */
+  margin-top: 10px;         /* Top margin for spacing */
+  text-align: center;       /* Center align text */
 }
 
-/* Login-specific form validation styles */
+/* Form validation visual feedback */
 form input:invalid {
-  border-color: #ef4444;
+  border-color: #ef4444;    /* Red border for invalid input */
 }
 
 form input:valid {
-  border-color: #10b981;
+  border-color: #10b981;    /* Green border for valid input */
 }
 
-/* Login-specific loading state */
+/* Loading state for submit button */
 form button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
+  opacity: 0.7;             /* Reduce opacity when disabled */
+  cursor: not-allowed;      /* Show disabled cursor */
+  transform: none;          /* Remove hover effects */
 }
 
-/* Login-specific focus states */
+/* Focus states for form inputs */
 form input:focus {
-  border-color: #1e90ff;
-  outline: none;
-  box-shadow: 0 0 5px rgba(30, 144, 255, 0.2);
+  border-color: #1e90ff;    /* Blue border on focus */
+  outline: none;            /* Remove default outline */
+  box-shadow: 0 0 5px rgba(30, 144, 255, 0.2);  /* Blue glow effect */
 }
 
-/* Login-specific hover effects */
+/* Hover effects for submit button */
 form button:hover:not(:disabled) {
-  transform: scale(1.03);
-  box-shadow: 0 0 15px rgba(30, 144, 255, 0.3);
+  transform: scale(1.03);   /* Slight scale up on hover */
+  box-shadow: 0 0 15px rgba(30, 144, 255, 0.3); /* Enhanced glow */
 }
 
-/* Login-specific active states */
+/* Active state for submit button */
 form button:active:not(:disabled) {
-  transform: scale(0.98);
+  transform: scale(0.98);   /* Slight scale down when clicked */
 }

@@ -1,6 +1,6 @@
-let currentChatUser = null; // المستخدم الحالي في الدردشة
+let currentChatUser = null; // Current user in chat
 
-// عند تحميل الصفحة، جلب المحادثات
+// When page loads, fetch conversations
 window.addEventListener('DOMContentLoaded', () => {
   fetch("fetch_conversations.php")
     .then(response => response.json())
@@ -20,7 +20,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// تحميل المحادثة عند النقر
+// Load conversation when clicked
 function loadChat(username) {
   currentChatUser = username;
   document.getElementById("chatHeader").textContent = username;
@@ -47,7 +47,7 @@ function loadChat(username) {
     });
 }
 
-// إرسال الرسالة عند الضغط على زر "Send" أو Enter
+// Send message when pressing "Send" button or Enter
 document.addEventListener("DOMContentLoaded", () => {
   const sendButton = document.getElementById("sendButton");
   const messageInput = document.getElementById("messageInput");
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // عند الضغط على زر Send
+  // When pressing Send button
   sendButton.addEventListener("click", sendMessage);
 
   // عند الضغط على Enter

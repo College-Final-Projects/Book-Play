@@ -1,15 +1,27 @@
 <?php
+/**
+ * User Logout Handler
+ * 
+ * This file handles user logout functionality by destroying the session
+ * and redirecting users back to the login page.
+ * 
+ * @author BOOK-PLAY Development Team
+ * @version 1.0
+ * @since 2025
+ */
+
+// Start session to access session variables
 session_start();
 
-// (اختياري) سجل وقت الخروج في قاعدة البيانات أو ملف
+// (Optional) Log logout time to database or file for audit purposes
 
-// احذف جميع متغيرات الجلسة
+// Clear all session variables
 session_unset();
 
-// دمر الجلسة تماماً
+// Destroy the session completely
 session_destroy();
 
-// أعد التوجيه إلى صفحة تسجيل الدخول
+// Redirect to login page
 header("Location: pages/auth/Login_Page/Login.php");
 exit;
 ?>

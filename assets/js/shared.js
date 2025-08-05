@@ -1,12 +1,28 @@
-// Shared JavaScript functions for Book&Play application
+/**
+ * Shared JavaScript Functions
+ * 
+ * This file contains common JavaScript functions used across the BOOK-PLAY application.
+ * It includes utility functions for UI interactions, user profile management,
+ * and admin request functionality.
+ * 
+ * @author BOOK-PLAY Development Team
+ * @version 1.0
+ * @since 2025
+ */
 
-// Toggle profile menu visibility
+/**
+ * Toggle profile menu visibility
+ * Shows/hides the user profile dropdown menu
+ */
 function toggleProfileMenu() {
   const menu = document.getElementById('profileMenu');
   menu.classList.toggle('active');
 }
 
-// Close profile menu when clicking outside
+/**
+ * Close profile menu when clicking outside
+ * Automatically closes the profile dropdown when user clicks elsewhere
+ */
 document.addEventListener('click', function (e) {
   const profileContainer = document.querySelector('.profile-container');
   const menu = document.getElementById('profileMenu');
@@ -15,7 +31,13 @@ document.addEventListener('click', function (e) {
   }
 });
 
-// Helper function to show temporary messages on screen
+/**
+ * Show temporary message notification
+ * Creates and displays a temporary toast message on screen
+ * 
+ * @param {string} message - The message text to display
+ * @param {number} duration - Duration in milliseconds to show the message
+ */
 function showTempMessage(message, duration) {
   const msg = document.createElement("div");
   msg.textContent = message;
@@ -33,16 +55,24 @@ function showTempMessage(message, duration) {
   setTimeout(() => msg.remove(), duration);
 }
 
-// Load user profile image and username
+/**
+ * Load user profile image and username
+ * Fetches and displays the current user's profile image and username
+ * from the server and updates the UI elements
+ */
 function loadUserProfile() {
   fetch("HomePage.php?action=get_user_image")
     .then((res) => res.json())
     .then((data) => {
       const imgElement = document.getElementById("userProfileImage");
       const usernameSpan = document.getElementById("usernameDisplay");
+      
+      // Update profile image if available
       if (imgElement && data.image) {
         imgElement.src = `../../../uploads/users/${data.image}`;
       }
+      
+      // Update username display if available
       if (usernameSpan && data.username) {
         usernameSpan.textContent = data.username;
       }
@@ -52,7 +82,10 @@ function loadUserProfile() {
     });
 }
 
-// Initialize admin request button functionality
+/**
+ * Initialize admin request button functionality
+ * Sets up the admin request button with proper event handling and status checking
+ */
 function initAdminRequestButton() {
   const adminBtn = document.getElementById("adminRequestBtn");
   if (!adminBtn) return; // Exit if the button doesn't exist
@@ -61,13 +94,13 @@ function initAdminRequestButton() {
   fetch("../../admin_actions.php?action=check")
     .then((res) => res.json())
     .then((data) => {
-      // Hide the button if the user is an admin
+      // Hide the button if the user is already an admin
       if (data.is_admin) {
         adminBtn.style.display = "none";
         return;
       }
 
-      // Handle button click
+      // Handle button click event
       adminBtn.addEventListener("click", () => {
         if (data.already_requested) {
           // Show waiting message if request already submitted
@@ -76,7 +109,7 @@ function initAdminRequestButton() {
             4000
           );
         } else {
-          // Send admin request
+          // Send new admin request
           fetch("../../admin_actions.php", {
             method: "POST",
             headers: {
@@ -118,8 +151,11 @@ function initAdminRequestButton() {
     });
 }
 
-// Initialize shared functionality when DOM is loaded
+/**
+ * Initialize shared functionality when DOM is loaded
+ * Sets up common features like user profile loading and admin request button
+ */
 document.addEventListener("DOMContentLoaded", () => {
-  loadUserProfile();
-  initAdminRequestButton();
+  loadUserProfile();        // Load and display user profile information
+  initAdminRequestButton(); // Initialize admin request functionality
 }); 

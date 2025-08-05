@@ -1,14 +1,41 @@
 <?php
+/**
+ * User Registration Verification Handler
+ * 
+ * This file handles the multi-step user registration verification process:
+ * 1. Email verification code validation
+ * 2. User profile creation with sports preferences
+ * 3. Image upload handling
+ * 4. Database insertion and session cleanup
+ * 
+ * Features:
+ * - Email verification code checking
+ * - Sports list generation for user preferences
+ * - Profile image upload and storage
+ * - User data validation and database insertion
+ * - Favorite sports association
+ * 
+ * @author BOOK-PLAY Development Team
+ * @version 1.0
+ * @since 2025
+ */
+
+// Start session and include database connection
 session_start(); // Start PHP session for user tracking across requests
 require_once '../../../db.php'; // Include database connection file
 
-// ✅ Function to generate sports list HTML from DB
+/**
+ * Generate sports list HTML from database
+ * Creates checkbox options for all accepted sports
+ * 
+ * @return string HTML string containing sport options
+ */
 function getSportsHTML() {
     global $conn; // Use the global $conn variable for DB connection
 
     $sportsHTML = ''; // Initialize the variable that will store the HTML
 
-    // 🔄 Query to get accepted sports
+    // Query to get accepted sports from database
     $result = $conn->query("SELECT * FROM `sports` WHERE is_Accepted = 1");
 
     if ($result->num_rows > 0) { // If there are sports returned from DB
@@ -28,20 +55,27 @@ function getSportsHTML() {
     return $sportsHTML; // Return the full HTML string
 }
 
-// ✅ Handle GET request for sports list
+/**
+ * Handle GET request for sports list
+ * Returns HTML options for sports selection in registration form
+ */
 if (isset($_GET['get_sports']) && $_GET['get_sports'] == 1) {
     echo getSportsHTML(); // Output the generated sports HTML
     exit(); // Terminate script to prevent further execution
 }
 
-// ✅ Set header for JSON response for all POST requests
+// Set header for JSON response for all POST requests
 header('Content-Type: application/json'); // Response type is JSON
 
-// ✅ Verify code sent from frontend (step 2)
+/**
+ * Verify email verification code (Step 2 of registration)
+ * Validates the 6-digit code sent to user's email
+ */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['code']) && !isset($_POST['username'])) {
     $code = $_POST['code']; // Get the code from the request
 
-    if (!isset($_SESSION['verification_code']) || $code != $_SESSION['verification_code']) { // Compare with stored code
+    // Compare submitted code with stored session code
+    if (!isset($_SESSION['verification_code']) || $code != $_SESSION['verification_code']) {
         echo json_encode([
             "status" => "error",
             "message" => "❌ Incorrect verification code."
@@ -49,13 +83,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['code']) && !isset($_P
         exit(); // Stop script if invalid code
     }
 
-    // ✅ Code is correct
-    echo json_encode(["status" => "success"]); // Send success response
+    // Code is correct - proceed to profile creation
+    echo json_encode(["status" => "success"]);
     exit(); // Terminate script
 }
 
-// ✅ Handle profile form submission (step 3)
+/**
+ * Handle profile form submission (Step 3 of registration)
+ * Creates user profile with personal information and sports preferences
+ */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
+    // Extract form data with fallback values
     $username     = $_POST['username'] ?? ''; // Get username
     $firstName    = $_POST['firstName'] ?? ''; // Get first name
     $lastName     = $_POST['lastName'] ?? ''; // Get last name
@@ -66,16 +104,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
     $userImage    = $_FILES['user_image'] ?? null; // Get uploaded image if exists
     $favoriteSports = isset($_POST['favorite_sports']) ? $_POST['favorite_sports'] : []; // Get favorite sports
 
-    // ❌ Ensure session email and password exist
+    // Validate session data exists (email and password from step 1)
     if (!isset($_SESSION['temp_email']) || !isset($_SESSION['temp_password'])) {
         echo json_encode(["status" => "error", "message" => "⏳ Session expired. Please try again."]);
         exit(); // Exit if session data is missing
     }
 
+    // Retrieve stored email and password from session
     $email = $_SESSION['temp_email']; // Retrieve stored email
     $password = $_SESSION['temp_password']; // Retrieve stored password
 
-    // 🛡️ Check if username already exists in DB
+    // Check if username already exists in database
     $checkUser = $conn->prepare("SELECT username FROM users WHERE username = ?");
     $checkUser->bind_param("s", $username); // Bind username to query
     $checkUser->execute(); // Execute the query
@@ -87,7 +126,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
     }
     $checkUser->close(); // Close statement
 
-    // 📷 Handle image upload
+    /**
+     * Handle profile image upload
+     * Processes uploaded image file and stores it in uploads directory
+     */
     $userImagePath = null; // Default to null
     if ($userImage && $userImage['tmp_name']) { // If file uploaded
         $targetDir = "../../../uploads/users/"; // Directory to store uploads
