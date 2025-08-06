@@ -70,9 +70,9 @@ body {
 }
 
 .profile-menu {
-  position: fixed; /* بدلاً من absolute */
+  position: fixed; /* instead of absolute */
   top: 70px;
-  right: 30px; /* يمكنك تعديل الرقم حسب التباعد */
+  right: 30px; /* you can adjust the number according to spacing */
   background-color: white;
   border: 1px solid var(--card-border);
   border-radius: var(--radius);

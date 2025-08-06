@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // جلب السعر من جدول sportfacilities
+    // Get price from sportfacilities table
     $priceQuery = $conn->prepare("SELECT price FROM sportfacilities WHERE facilities_id = ?");
     $priceQuery->bind_param("i", $facility_id);
     $priceQuery->execute();
@@ -45,14 +45,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $facility = $priceResult->fetch_assoc();
     $pricePerHour = $facility ? (int)$facility['price'] : 0;
 
-    // حساب السعر الإجمالي
+    // Calculate total price
     $start = new DateTime($start_time);
     $end = new DateTime($end_time);
     $interval = $start->diff($end);
     $hours = $interval->h + ($interval->i / 60);
     $total_price = $pricePerHour * $hours;
 
-    // إنشاء الحجز
+    // Create booking
     $stmt = $conn->prepare("INSERT INTO bookings (facilities_id, username, booking_date, start_time, end_time, Total_Price) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("issssi", $facility_id, $username, $start_date, $start_time, $end_time, $total_price);
 
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $group_id = $group_stmt->insert_id;
 
-    // ⬇️ أضف المستخدم إلى المجموعة
+    // ⬇️ Add user to group
     $add_host_stmt = $conn->prepare("INSERT INTO group_members (group_id, username, payment_amount) VALUES (?, ?, 0)");
     $add_host_stmt->bind_param("is", $group_id, $username);
     $add_host_stmt->execute();

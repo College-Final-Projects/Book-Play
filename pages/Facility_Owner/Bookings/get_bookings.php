@@ -12,7 +12,7 @@ if (!$facilityId) {
 $currentYear = date("Y");
 $calendar = [];
 
-// تجهيز كل الشهور فارغة
+// Prepare all months empty
 $months = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -22,7 +22,7 @@ foreach ($months as $month) {
     $calendar[$month] = [];
 }
 
-// تعبئة التواريخ التي فيها حجوزات
+// Fill dates that have bookings
 $query = "
   SELECT 
     DATE_FORMAT(booking_date, '%M') AS month_name,
@@ -42,7 +42,7 @@ while ($row = $result->fetch_assoc()) {
     $calendar[$month][] = $row['full_date'];
 }
 
-// حجوزات جدول العرض
+// Display table bookings
 $query2 = "
    SELECT 
         b.booking_id,
@@ -68,7 +68,7 @@ $bookings = [];
 while ($row = $result2->fetch_assoc()) {
     $playersDisplay = isset($row['max_members']) 
         ? $row['member_count'] . '/' . $row['max_members'] 
-        : '0/0'; // في حال لا توجد مجموعة
+        : '0/0'; // in case there's no group
 
     $bookings[] = [
         'username' => $row['username'],

@@ -143,9 +143,9 @@ function initializeMap() {
     autocomplete.addListener('place_changed', function () {
     const place = autocomplete.getPlace();
     
-    // ✅ حماية ضد إدخال يدوي بدون اختيار اقتراح
+    // ✅ Protection against manual input without selecting suggestion
     if (!place.geometry || !place.geometry.location) {
-        alert("❌ من فضلك اختر الموقع من القائمة التي تظهر، لا تكتب العنوان يدويًا فقط.");
+        alert("❌ Please select the location from the list that appears, don't just type the address manually.");
         document.getElementById('locationInput').value = '';
         return;
     }

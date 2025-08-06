@@ -8,7 +8,7 @@ if ($conn->connect_error) {
     exit();
 }
 
-// جمع الفلاتر
+// Collect filters
 $sports = isset($_GET['sports']) ? $_GET['sports'] : [];
 $search = isset($_GET['search']) ? trim($_GET['search']) : "";
 
@@ -16,7 +16,7 @@ $conditions = ["is_Accepted = 1"];
 $params = [];
 $types = "";
 
-// فلترة حسب الرياضات
+// Filter by sports
 if (!empty($sports)) {
     $placeholders = implode(',', array_fill(0, count($sports), '?'));
     $conditions[] = "SportCategory IN ($placeholders)";
@@ -24,7 +24,7 @@ if (!empty($sports)) {
     $types .= str_repeat('s', count($sports));
 }
 
-// فلترة حسب بداية اسم المكان
+// Filter by venue name start
 if (!empty($search)) {
     $conditions[] = "place_name LIKE ?";
     $params[] = $search . '%';

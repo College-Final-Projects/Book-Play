@@ -9,7 +9,7 @@ if (!$bookingId) {
     exit;
 }
 
-// ✅ جلب بيانات الحجز + المجموعة + المكان
+// ✅ Get booking data + group + venue
 $bookingSql = "
   SELECT 
     b.*, 
@@ -47,7 +47,7 @@ if (!$booking) {
     exit;
 }
 
-// ✅ جلب اللاعبين
+// ✅ Get players
 $playersSql = "
   SELECT 
     u.username, 
@@ -99,7 +99,7 @@ while ($row = $playersResult->fetch_assoc()) {
     $players[] = $row;
 }
 
-// ✅ حساب السعر الكامل
+// ✅ Calculate total price
 $start = new DateTime($booking['start_time']);
 $end = new DateTime($booking['end_time']);
 $intervalInSeconds = ($end->getTimestamp() - $start->getTimestamp());
@@ -114,7 +114,7 @@ if ($booking['image_url'] && !empty($booking['image_url'])) {
     $venueImage = '../../../Images/staduim_icon.png'; // Default image
 }
 
-// ✅ إرسال البيانات كاملة
+// ✅ Send complete data
 echo json_encode([
   'booking' => [
     'place_name' => $booking['group_name'],

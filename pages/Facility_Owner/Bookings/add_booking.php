@@ -16,7 +16,7 @@ if (!$username || !$date || !$players || !$start_time || !$end_time || !$facilit
 }
 
 
-// ✅ تحقق من وجود المستخدم
+// ✅ Check if user exists
 $userCheck = $conn->prepare("SELECT 1 FROM users WHERE username = ?");
 $userCheck->bind_param("s", $username);
 $userCheck->execute();
@@ -27,13 +27,13 @@ if ($userCheck->num_rows === 0) {
     exit;
 }
 
-// ✅ منع التاريخ في الماضي
+// ✅ Prevent past dates
 if (strtotime($date) < strtotime(date('Y-m-d'))) {
     echo json_encode(['success' => false, 'message' => 'Date must be today or in the future.']);
     exit;
 }
 
-// ✅ منع الحجز في ساعات ماضية من نفس اليوم
+// ✅ Prevent booking in past hours of same day
 if ($date === date('Y-m-d')) {
     $now = date('H:i');
     if (strtotime($end) <= strtotime($now)) {
@@ -42,7 +42,7 @@ if ($date === date('Y-m-d')) {
     }
 }
 
-// ✅ التحقق من وجود حجز في نفس الوقت
+// ✅ Check for existing booking at same time
 $conflictCheck = $conn->prepare("
     SELECT 1 FROM bookings
     WHERE facilities_id = ? AND booking_date = ? 
@@ -64,7 +64,7 @@ $start = DateTime::createFromFormat('H:i', $start_time);
 $end = DateTime::createFromFormat('H:i', $end_time);
 $duration_hours = ($end->getTimestamp() - $start->getTimestamp()) / 3600;
 
-// استخرج السعر من قاعدة البيانات
+// Extract price from database
 $facility_id = $_POST['facility_id'];
 $stmt = $conn->prepare("SELECT price FROM sportfacilities WHERE facilities_id = ?");
 $stmt->bind_param("i", $facility_id);
@@ -73,7 +73,7 @@ $result = $stmt->get_result();
 $price = $result->fetch_assoc()['price'] ?? 0;
 
 $total_price = $price * $duration_hours;
-// ✅ حفظ الحجز
+// ✅ Save booking
 $stmt = $conn->prepare("
     INSERT INTO bookings (facilities_id, username, booking_date, start_time, end_time, status,Total_Price) 
     VALUES (?, ?, ?, ?, ?, 'pending',?)
@@ -81,7 +81,7 @@ $stmt = $conn->prepare("
 $stmt->bind_param("issssi", $facilityId, $username, $date, $start_time, $end_time, $total_price);
 
 if ($stmt->execute()) {
-    $bookingId = $conn->insert_id; // ✅ هنا صار عندك booking_id
+    $bookingId = $conn->insert_id; // ✅ here you have booking_id
 
     if ($players > 1) {
         $groupName = $username . "'s Group " . date("Ymd_His");

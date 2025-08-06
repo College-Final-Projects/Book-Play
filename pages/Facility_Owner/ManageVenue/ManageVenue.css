@@ -330,7 +330,7 @@ input:checked + .toggle-slider:before {
 
 
 .modal-content {
-  margin-bottom: 20px; /* المسافة بين العنوان والوسم التالي */
+  margin-bottom: 20px; /* distance between title and next tag */
 
   background: white;
   padding: 30px;
@@ -341,7 +341,7 @@ input:checked + .toggle-slider:before {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 .modal-content h2 {
-  margin-bottom: 30px; /* المسافة بين العنوان و"Venue Name" */
+  margin-bottom: 30px; /* distance between title and "Venue Name" */
   font-size: 24px;
   font-weight: 700;
   color: var(--text-main);
@@ -564,12 +564,12 @@ input:checked + .toggle-slider:before {
   margin-bottom: 10px;
 }
 
-/* تنسيق للأزرار في الخريطة */
+/* Styling for map buttons */
 .gm-style .gm-style-iw {
   font-family: 'Outfit', sans-serif;
 }
 
-/* تحسين التموضع على الشاشات الصغيرة */
+/* Improve positioning on small screens */
 @media (max-width: 768px) {
   #map {
     height: 250px;

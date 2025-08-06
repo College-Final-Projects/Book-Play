@@ -9,7 +9,7 @@ error_log("Request method: " . $_SERVER['REQUEST_METHOD']);
 error_log("Session user_id: " . ($_SESSION['user_id'] ?? 'null'));
 error_log("Action: " . ($_POST['action'] ?? $_GET['action'] ?? 'none'));
 
-// تحديد نوع العملية المطلوبة
+// Determine required operation type
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
 switch ($action) {

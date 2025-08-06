@@ -1,14 +1,14 @@
 <?php
 /**
  * Facility Owner Navbar Component
- * للـ Facility Owner فقط مع شروط تحديد الصفحة النشطة
+ * For Facility Owner only with conditions to determine active page
  */
 
-// الحصول على اسم الصفحة الحالية
+// Get current page name
 $current_page = basename($_SERVER['PHP_SELF'], '.php');
 $current_folder = basename(dirname($_SERVER['PHP_SELF']));
 
-// تحديد الصفحة النشطة بناءً على الشروط
+// Determine active page based on conditions
 $active_page = '';
 
 if ($current_page == 'HomePage' || $current_folder == 'HomePage') {

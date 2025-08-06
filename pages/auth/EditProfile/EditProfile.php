@@ -11,7 +11,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'remove_image') {
         exit;
     }
 
-    // حذف اسم الصورة من قاعدة البيانات
+    // Delete image name from database
     $stmt = $conn->prepare("UPDATE users SET user_image = NULL WHERE username = ?");
     $stmt->bind_param("s", $username);
     if ($stmt->execute()) {
@@ -22,7 +22,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'remove_image') {
     exit;
 }
 
-// ✅ API لجلب بيانات المستخدم (للجافاسكربت)
+// ✅ API to get user data (for JavaScript)
 if (isset($_GET['action']) && $_GET['action'] === 'get_user_data') {
     header('Content-Type: application/json');
 
@@ -43,13 +43,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_user_data') {
     exit;
 }
 
-// ✅ تحقق من تسجيل الدخول عند فتح الصفحة مباشرة
+// ✅ Check login when opening page directly
 if (!$username) {
     header("Location: ../Login_Page/Login.php");
     exit;
 }
 
-// ✅ معالجة حفظ التعديلات (POST)
+// ✅ Handle saving changes (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $firstName   = $_POST['firstName'];
     $lastName    = $_POST['lastName'];
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = $_POST['description'];
     $sports      = isset($_POST['favoriteSport']) ? $_POST['favoriteSport'] : [];
 
-    // ✅ معالجة رفع صورة البروفايل
+    // ✅ Handle profile image upload
     $user_image = null;
     if (isset($_FILES['user_image']) && $_FILES['user_image']['error'] === UPLOAD_ERR_OK) {
         $image_tmp      = $_FILES['user_image']['tmp_name'];
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // ✅ تحديث جدول المستخدمين
+    // ✅ Update users table
     if ($user_image) {
         $stmt = $conn->prepare("UPDATE users SET first_name=?, last_name=?, age=?, Gender=?, phone_number=?, description=?, user_image=? WHERE username=?");
         $stmt->bind_param("ssisssss", $firstName, $lastName, $age, $gender, $phone, $description, $user_image, $username);
@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
     $stmt->close();
 
-    // ✅ حذف الرياضات السابقة
+    // ✅ Delete previous sports
     $deleteStmt = $conn->prepare("DELETE FROM user_favorite_sports WHERE username = ?");
     if ($deleteStmt) {
         $deleteStmt->bind_param("s", $username);
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $deleteStmt->close();
     }
 
-    // ✅ إدراج الرياضات المفضلة الجديدة
+    // ✅ Insert new favorite sports
     $insertStmt = $conn->prepare("INSERT INTO user_favorite_sports (username, sport_id) VALUES (?, ?)");
     foreach ($sports as $sportName) {
         $sportQuery = $conn->prepare("SELECT sport_id FROM sports WHERE sport_name = ?");
@@ -126,7 +126,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'prev') {
 }
 
 
-// ✅ عرض الصفحة HTML
+// ✅ Display HTML page
 require_once '../../../components/sports-scroll.php';
 include 'EditProfile.html';
 exit;

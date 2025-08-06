@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // When pressing Send button
   sendButton.addEventListener("click", sendMessage);
 
-  // عند الضغط على Enter
+  // When pressing Enter
   messageInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();

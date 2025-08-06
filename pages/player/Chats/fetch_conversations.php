@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../db.php'; // غيّر المسار حسب مشروعك
+require_once '../../db.php'; // change path according to your project
 
 header('Content-Type: application/json');
 

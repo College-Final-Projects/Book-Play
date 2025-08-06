@@ -61,7 +61,7 @@ body {
   display: inline-block;
 }
 
-/* شبكة البطاقات */
+/* Card grid */
 .admin-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -73,7 +73,7 @@ body {
   max-width: 1200px;
 }
 
-/* تصميم كل بطاقة */
+/* Design for each card */
 .glow-card {
   width: 200px;
   height: 200px;
@@ -111,7 +111,7 @@ body {
   box-shadow: 0 6px 20px rgba(30, 144, 255, 0.15);
 }
 
-/* ألوان Glow حسب نوع البطاقة */
+/* Glow colors according to card type */
 .btn-VenueRequests { box-shadow: 0 0 12px #22c55e; }
 .btn-complaints    { box-shadow: 0 0 12px gold; }
 .btn-sports        { box-shadow: 0 0 12px #38bdf8; }

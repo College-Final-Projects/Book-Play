@@ -1,4 +1,4 @@
-// معاينة صورة البروفايل عند التحميل
+// Preview profile image on load
 window.previewImage = function () {
   const input = document.getElementById("profileImage");
   const preview = document.getElementById("profileImagePreview");
@@ -17,13 +17,13 @@ window.removeImage = function () {
   const preview = document.getElementById("profileImagePreview");
   const removeBtn = document.getElementById("removeImageBtn");
 
-  // تنظيف الواجهة
+  // Clean interface
   input.value = "";
   preview.src = "#";
   preview.style.display = "none";
   removeBtn.style.display = "none";
 
-  // إرسال الطلب لحذف الصورة من قاعدة البيانات
+  // Send request to delete image from database
   fetch("EditProfile.php?action=remove_image")
     .then((res) => res.json())
     .then((data) => {
@@ -37,7 +37,7 @@ window.removeImage = function () {
 };
 
 
-// التحقق من أن الهاتف يحتوي فقط على أرقام (داخل oninput أيضاً)
+// Check that phone contains only numbers (also in oninput)
 document.addEventListener("DOMContentLoaded", function () {
   const phoneInput = document.getElementById("phone");
 
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
     this.value = this.value.replace(/[^0-9]/g, "").slice(0, 10);
   });
 
-  // يمكنك إضافة أي تحقق إضافي آخر هنا لاحقًا
+  // You can add any additional validation here later
 });
 document.addEventListener("DOMContentLoaded", function () {
   fetch("EditProfile.php?action=get_user_data")
@@ -73,18 +73,18 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .catch((err) => console.error("❌ Error loading profile:", err));
 });
-// إظهار النافذة بعد الحفظ
+// Show window after saving
 function showModal() {
   const modal = document.getElementById("confirmationModal");
   if (modal) modal.style.display = "flex";
 }
 
-// إغلاق النافذة عند الضغط على OK
+// Close window when pressing OK
 window.closeModal = function () {
   const modal = document.getElementById("confirmationModal");
   if (modal) {
     modal.style.display = "none";
-    window.location.href = "EditProfile.php"; // إعادة التوجيه بعد الإغلاق
+    window.location.href = "EditProfile.php"; // redirect after closing
   }
 };
 function goBack() {

@@ -51,7 +51,7 @@ function populateBookingDetails(booking) {
   // store group id globally for later updates
   window.currentGroupId = booking.group_id;
 
-  // ✅ عرض الخصوصية
+  // ✅ Display privacy
   const privacyToggle = document.getElementById("privacyToggle");
   const passwordSection = document.getElementById("passwordSection");
   const roomPassword = document.getElementById("roomPassword");
