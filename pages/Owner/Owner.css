@@ -23,10 +23,46 @@ body {
   box-shadow: var(--shadow);
   font-size: 24px;
   font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+}
+
+.logout-btn {
+  background: linear-gradient(to right, #f87171, #ef4444);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  font-size: 14px;
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: bold;
+  background: linear-gradient(to right, #1e90ff, #22c55e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
 }
 
 .logo span {
-  color: var(--primary);
+  color: #f472b6;
 }
 
 .section-title {
@@ -101,6 +137,51 @@ td {
   margin: 30px auto;
   font-size: 16px;
   background: linear-gradient(to right, #4fc3f7, #1e90ff);
+}
+
+.view-admins-btn {
+  display: block;
+  margin: 10px auto 30px auto;
+  font-size: 16px;
+  background: linear-gradient(to right, #4fc3f7, #22c55e);
+  border: none;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+.view-admins-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+#adminsList {
+  margin-top: 20px;
+  text-align: left;
+}
+#adminsList .admin-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+#adminsList .remove-admin-btn {
+  background: linear-gradient(to right, #f87171, #ef4444);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 6px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 16px;
+  transition: var(--transition);
+}
+#adminsList .remove-admin-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
 }
 
 .add-admin-btn:hover,
