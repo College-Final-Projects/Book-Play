@@ -46,6 +46,7 @@ function isActive($pageName) {
             <li><a href="../Favorites/Favorites.php" class="<?php echo isActive('Favorites'); ?>">My Favorites</a></li>
             <li><a href="../Chats/Chats.php" class="<?php echo isActive('Chats'); ?>">My Chats</a></li>
             <li><a href="../MyBookings/MyBookings.php" class="<?php echo isActive('MyBookings'); ?>">My Bookings</a></li>
+            <li><a href="../MyFriends/MyFriends.php" class="<?php echo isActive('MyFriends'); ?>">My Friends</a></li>
             <li><a href="../../auth/Login_Page/Login.php" class="logout">Logout</a></li>
         </ul>
     </div>

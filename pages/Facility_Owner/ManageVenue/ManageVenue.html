@@ -65,9 +65,15 @@
                 <input type="text" name="place_name" id="placeName" placeholder="Enter venue name" required>
           
                 <label>Sport Type</label>
-                <select name="sport_type" id="sportType" required>
-                    <!-- Sports will be populated via JavaScript -->
-                </select>
+                <div class="sport-type-container">
+                    <select name="sport_type" id="sportType" required>
+                        <!-- Sports will be populated via JavaScript -->
+                    </select>
+                    <button type="button" class="suggest-sport-btn" onclick="openSuggestSportModal()">
+                        <span>+</span>
+                        <span>Suggest Sport</span>
+                    </button>
+                </div>
           
                 <label>Venue Images</label>
                 <input type="file" id="venueImages" name="venueImages[]" accept="image/*" multiple>
@@ -98,6 +104,24 @@
                 <div class="modal-buttons">
                     <button type="button" class="cancel-btn">Cancel</button>
                     <button type="submit" class="save-btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Suggest Sport Modal -->
+    <div id="suggestSportModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeSuggestSportModal()">&times;</span>
+            <h2>Suggest a New Sport</h2>
+            <form id="suggestSportForm" class="suggest-form">
+                <div class="form-group">
+                    <label for="sportName">Sport Name *</label>
+                    <input type="text" id="sportName" name="sport_name" placeholder="e.g., Pickleball, Ultimate Frisbee" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="cancel-btn" onclick="closeSuggestSportModal()">Cancel</button>
+                    <button type="submit" class="save-btn">Submit Suggestion</button>
                 </div>
             </form>
         </div>

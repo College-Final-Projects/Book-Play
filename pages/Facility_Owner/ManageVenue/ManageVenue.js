@@ -974,6 +974,157 @@ function handleError(error, context = '') {
 function initializeUIEnhancements() {
     // Add any additional UI enhancements here
     // For example, tooltips, animations, etc.
+    setupSuggestSportForm();
+    setupSuggestSportModalEvents();
+}
+
+// Suggest Sport Modal Functionality
+function openSuggestSportModal() {
+    const modal = document.getElementById('suggestSportModal');
+    if (modal) {
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+}
+
+function closeSuggestSportModal() {
+    const modal = document.getElementById('suggestSportModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restore scrolling
+        // Reset form
+        const form = document.getElementById('suggestSportForm');
+        if (form) {
+            form.reset();
+        }
+    }
+}
+
+// Handle sport suggestion form submission
+function setupSuggestSportForm() {
+    const suggestForm = document.getElementById('suggestSportForm');
+    const sportNameInput = document.getElementById('sportName');
+    
+    if (suggestForm) {
+        // Add real-time validation for sport name
+        if (sportNameInput) {
+            let validationTimeout;
+            sportNameInput.addEventListener('input', function() {
+                clearTimeout(validationTimeout);
+                const sportName = this.value.trim();
+                
+                if (sportName.length > 2) {
+                    validationTimeout = setTimeout(() => {
+                        checkSportExists(sportName);
+                    }, 500); // Wait 500ms after user stops typing
+                } else {
+                    clearSportValidation();
+                }
+            });
+        }
+        
+        suggestForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const sportName = formData.get('sport_name').trim();
+            
+            if (!sportName) {
+                showMessage("❌ Please enter a sport name.", 'error');
+                return;
+            }
+            
+            // Submit the suggestion
+            fetch('sport_suggestion.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    closeSuggestSportModal();
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting sport suggestion:', error);
+                showMessage("❌ Failed to submit suggestion. Please try again.", 'error');
+            });
+        });
+    }
+}
+
+// Check if sport already exists
+function checkSportExists(sportName) {
+    fetch(`sport_suggestion.php?sport_name=${encodeURIComponent(sportName)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.already_exists) {
+                    showSportValidation("❌ This sport already exists in our website.", 'error');
+                } else if (data.already_suggested) {
+                    showSportValidation("⚠️ You have already suggested this sport.", 'warning');
+                } else {
+                    showSportValidation("✅ This sport name is available.", 'success');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error checking sport:', error);
+        });
+}
+
+// Show validation message for sport name
+function showSportValidation(message, type) {
+    clearSportValidation();
+    
+    const sportNameInput = document.getElementById('sportName');
+    if (!sportNameInput) return;
+    
+    const validationDiv = document.createElement('div');
+    validationDiv.className = 'sport-validation';
+    validationDiv.textContent = message;
+    
+    // Style based on type
+    switch (type) {
+        case 'success':
+            validationDiv.style.color = '#22c55e';
+            break;
+        case 'error':
+            validationDiv.style.color = '#ef4444';
+            break;
+        case 'warning':
+            validationDiv.style.color = '#f59e0b';
+            break;
+    }
+    
+    validationDiv.style.fontSize = '12px';
+    validationDiv.style.marginTop = '4px';
+    validationDiv.style.fontWeight = '500';
+    
+    sportNameInput.parentNode.appendChild(validationDiv);
+}
+
+// Clear validation message
+function clearSportValidation() {
+    const existingValidation = document.querySelector('.sport-validation');
+    if (existingValidation) {
+        existingValidation.remove();
+    }
+}
+
+// Close suggest sport modal when clicking outside
+function setupSuggestSportModalEvents() {
+    const modal = document.getElementById('suggestSportModal');
+    if (modal) {
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closeSuggestSportModal();
+            }
+        });
+    }
 }
 
 // Call UI enhancements after DOM is loaded

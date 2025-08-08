@@ -156,22 +156,41 @@ function renderPlayers() {
 
 // Add Friend functionality
 function addFriend(playerName) {
-    // Check if already friends
-    if (friendsList.includes(playerName)) {
-        alert(`${playerName} is already in your friends list!`);
-        return;
-    }
+    // Send friend request to backend
+    const formData = new FormData();
+    formData.append('action', 'send_request');
+    formData.append('friend_username', playerName);
     
-    // Add to friends list
-    friendsList.push(playerName);
-    
-    // Show success message
-    alert(`${playerName} has been added to your friends list!`);
-    
-    // Re-render players to update button state
-    renderPlayers();
-    
-    console.log('Current friends list:', friendsList);
+    fetch('../MyFriends/friends_api.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            // Update button to show "Request Sent"
+            updateAddFriendButton(playerName, 'Request Sent');
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error sending friend request:', error);
+        alert('Failed to send friend request. Please try again.');
+    });
+}
+
+function updateAddFriendButton(playerName, status) {
+    // Find the button for this player and update its text
+    const buttons = document.querySelectorAll('.add-friend-btn');
+    buttons.forEach(button => {
+        if (button.getAttribute('onclick') && button.getAttribute('onclick').includes(playerName)) {
+            button.textContent = status;
+            button.disabled = true;
+            button.style.backgroundColor = '#6b7280';
+        }
+    });
 }
 
 function setupEventListeners() {
