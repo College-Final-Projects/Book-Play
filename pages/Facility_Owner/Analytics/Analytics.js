@@ -42,7 +42,7 @@ function displayVenues(data) {
     const card = document.createElement('div');
     card.className = 'venue-card';
     card.innerHTML = `
-      <img src="${facility.image_url || 'default.jpg'}" class="venue-image" />
+      <img src="${facility.image_url || '../../../uploads/venues/default.jpg'}" class="venue-image" />
       <div class="venue-name">${facility.place_name}</div>
       <div class="venue-sport">${facility.SportCategory}</div>
       <div class="venue-rating">📍 ${facility.location || 'Unknown location'}</div>

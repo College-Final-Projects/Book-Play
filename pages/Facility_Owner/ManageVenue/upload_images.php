@@ -5,14 +5,19 @@
  */
 function upload_images($files) {
     // Define the upload directory path (server path)
-    $upload_dir = '../../../uploads/venues/';
+    $upload_dir = __DIR__ . '/../../../uploads/venues/';
 
-    // Public URL path to return (relative to web root)
-    $public_path = '../../../uploads/venues/';
+    error_log("Upload Images - Starting upload process");
+    error_log("Upload Images - Upload directory: " . $upload_dir);
+    error_log("Upload Images - Files received: " . json_encode($files));
 
     // Create the uploads directory if it doesn't exist
     if (!file_exists($upload_dir)) {
-        mkdir($upload_dir, 0777, true);
+        if (!mkdir($upload_dir, 0777, true)) {
+            error_log("Failed to create upload directory: " . $upload_dir);
+            return [];
+        }
+        error_log("Upload Images - Created upload directory: " . $upload_dir);
     }
 
     $uploaded_files = [];
@@ -20,30 +25,42 @@ function upload_images($files) {
     $max_size = 5 * 1024 * 1024; // 5MB
 
     $file_count = min(count($files['name']), 3); // Limit to 3 files
+    error_log("Upload Images - Processing $file_count files");
 
     for ($i = 0; $i < $file_count; $i++) {
+        error_log("Upload Images - Processing file $i: " . $files['name'][$i]);
+        
         if ($files['error'][$i] !== UPLOAD_ERR_OK) {
+            error_log("File upload error for file $i: " . $files['error'][$i]);
             continue;
         }
 
         $file_type = $files['type'][$i];
         if (!in_array($file_type, $allowed_types)) {
+            error_log("Invalid file type for file $i: " . $file_type);
             continue;
         }
 
         if ($files['size'][$i] > $max_size) {
+            error_log("File too large for file $i: " . $files['size'][$i]);
             continue;
         }
 
         $new_filename = uniqid() . '_' . basename($files['name'][$i]);
         $destination = $upload_dir . $new_filename;
+        
+        error_log("Upload Images - Moving file to: " . $destination);
 
         if (move_uploaded_file($files['tmp_name'][$i], $destination)) {
-            // ✅ Store relative web path, not full server path
-            $uploaded_files[] = $public_path . $new_filename;
+            // Store only the filename for database storage
+            $uploaded_files[] = $new_filename;
+            error_log("Upload Images - Successfully uploaded: " . $new_filename);
+        } else {
+            error_log("Failed to move uploaded file: " . $files['tmp_name'][$i] . " to " . $destination);
         }
     }
 
+    error_log("Upload Images - Final result: " . json_encode($uploaded_files));
     return $uploaded_files;
 }
 ?>

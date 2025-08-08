@@ -2,6 +2,7 @@
 require_once '../../../db.php';
 header('Content-Type: application/json');
 
+session_start();
 
 if ($conn->connect_error) {
     echo json_encode(["success" => false, "message" => "DB connection failed"]);
@@ -32,18 +33,27 @@ if (!empty($search)) {
 }
 
 $whereClause = implode(" AND ", $conditions);
+
+// Get current user's username for favorite check
+$current_user = isset($_SESSION['username']) ? $_SESSION['username'] : '';
+
 $sql = "
-  SELECT f.*, ROUND(AVG(r.rating_value), 1) AS avg_rating
+  SELECT 
+    f.*, 
+    COALESCE(ROUND(AVG(r.rating_value), 1), 0) AS avg_rating,
+    CASE WHEN fav.facility_id IS NOT NULL THEN 1 ELSE 0 END AS is_favorite
   FROM sportfacilities f
   LEFT JOIN ratings r ON f.facilities_id = r.facilities_id 
+  LEFT JOIN user_favorite_facilities fav ON f.facilities_id = fav.facility_id AND fav.user_id = ?
   WHERE $whereClause
   GROUP BY f.facilities_id
 ";
 
-
 $stmt = $conn->prepare($sql);
 if ($params) {
-    $stmt->bind_param($types, ...$params);
+    $stmt->bind_param($types . 's', ...array_merge($params, [$current_user]));
+} else {
+    $stmt->bind_param('s', $current_user);
 }
 
 $stmt->execute();

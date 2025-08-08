@@ -12,7 +12,7 @@ $input = json_decode(file_get_contents("php://input"), true);
 error_log("Input data: " . json_encode($input));
 
 $username = $_SESSION['username'] ?? null;
-$facilityId = $input['facility_id'] ?? null;
+$facilityId = $input['facilities_id'] ?? null;
 $rating = $input['rating'] ?? null;
 $comment = $input['comment'] ?? null;
 

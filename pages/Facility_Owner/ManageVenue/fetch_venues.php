@@ -115,31 +115,38 @@ function addFacility() {
     $description = $_POST['description'] ?? '';
     $price = intval($_POST['price'] ?? 0);
     $location = $_POST['location'] ?? '';
-    $latitude = $_POST['latitude'] ?? null;  // receive latitude
-    $longitude = $_POST['longitude'] ?? null;  // receive longitude
+    $latitude = $_POST['latitude'] ?? null;
+    $longitude = $_POST['longitude'] ?? null;
     $is_available = isset($_POST['is_available']) ? 1 : 0;
     $image_urls = [];
 
+    // Debug: Log received data
+    error_log("Add Facility - Received data: " . json_encode($_POST));
+    error_log("Add Facility - Files: " . json_encode($_FILES));
+
     // Check image upload
-    if (isset($_FILES['venueImages']) && is_array($_FILES['venueImages']['name']) && $_FILES['venueImages']['error'][0] !== UPLOAD_ERR_NO_FILE) {
+    if (isset($_FILES['venueImages']) && 
+        is_array($_FILES['venueImages']['name']) && 
+        !empty($_FILES['venueImages']['name'][0]) && 
+        $_FILES['venueImages']['error'][0] !== UPLOAD_ERR_NO_FILE) {
+        
         $image_urls = upload_images($_FILES['venueImages']);
+        error_log("Add Facility - Uploaded images: " . json_encode($image_urls));
+        
+        // Only show error if files were actually selected but failed to upload
+        if (empty($image_urls) && $_FILES['venueImages']['error'][0] === UPLOAD_ERR_OK) {
+            echo json_encode(['success' => false, 'message' => 'Failed to upload images. Please try again.']);
+            return;
+        }
     }
 
-    // Convert array of image links to comma-separated text
+    // Convert array of image filenames to comma-separated text
     $image_url_string = implode(',', $image_urls);
-    
-    // Add coordinates to location if available
-    if ($latitude && $longitude) {
-        // Add coordinates to location (can use JSON format or any other format)
-        $coordinates = json_encode(['lat' => $latitude, 'lng' => $longitude]);
-    } else {
-        $coordinates = null;
-    }
+    error_log("Add Facility - Image URL string: " . $image_url_string);
     
     $conn->begin_transaction();
 
     try {
-        // Modify query to add coordinates field
         $stmt = $conn->prepare("INSERT INTO sportfacilities (place_name, location, description, image_url, owner_username, SportCategory, price, latitude, longitude, is_Accepted, is_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)");
         $stmt->bind_param("ssssssiddi", $place_name, $location, $description, $image_url_string, $username, $sport_type, $price, $latitude, $longitude, $is_available);
 
@@ -157,6 +164,7 @@ function addFacility() {
         echo json_encode(["success" => false, "message" => $e->getMessage()]);
     }
 }
+
 function updateFacility() {
     global $conn;
 
@@ -176,6 +184,10 @@ function updateFacility() {
     $longitude = $_POST['longitude'] ?? null;
     $is_available = isset($_POST['is_available']) ? 1 : 0;
 
+    // Debug: Log received data
+    error_log("Update Facility - Received data: " . json_encode($_POST));
+    error_log("Update Facility - Files: " . json_encode($_FILES));
+
     // Check if user owns this facility
     $check_stmt = $conn->prepare("SELECT * FROM sportfacilities WHERE facilities_id = ? AND owner_username = ?");
     $check_stmt->bind_param("is", $facility_id, $username);
@@ -189,13 +201,31 @@ function updateFacility() {
 
     // Handle image upload if new images are provided
     $image_url_string = '';
-    if (isset($_FILES['venueImages']) && is_array($_FILES['venueImages']['name']) && $_FILES['venueImages']['error'][0] !== UPLOAD_ERR_NO_FILE) {
+    $has_new_images = false;
+    
+    // Check if files were actually uploaded
+    if (isset($_FILES['venueImages']) && 
+        is_array($_FILES['venueImages']['name']) && 
+        !empty($_FILES['venueImages']['name'][0]) && 
+        $_FILES['venueImages']['error'][0] !== UPLOAD_ERR_NO_FILE) {
+        
         $image_urls = upload_images($_FILES['venueImages']);
-        $image_url_string = implode(',', $image_urls);
+        error_log("Update Facility - Uploaded images: " . json_encode($image_urls));
+        
+        if (!empty($image_urls)) {
+            $image_url_string = implode(',', $image_urls);
+            $has_new_images = true;
+        } else {
+            // Only show error if files were actually selected but failed to upload
+            if ($_FILES['venueImages']['error'][0] === UPLOAD_ERR_OK) {
+                echo json_encode(['success' => false, 'message' => 'Failed to upload images. Please try again.']);
+                return;
+            }
+        }
     }
 
     // Update query - only update image_url if new images were uploaded
-    if ($image_url_string) {
+    if ($has_new_images && $image_url_string) {
         $stmt = $conn->prepare("UPDATE sportfacilities SET place_name = ?, location = ?, description = ?, image_url = ?, SportCategory = ?, price = ?, latitude = ?, longitude = ?, is_available = ? WHERE facilities_id = ? AND owner_username = ?");
         $stmt->bind_param("ssssssiddis", $place_name, $location, $description, $image_url_string, $sport_type, $price, $latitude, $longitude, $is_available, $facility_id, $username);
     } else {
@@ -206,7 +236,7 @@ function updateFacility() {
     if ($stmt->execute()) {
         echo json_encode(["success" => true, "message" => "Facility updated successfully"]);
     } else {
-        echo json_encode(["success" => false, "message" => "Failed to update facility"]);
+        echo json_encode(["success" => false, "message" => "Failed to update facility: " . $conn->error]);
     }
 }
 ?>

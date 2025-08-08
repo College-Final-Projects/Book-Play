@@ -280,9 +280,10 @@ input[type="radio"], input[type="checkbox"] {
   letter-spacing: -0.025em;
 }
 .venue-card.unavailable {
-  opacity: 0.6;
+  opacity: 0.7;
   pointer-events: none;
   position: relative;
+  cursor: not-allowed;
 }
 
 .venue-card.unavailable::after {
@@ -299,6 +300,33 @@ input[type="radio"], input[type="checkbox"] {
   font-size: 18px;
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5);
   text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  z-index: 10;
+}
+
+/* Lock overlay on venue image */
+.lock-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Unavailable button styling */
+.book-btn.unavailable-btn {
+  background: #6b7280 !important;
+  color: #9ca3af !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+}
+
+.book-btn.unavailable-btn:hover {
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .results-count {

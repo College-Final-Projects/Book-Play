@@ -456,13 +456,23 @@ function displayVenues(venues) {
 // Create venue card HTML
 function createVenueCard(venue) {
     const images = venue.image_url ? venue.image_url.split(',') : [];
-    const firstImage = images.length > 0 ? images[0] : 'placeholder.jpg';
+    let firstImage = 'placeholder.jpg';
+    
+    if (images.length > 0 && images[0].trim()) {
+        // If the image URL is just a filename, construct the full path
+        if (!images[0].includes('/')) {
+            firstImage = `../../../uploads/venues/${images[0].trim()}`;
+        } else {
+            firstImage = images[0].trim();
+        }
+    }
+    
     const isAvailable = venue.is_available == 1;
     
     return `
         <div class="venue-card" data-venue-id="${venue.facilities_id}">
             <div class="venue-image">
-                <img src="${firstImage}" alt="${venue.place_name}" onerror="this.src='../../../Images/default.jpg'">
+                <img src="${firstImage}" alt="${venue.place_name}" onerror="this.src='../../../uploads/venues/default.jpg'">
             </div>
             <div class="venue-details">
                 <div class="venue-name">
@@ -536,7 +546,12 @@ function openModal(venue = null) {
             images.forEach(imageUrl => {
                 if (imageUrl.trim()) {
                     const img = document.createElement('img');
-                    img.src = imageUrl.trim();
+                    // Construct proper path for existing images
+                    if (!imageUrl.includes('/')) {
+                        img.src = `../../../uploads/venues/${imageUrl.trim()}`;
+                    } else {
+                        img.src = imageUrl.trim();
+                    }
                     img.style.width = '100px';
                     img.style.height = '100px';
                     img.style.objectFit = 'cover';
@@ -652,6 +667,16 @@ async function handleFormSubmit(e) {
     
     const formData = new FormData(venueForm);
     
+    // Debug: Log form data
+    console.log('Form data being submitted:');
+    for (let [key, value] of formData.entries()) {
+        if (key === 'venueImages[]') {
+            console.log(`${key}: File object (${value.name}, ${value.size} bytes)`);
+        } else {
+            console.log(`${key}: ${value}`);
+        }
+    }
+    
     // Determine if we're editing or adding
     if (currentEditingId) {
         formData.append('action', 'update_facility');
@@ -660,12 +685,16 @@ async function handleFormSubmit(e) {
         formData.append('action', 'add_facility');
     }
     
+    // Get save button and store original text before try block
+    const saveBtn = document.querySelector('.save-btn');
+    const originalText = saveBtn ? saveBtn.textContent : 'Save';
+    
     try {
         // Show loading state
-        const saveBtn = document.querySelector('.save-btn');
-        const originalText = saveBtn.textContent;
-        saveBtn.textContent = 'Saving...';
-        saveBtn.disabled = true;
+        if (saveBtn) {
+            saveBtn.textContent = 'Saving...';
+            saveBtn.disabled = true;
+        }
         
         const response = await fetch('fetch_venues.php', {
             method: 'POST',
@@ -677,6 +706,7 @@ async function handleFormSubmit(e) {
         }
         
         const result = await response.json();
+        console.log('Server response:', result);
         
         if (result.success) {
             showMessage(result.message, 'success');
@@ -690,9 +720,10 @@ async function handleFormSubmit(e) {
         showMessage('Error saving venue. Please try again.', 'error');
     } finally {
         // Restore button state
-        const saveBtn = document.querySelector('.save-btn');
-        saveBtn.textContent = originalText;
-        saveBtn.disabled = false;
+        if (saveBtn) {
+            saveBtn.textContent = originalText;
+            saveBtn.disabled = false;
+        }
     }
 }
 
@@ -774,7 +805,7 @@ function handleImagePreview(e) {
 // View venue details function
 function viewVenueDetails(venueId) {
     // Redirect to player's VenueDetails.php with the facility ID
-    window.location.href = `../../player/VenueDetails/VenueDetails.php?facility_id=${venueId}`;
+    window.location.href = `../../player/VenueDetails/VenueDetails.php?facilities_id=${venueId}`;
 }
 
 // Edit venue function

@@ -22,12 +22,20 @@ function filterVenuesBySports(sports = [], searchTerm = "") {
         return;
       }
 
-      const sortOptions = {
-        available: document.querySelector("input[name='Available-sort']:checked")?.id,
-        price: document.querySelector("input[name='price-sort']:checked")?.id,
-        rating: document.querySelector("input[name='rating-sort']:checked")?.id,
-        distance: document.querySelector("input[name='distance-sort']:checked")?.id
-      };
+      // Store the venues data globally
+      currentVenuesData = data.venues;
+
+      // Test rating data after loading
+      testRatingData();
+
+        const sortOptions = {
+    available: document.querySelector("input[name='Available-sort']:checked")?.id,
+    price: document.querySelector("input[name='price-sort']:checked")?.id,
+    rating: document.querySelector("input[name='rating-sort']:checked")?.id,
+    distance: document.querySelector("input[name='distance-sort']:checked")?.id
+  };
+  
+  console.log('Sort options:', sortOptions);
 
       navigator.geolocation.getCurrentPosition(position => {
         const userLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -50,21 +58,37 @@ function filterVenuesBySports(sports = [], searchTerm = "") {
 }
 
 function sortVenues(venues, sortOptions) {
+  console.log('Sorting venues with options:', sortOptions);
+  console.log('Before filtering - venues count:', venues.length);
+  
+  // Debug: Log first few venues to check rating data
+  console.log('Sample venue data:', venues.slice(0, 3).map(v => ({
+    name: v.place_name,
+    rating: v.avg_rating,
+    price: v.price,
+    distance: v.distance
+  })));
+  
   // First filter by availability if needed
   if (sortOptions.available === "Available") {
-    venues = venues.filter(v => v.available === 1 || v.available === true);
+    venues = venues.filter(v => v.is_available == 1);
+    console.log('After availability filter - venues count:', venues.length);
   }
 
   // Sort venues based on selected options
   venues.sort((a, b) => {
+    let comparison = 0;
+    
     // Distance sorting (highest priority)
     if (sortOptions.distance === "distance-near") {
       if (a.distance !== undefined && b.distance !== undefined) {
-        return a.distance - b.distance;
+        comparison = a.distance - b.distance;
+        if (comparison !== 0) return comparison;
       }
     } else if (sortOptions.distance === "distance-far") {
       if (a.distance !== undefined && b.distance !== undefined) {
-        return b.distance - a.distance;
+        comparison = b.distance - a.distance;
+        if (comparison !== 0) return comparison;
       }
     }
 
@@ -72,35 +96,34 @@ function sortVenues(venues, sortOptions) {
     if (sortOptions.rating === "rating-high") {
       const ratingA = parseFloat(a.avg_rating) || 0;
       const ratingB = parseFloat(b.avg_rating) || 0;
-      if (ratingA !== ratingB) {
-        return ratingB - ratingA;
-      }
+      comparison = ratingB - ratingA;
+      console.log(`Rating comparison: ${ratingA} vs ${ratingB} = ${comparison}`);
+      if (comparison !== 0) return comparison;
     } else if (sortOptions.rating === "rating-low") {
       const ratingA = parseFloat(a.avg_rating) || 0;
       const ratingB = parseFloat(b.avg_rating) || 0;
-      if (ratingA !== ratingB) {
-        return ratingA - ratingB;
-      }
+      comparison = ratingA - ratingB;
+      console.log(`Rating comparison: ${ratingA} vs ${ratingB} = ${comparison}`);
+      if (comparison !== 0) return comparison;
     }
 
     // Price sorting
     if (sortOptions.price === "price-low") {
       const priceA = parseFloat(a.price) || 0;
       const priceB = parseFloat(b.price) || 0;
-      if (priceA !== priceB) {
-        return priceA - priceB;
-      }
+      comparison = priceA - priceB;
+      if (comparison !== 0) return comparison;
     } else if (sortOptions.price === "price-high") {
       const priceA = parseFloat(a.price) || 0;
       const priceB = parseFloat(b.price) || 0;
-      if (priceA !== priceB) {
-        return priceB - priceA;
-      }
+      comparison = priceB - priceA;
+      if (comparison !== 0) return comparison;
     }
 
     return 0;
   });
 
+  console.log('After sorting - venues count:', venues.length);
   return venues;
 }
 
@@ -129,10 +152,17 @@ function renderVenues(venues) {
 
   venues.forEach(venue => {
     const card = document.createElement("div");
-    card.className = "venue-card";
-    card.onclick = () => {
-      window.location.href = `../VenueDetails/VenueDetails.php?facility_id=${venue.facilities_id}`;
-    };
+    const isAvailable = venue.is_available == 1;
+    
+    // Add unavailable class if venue is not available
+    card.className = `venue-card ${!isAvailable ? 'unavailable' : ''}`;
+    
+    // Only add click handler if venue is available
+    if (isAvailable) {
+      card.onclick = () => {
+        window.location.href = `../VenueDetails/VenueDetails.php?facilities_id=${venue.facilities_id}`;
+      };
+    }
 
     const ratingValue = parseFloat(venue.avg_rating) || 0;
     const fullStars = Math.floor(ratingValue);
@@ -145,6 +175,7 @@ function renderVenues(venues) {
     card.innerHTML = `
       <div class="venue-image">
         <img src="../../../uploads/venues/${venue.image_url}" alt="Venue Image">
+        ${!isAvailable ? '<div class="lock-overlay">🔒</div>' : ''}
         <div class="favorite-icon ${isFavorited}" onclick="event.stopPropagation(); toggleFavorite(this, ${venue.facilities_id})">&#10084;</div>
       </div>
       <div class="venue-content">
@@ -166,12 +197,31 @@ function renderVenues(venues) {
         <div class="venue-footer">
           <div class="price">₪${venue.price}<span class="per">/hour</span></div>
           <div class="distance">${venue.distance?.toFixed(2) || '–'} km away</div>
-          <button class="book-btn" onclick="event.stopPropagation(); window.location.href='../CreateBooking/CreateBooking.php?facility_id=${venue.facilities_id}'">Book Now</button>
+          ${isAvailable ? 
+            `<button class="book-btn" onclick="event.stopPropagation(); window.location.href='../CreateBooking/CreateBooking.php?facilities_id=${venue.facilities_id}'">Book Now</button>` :
+            `<button class="book-btn unavailable-btn" disabled>Unavailable</button>`
+          }
         </div>
       </div>
     `;
     container.appendChild(card);
   });
+}
+
+// Global variable to store current venues data
+let currentVenuesData = [];
+
+// Test function to verify rating data
+function testRatingData() {
+  console.log('Testing rating data...');
+  if (currentVenuesData.length > 0) {
+    console.log('Sample venues with ratings:');
+    currentVenuesData.slice(0, 5).forEach((venue, index) => {
+      console.log(`${index + 1}. ${venue.place_name}: Rating = ${venue.avg_rating} (${typeof venue.avg_rating})`);
+    });
+  } else {
+    console.log('No venues data available');
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -183,8 +233,25 @@ document.addEventListener("DOMContentLoaded", () => {
   sortGroups.forEach(group => {
     document.querySelectorAll(`input[name='${group}']`).forEach(radio => {
       radio.addEventListener("change", () => {
-        const searchValue = document.getElementById("playerSearch").value.trim();
-        filterVenuesBySports([], searchValue);
+        console.log(`Radio changed: ${group} - ${radio.id}`);
+        // Only resort existing data, don't make new API call
+        if (currentVenuesData.length > 0) {
+          const sortOptions = {
+            available: document.querySelector("input[name='Available-sort']:checked")?.id,
+            price: document.querySelector("input[name='price-sort']:checked")?.id,
+            rating: document.querySelector("input[name='rating-sort']:checked")?.id,
+            distance: document.querySelector("input[name='distance-sort']:checked")?.id
+          };
+          
+          console.log('Sorting existing data with options:', sortOptions);
+          console.log('Current venues data length:', currentVenuesData.length);
+          
+          // Test rating data before sorting
+          testRatingData();
+          
+          const sortedVenues = sortVenues([...currentVenuesData], sortOptions);
+          renderVenues(sortedVenues);
+        }
       });
     });
   });
