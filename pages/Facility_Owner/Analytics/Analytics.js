@@ -4,7 +4,7 @@ let currentSearch = '';
 let currentSort = 'name';
 let currentSport = 'all';
 let currentVenue = '';
-let currentMonth = '';
+let currentMonth = 'All';
 let venueAnalyticsData = {};
 
 // 📥 Load all venues from AnalyticsAPI
@@ -102,7 +102,9 @@ function loadSports() {
         sportSelect.appendChild(option);
       });
     })
-    .catch(error => console.error('Error loading sports:', error));
+    .catch(error => {
+      console.error('Error loading sports:', error);
+    });
 }
 
 // 📊 Open analytics view for a selected venue
@@ -114,6 +116,9 @@ function openBookings(venueName) {
   document.getElementById("venueTitle").textContent = `Bookings for ${venueName}`;
   document.getElementById("bookingPage").style.display = "flex";
   document.getElementById("cardSection").style.display = "none";
+  
+  // Hide the search bar when showing detailed analytics
+  document.querySelector(".search-sort-container").style.display = "none";
 
   fetchMonthlyData(venueName, year);
 }
@@ -126,19 +131,18 @@ function fetchMonthlyData(venueName, year) {
     .then(data => {
       venueAnalyticsData = data.data || {};
       populateMonthButtons(Object.keys(venueAnalyticsData));
-      showMonth("January");
+      showMonth("All");
     })
     .catch(err => {
       console.error("❌ Error fetching monthly data:", err);
     });
 }
 
-// 📆 Show or hide month buttons depending on available data
+// 📆 Show all month buttons (don't hide any)
 function populateMonthButtons(months) {
   document.querySelectorAll('.month-btn').forEach(btn => {
-    if (btn.textContent !== 'All') {
-      btn.style.display = months.includes(btn.textContent) ? 'block' : 'none';
-    }
+    // Show all month buttons regardless of data availability
+    btn.style.display = 'block';
   });
 }
 
@@ -186,16 +190,25 @@ function showMonth(month) {
     let totalBookings = 0;
     let totalRevenue = 0;
 
-    data.forEach(entry => {
-      tableBody.innerHTML += `
+    if (data.length === 0) {
+      tableBody.innerHTML = `
         <tr>
-          <td>${entry.date}</td>
-          <td>${entry.bookings}</td>
-          <td>${entry.total} ₪</td>
+          <td colspan="3" style="text-align: center; color: #666; font-style: italic;">
+            No booking data available for ${month}
+          </td>
         </tr>`;
-      totalBookings += entry.bookings;
-      totalRevenue += entry.total;
-    });
+    } else {
+      data.forEach(entry => {
+        tableBody.innerHTML += `
+          <tr>
+            <td>${entry.date}</td>
+            <td>${entry.bookings}</td>
+            <td>${entry.total} ₪</td>
+          </tr>`;
+        totalBookings += entry.bookings;
+        totalRevenue += entry.total;
+      });
+    }
 
     summaryRow.innerHTML = `
       <span>Total Bookings: ${totalBookings}</span>
@@ -213,6 +226,9 @@ function showMonth(month) {
 function goBack() {
   document.getElementById("bookingPage").style.display = "none";
   document.getElementById("cardSection").style.display = "block";
+  
+  // Show the search bar again when going back to main page
+  document.querySelector(".search-sort-container").style.display = "flex";
 }
 
 // 🧾 Export bookings data to PDF

@@ -2,24 +2,6 @@
 
 /* Color Variables */
 :root {
-    --primary: #1e90ff;
-    --secondary: #22c55e;
-    --bg-light: #e0f7fa;
-    --bg-secondary: #d0f8ce;
-    --card-bg: rgba(255, 255, 255, 0.95);
-    --card-border: rgba(209, 213, 219, 0.6);
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --text-light: #94a3b8;
-    --shadow-light: rgba(30, 144, 255, 0.08);
-    --shadow-medium: rgba(0, 0, 0, 0.08);
-    --shadow-strong: rgba(0, 0, 0, 0.15);
-    --radius: 12px;
-    --radius-medium: 10px;
-    --radius-small: 8px;
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --border-subtle: rgba(0, 0, 0, 0.06);
-    --navbar-height: 80px;
     --success: #10b981;
     --danger: #ef4444;
     --warning: #f59e0b;
@@ -240,6 +222,61 @@ body {
     gap: 16px;
 }
 
+.friend-request-card {
+    background: rgba(255, 193, 7, 0.05);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: 0 2px 8px var(--shadow-light);
+    border: 1px solid rgba(255, 193, 7, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.friend-request-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow-light);
+}
+
+.friend-request-card .friend-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+    margin-bottom: 0;
+}
+
+.friend-request-card .friend-avatar {
+    width: 60px;
+    height: 60px;
+    margin: 0;
+}
+
+.friend-request-card .friend-details h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.friend-request-card .friend-details p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+}
+
+.friend-request-card .request-date {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.request-actions {
+    display: flex;
+    gap: 8px;
+}
+
 .request-card {
     background: rgba(255, 193, 7, 0.05);
     border-radius: var(--radius);
@@ -356,6 +393,34 @@ body {
 .friend-actions {
     display: flex;
     gap: 12px;
+}
+
+/* Friend Card Specific Styles */
+.friend-card .friend-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+    margin-bottom: 16px;
+}
+
+.friend-card .friend-avatar {
+    width: 60px;
+    height: 60px;
+    margin: 0;
+}
+
+.friend-card .friend-details h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.friend-card .friend-details p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
 }
 
 .action-btn {

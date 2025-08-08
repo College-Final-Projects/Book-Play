@@ -11,8 +11,34 @@ function toggleProfileMenu() {
     }
   });
 
+// Load friend counts on page load
+function loadFriendCounts() {
+    fetch('../MyFriends/friends_api.php?action=get_counts')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the My Friends card with counts
+                const friendsCard = document.querySelector('.btn-friends');
+                if (friendsCard) {
+                    const span = friendsCard.querySelector('span');
+                    if (span) {
+                        span.innerHTML = `My Friends <span class="count-badge">${data.friends_count}</span>`;
+                        if (data.requests_count > 0) {
+                            span.innerHTML += ` <span class="requests-badge">${data.requests_count}</span>`;
+                        }
+                    }
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error loading friend counts:', error);
+        });
+}
+
 // Admin Request Functionality
 document.addEventListener("DOMContentLoaded", () => {
+    // Load friend counts
+    loadFriendCounts();
   const adminBtn = document.getElementById("adminRequestBtn");
   if (!adminBtn) {
     console.error("Admin request button not found!");

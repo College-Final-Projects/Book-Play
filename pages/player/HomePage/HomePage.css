@@ -165,7 +165,29 @@ body {
 .btn-book     { box-shadow: 0 0 12px #22c55e; }
 .btn-fav      { box-shadow: 0 0 12px #f43f5e; }
 .btn-chat     { box-shadow: 0 0 12px #3b82f6; }
-.btn-bookings { box-shadow: 0 0 12px #fb923c; }
+.btn-friends {box-shadow: 0 0 12px #ff6fb5;}
+
+/* Friend count badges */
+.count-badge {
+    background: #10b981;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+.requests-badge {
+    background: #f59e0b;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: bold;
+    margin-left: 4px;
+}
+  .btn-bookings { box-shadow: 0 0 12px #fb923c; }
 .btn-switch   { box-shadow: 0 0 12px #a855f7; }
 
 footer {
@@ -312,7 +334,7 @@ footer {
   }
   
   .secondary-buttons {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 15px;
     margin: 30px auto;
   }
