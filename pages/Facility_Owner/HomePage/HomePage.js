@@ -13,12 +13,13 @@ document.addEventListener("click", function (e) {
   }
 });
 
+// Admin Request Functionality
 document.addEventListener("DOMContentLoaded", () => {
   const adminBtn = document.getElementById("adminRequestBtn");
   if (!adminBtn) return; // Exit if the button doesn't exist
 
   // Check admin status and if a request has already been submitted
-  fetch("../../admin_actions.php?action=check")
+  fetch("../../../admin_actions.php?action=check")
     .then((res) => res.json())
     .then((data) => {
       // Hide the button if the user is an admin
@@ -37,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
           );
         } else {
           // Send admin request
-          fetch("../../admin_actions.php", {
+          fetch("../../../admin_actions.php", {
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
@@ -95,20 +96,22 @@ function showTempMessage(message, duration) {
   document.body.appendChild(msg);
   setTimeout(() => msg.remove(), duration);
 }
+
 document.addEventListener("DOMContentLoaded", () => {
   fetch("HomePage.php?action=get_user_image")
     .then((res) => res.json())
     .then((data) => {
       const imgElement = document.getElementById("userProfileImage");
       const usernameSpan = document.getElementById("usernameDisplay");
-      if (imgElement && data.image) {
-        imgElement.src = `../../uploads/users/${data.image}`;
-      }
-      if (usernameSpan && data.username) {
+      
+      if (data.success) {
+        if (data.user_image) {
+          imgElement.src = "../../../uploads/users/" + data.user_image;
+        }
         usernameSpan.textContent = data.username;
       }
     })
-    .catch((err) => {
-      console.error("Failed to load user image or username", err);
+    .catch((error) => {
+      console.error("Error fetching user data:", error);
     });
 });

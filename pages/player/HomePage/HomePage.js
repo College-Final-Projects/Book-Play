@@ -10,22 +10,42 @@ function toggleProfileMenu() {
       menu.classList.remove('active');
     }
   });
+
+// Admin Request Functionality
 document.addEventListener("DOMContentLoaded", () => {
   const adminBtn = document.getElementById("adminRequestBtn");
-  if (!adminBtn) return; // Exit if the button doesn't exist
+  if (!adminBtn) {
+    console.error("Admin request button not found!");
+    return;
+  }
+  
+  console.log("Admin request button found, checking status...");
 
   // Check admin status and if a request has already been submitted
-  fetch("../../admin_actions.php?action=check")
-    .then((res) => res.json())
+  fetch("../../../admin_actions.php?action=check")
+    .then((res) => {
+      console.log("Response status:", res.status);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
     .then((data) => {
+      console.log("Admin check response:", data);
+      
       // Hide the button if the user is an admin
       if (data.is_admin) {
+        console.log("User is admin, hiding button");
         adminBtn.style.display = "none";
         return;
       }
 
+      console.log("User is not admin, showing button");
+
       // Handle button click
       adminBtn.addEventListener("click", () => {
+        console.log("Admin request button clicked");
+        
         if (data.already_requested) {
           // Show waiting message if request already submitted
           showTempMessage(
@@ -34,15 +54,19 @@ document.addEventListener("DOMContentLoaded", () => {
           );
         } else {
           // Send admin request
-          fetch("../../admin_actions.php", {
+          fetch("../../../admin_actions.php", {
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
             },
             body: "action=submit",
           })
-            .then((res) => res.json())
+            .then((res) => {
+              console.log("Submit response status:", res.status);
+              return res.json();
+            })
             .then((response) => {
+              console.log("Submit response:", response);
               if (response.success) {
                 showTempMessage(
                   "✅ Your admin request has been submitted. We'll review it as soon as possible.",
@@ -92,20 +116,22 @@ function showTempMessage(message, duration) {
   document.body.appendChild(msg);
   setTimeout(() => msg.remove(), duration);
 }
+
 document.addEventListener("DOMContentLoaded", () => {
   fetch("HomePage.php?action=get_user_image")
     .then((res) => res.json())
     .then((data) => {
       const imgElement = document.getElementById("userProfileImage");
       const usernameSpan = document.getElementById("usernameDisplay");
-      if (imgElement && data.image) {
-        imgElement.src = `../../uploads/users/${data.image}`;
-      }
-      if (usernameSpan && data.username) {
+      
+      if (data.success) {
+        if (data.user_image) {
+          imgElement.src = "../../../uploads/users/" + data.user_image;
+        }
         usernameSpan.textContent = data.username;
       }
     })
-    .catch((err) => {
-      console.error("Failed to load user image or username", err);
+    .catch((error) => {
+      console.error("Error fetching user data:", error);
     });
 });

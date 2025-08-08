@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Jul 24, 2025 at 02:56 PM
+-- Generation Time: Aug 06, 2025 at 03:32 PM
 -- Server version: 11.5.2-MariaDB
 -- PHP Version: 8.4.0
 
@@ -35,9 +35,8 @@ CREATE TABLE IF NOT EXISTS `bookings` (
   `booking_date` date DEFAULT NULL,
   `start_time` time DEFAULT NULL,
   `end_time` time DEFAULT NULL,
-  `status` enum('pending','confirmed','cancelled') DEFAULT 'pending',
   `Total_Price` int(11) NOT NULL,
-  `Payed` int(11) DEFAULT 0,
+  `Paid` int(11) DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`booking_id`),
   KEY `facilities_id` (`facilities_id`),
@@ -57,7 +56,6 @@ CREATE TABLE IF NOT EXISTS `facilityinsights` (
   `booking_day` int(11) NOT NULL CHECK (`booking_day` between 1 and 31),
   `booking_month` int(11) NOT NULL CHECK (`booking_month` between 1 and 12),
   `booking_year` int(11) NOT NULL,
-  `total_bookings` int(11) DEFAULT 0,
   PRIMARY KEY (`insight_id`),
   KEY `facilities_id` (`facilities_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_general_ci;
@@ -108,27 +106,9 @@ CREATE TABLE IF NOT EXISTS `group_members` (
   `group_id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
   `payment_amount` decimal(10,0) NOT NULL DEFAULT 0,
+  `required_payment` decimal(10,2) NOT NULL DEFAULT 0.00,
   PRIMARY KEY (`group_id`,`username`),
   KEY `username` (`username`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `invoices`
---
-
-DROP TABLE IF EXISTS `invoices`;
-CREATE TABLE IF NOT EXISTS `invoices` (
-  `invoice_id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL,
-  `payment_id` int(11) DEFAULT NULL,
-  `invoice_date` datetime DEFAULT current_timestamp(),
-  `total_amount` decimal(10,2) NOT NULL,
-  `status` enum('unpaid','paid','cancelled') DEFAULT 'unpaid',
-  PRIMARY KEY (`invoice_id`),
-  KEY `username` (`username`),
-  KEY `payment_id` (`payment_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_general_ci;
 
 -- --------------------------------------------------------
@@ -143,7 +123,6 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `sender_username` varchar(50) DEFAULT NULL,
   `receiver_username` varchar(50) DEFAULT NULL,
   `message_text` text DEFAULT NULL,
-  `sent_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`message_id`),
   KEY `sender_username` (`sender_username`),
   KEY `receiver_username` (`receiver_username`)
@@ -160,26 +139,6 @@ CREATE TABLE IF NOT EXISTS `owner` (
   `owner_email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   PRIMARY KEY (`owner_email`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `payments`
---
-
-DROP TABLE IF EXISTS `payments`;
-CREATE TABLE IF NOT EXISTS `payments` (
-  `payment_id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) DEFAULT NULL,
-  `booking_id` int(11) DEFAULT NULL,
-  `amount` decimal(10,2) NOT NULL,
-  `payment_method` enum('credit_card','paypal') DEFAULT 'credit_card',
-  `payment_status` enum('pending','completed','failed') DEFAULT 'pending',
-  `payment_date` datetime DEFAULT current_timestamp(),
-  PRIMARY KEY (`payment_id`),
-  KEY `username` (`username`),
-  KEY `booking_id` (`booking_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_general_ci;
 
 -- --------------------------------------------------------
@@ -283,6 +242,23 @@ CREATE TABLE IF NOT EXISTS `users` (
   `is_admin` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`username`),
   UNIQUE KEY `email` (`email`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_availability`
+--
+
+DROP TABLE IF EXISTS `user_availability`;
+CREATE TABLE IF NOT EXISTS `user_availability` (
+  `username` varchar(50) NOT NULL,
+  `day_of_week` int(1) NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `is_available` tinyint(1) DEFAULT 1,
+  PRIMARY KEY (`username`,`day_of_week`,`start_time`),
+  KEY `day_of_week` (`day_of_week`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_general_ci;
 
 -- --------------------------------------------------------

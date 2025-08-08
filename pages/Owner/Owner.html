@@ -9,6 +9,9 @@
 <body>
   <nav class="navbar">
     <div class="logo">Book<span>&</span>Play</div>
+    <div class="nav-actions">
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
   </nav>
 
   <h2 class="section-title">Manage Admin Requests</h2>
@@ -23,35 +26,33 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>ali_admin</td>
-          <td>ali@example.com</td>
-          <td>
-            <button class="accept">✔ Accept</button>
-            <button class="reject">✖ Reject</button>
-          </td>
-        </tr>
-        <tr>
-          <td>sara_request</td>
-          <td>sara@bookplay.com</td>
-          <td>
-            <button class="accept">✔ Accept</button>
-            <button class="reject">✖ Reject</button>
-          </td>
-        </tr>
+        <!-- Admin requests will be loaded dynamically from database -->
       </tbody>
     </table>
   </div>
 
   <button class="add-admin-btn" onclick="openModal()">+ Add Admin</button>
+  <button class="view-admins-btn" onclick="openAdminsModal()">View All Admins</button>
 
   <!-- Modal -->
   <div class="modal" id="adminModal">
     <div class="modal-content">
       <span class="close" onclick="closeModal()">&times;</span>
-      <h3>Add New Admin</h3>
-      <input type="text" placeholder="Enter username..." id="newAdminInput">
-      <button class="confirm-btn">Add Admin</button>
+      <h3>Promote User to Admin</h3>
+      <p style="color: #666; margin-bottom: 15px;">Select an existing user to promote to admin:</p>
+      <input type="text" placeholder="Enter username..." id="newAdminInput" list="usersList">
+      <button class="confirm-btn" onclick="addAdmin()">Promote to Admin</button>
+    </div>
+  </div>
+
+  <!-- Admins Modal -->
+  <div class="modal" id="adminsModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeAdminsModal()">&times;</span>
+      <h3>Current Admins</h3>
+      <div id="adminsList">
+        <!-- Admin usernames and Remove buttons will be injected here by JS -->
+      </div>
     </div>
   </div>
 

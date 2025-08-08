@@ -13,7 +13,7 @@
 
 // Start session and include database connection
 session_start();
-require_once '../../../db.php';
+require_once 'db.php';
 
 // Get current user from session
 $username = $_SESSION['user_id'] ?? '';
