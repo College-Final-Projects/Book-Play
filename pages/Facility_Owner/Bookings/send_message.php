@@ -3,7 +3,7 @@ session_start();
 require_once '../../../db.php';
 header('Content-Type: application/json');
 
-$sender = $_SESSION['user_id'] ?? null;
+$sender = $_SESSION['username'] ?? null;
 $receiver = $_POST['receiver_username'] ?? '';
 $message = trim($_POST['message'] ?? '');
 

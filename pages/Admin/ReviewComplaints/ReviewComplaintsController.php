@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 // Add debugging
 error_log("=== REVIEWCOMPLAINTS CONTROLLER DEBUG START ===");
 error_log("Request method: " . $_SERVER['REQUEST_METHOD']);
-error_log("Session user_id: " . ($_SESSION['user_id'] ?? 'null'));
+error_log("Session username: " . ($_SESSION['username'] ?? 'null'));
 error_log("Action: " . ($_POST['action'] ?? $_GET['action'] ?? 'none'));
 
 // Determine required operation type
@@ -26,7 +26,7 @@ switch ($action) {
             AND (sf.owner_username IS NULL OR sf.owner_username != ?)
             ORDER BY r.created_at DESC";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $_SESSION['user_id']);
+    $stmt->bind_param("s", $_SESSION['username']);
     $stmt->execute();
     $result = $stmt->get_result();
 

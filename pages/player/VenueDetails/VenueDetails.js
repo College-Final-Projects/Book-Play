@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('🚀 VenueDetails.js DOMContentLoaded triggered');
   
   const params = new URLSearchParams(window.location.search);
-  const facilityId = params.get('facility_id');
+  const facilityId = params.get('facilities_id');
 
   console.log('🔍 VenueDetails loading for facility_id:', facilityId);
   console.log('📍 Current URL:', window.location.href);
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   console.log('📡 Making API request to VenueAPI.php...');
-  fetch(`VenueAPI.php?facility_id=${facilityId}`)
+  fetch(`VenueAPI.php?facilities_id=${facilityId}`)
     .then(res => {
       console.log('📡 API Response status:', res.status);
       console.log('📡 API Response headers:', res.headers);
@@ -189,7 +189,7 @@ function submitReport() {
 
   // Get facility ID from URL
   const params = new URLSearchParams(window.location.search);
-  const facilityId = params.get('facility_id');
+  const facilityId = params.get('facilities_id');
   
   if (!facilityId) {
     alert("Venue ID not found. Please try again.");
@@ -201,7 +201,7 @@ function submitReport() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ 
-      facility_id: facilityId, 
+      facilities_id: facilityId, 
       reason: reason, 
       details: details 
     })
@@ -228,7 +228,7 @@ function submitReport() {
 // Submit review
 document.querySelector('.submit-btn').addEventListener('click', () => {
   const params = new URLSearchParams(window.location.search);
-  const facilityId = params.get('facility_id');
+  const facilityId = params.get('facilities_id');
   const rating = parseInt(currentRating);
   const comment = document.querySelector('.add-comment textarea').value.trim();
 
@@ -240,7 +240,7 @@ document.querySelector('.submit-btn').addEventListener('click', () => {
   fetch('SubmitRating.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ facility_id: facilityId, rating, comment })
+    body: JSON.stringify({ facilities_id: facilityId, rating, comment })
   })
     .then(res => res.json())
     .then(data => {

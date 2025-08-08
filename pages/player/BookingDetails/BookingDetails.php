@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../../../db.php';
-$currentUsername = $_SESSION['user_id'] ?? '';
+$currentUsername = $_SESSION['username'] ?? '';
 
 // Check if this is a view-only mode (from JoinGroup image click)
 $viewOnly = isset($_GET['view_only']) && $_GET['view_only'] === 'true';

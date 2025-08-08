@@ -16,7 +16,9 @@
  */
 function toggleProfileMenu() {
   const menu = document.getElementById('profileMenu');
-  menu.classList.toggle('active');
+  if (menu) {
+    menu.classList.toggle('active');
+  }
 }
 
 /**
@@ -26,8 +28,12 @@ function toggleProfileMenu() {
 document.addEventListener('click', function (e) {
   const profileContainer = document.querySelector('.profile-container');
   const menu = document.getElementById('profileMenu');
-  if (!profileContainer.contains(e.target)) {
-    menu.classList.remove('active');
+  
+  // Only execute if both elements exist
+  if (profileContainer && menu) {
+    if (!profileContainer.contains(e.target)) {
+      menu.classList.remove('active');
+    }
   }
 });
 
@@ -61,25 +67,32 @@ function showTempMessage(message, duration) {
  * from the server and updates the UI elements
  */
 function loadUserProfile() {
-  fetch("HomePage.php?action=get_user_image")
-    .then((res) => res.json())
-    .then((data) => {
-      const imgElement = document.getElementById("userProfileImage");
-      const usernameSpan = document.getElementById("usernameDisplay");
-      
-      // Update profile image if available
-      if (imgElement && data.image) {
-        imgElement.src = `../../../uploads/users/${data.image}`;
-      }
-      
-      // Update username display if available
-      if (usernameSpan && data.username) {
-        usernameSpan.textContent = data.username;
-      }
-    })
-    .catch((err) => {
-      console.error("Failed to load user image or username", err);
-    });
+  // Check if we're in a context where HomePage.php exists
+  const currentPath = window.location.pathname;
+  const isInAuthPages = currentPath.includes('/auth/');
+  
+  // Only try to load user profile if we're not in auth pages (where HomePage.php doesn't exist)
+  if (!isInAuthPages) {
+    fetch("HomePage.php?action=get_user_image")
+      .then((res) => res.json())
+      .then((data) => {
+        const imgElement = document.getElementById("userProfileImage");
+        const usernameSpan = document.getElementById("usernameDisplay");
+        
+        // Update profile image if available
+        if (imgElement && data && data.image) {
+          imgElement.src = `../../../uploads/users/${data.image}`;
+        }
+        
+        // Update username display if available
+        if (usernameSpan && data && data.username) {
+          usernameSpan.textContent = data.username;
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load user image or username", err);
+      });
+  }
 }
 
 /**
@@ -90,65 +103,72 @@ function initAdminRequestButton() {
   const adminBtn = document.getElementById("adminRequestBtn");
   if (!adminBtn) return; // Exit if the button doesn't exist
 
-  // Check admin status and if a request has already been submitted
-  fetch("../../admin_actions.php?action=check")
-    .then((res) => res.json())
-    .then((data) => {
-      // Hide the button if the user is already an admin
-      if (data.is_admin) {
-        adminBtn.style.display = "none";
-        return;
-      }
-
-      // Handle button click event
-      adminBtn.addEventListener("click", () => {
-        if (data.already_requested) {
-          // Show waiting message if request already submitted
-          showTempMessage(
-            "🕐 Your admin request is under review. Thank you for your patience.",
-            4000
-          );
-        } else {
-          // Send new admin request
-          fetch("../../admin_actions.php", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: "action=submit",
-          })
-            .then((res) => res.json())
-            .then((response) => {
-              if (response.success) {
-                showTempMessage(
-                  "✅ Your admin request has been submitted. We'll review it as soon as possible.",
-                  4000
-                );
-                data.already_requested = true; // Prevent re-submission
-              } else {
-                showTempMessage(
-                  "❌ " + (response.message || "Failed to submit request."),
-                  4000
-                );
-              }
-            })
-            .catch((error) => {
-              console.error("Error submitting request:", error);
-              showTempMessage(
-                "❌ Could not connect to server. Try again later.",
-                4000
-              );
-            });
+  // Check if we're in a context where admin_actions.php exists
+  const currentPath = window.location.pathname;
+  const isInAuthPages = currentPath.includes('/auth/');
+  
+  // Only try to initialize admin request button if we're not in auth pages
+  if (!isInAuthPages) {
+    // Check admin status and if a request has already been submitted
+    fetch("../../admin_actions.php?action=check")
+      .then((res) => res.json())
+      .then((data) => {
+        // Hide the button if the user is already an admin
+        if (data.is_admin) {
+          adminBtn.style.display = "none";
+          return;
         }
+
+        // Handle button click event
+        adminBtn.addEventListener("click", () => {
+          if (data.already_requested) {
+            // Show waiting message if request already submitted
+            showTempMessage(
+              "🕐 Your admin request is under review. Thank you for your patience.",
+              4000
+            );
+          } else {
+            // Send new admin request
+            fetch("../../admin_actions.php", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+              body: "action=submit",
+            })
+              .then((res) => res.json())
+              .then((response) => {
+                if (response.success) {
+                  showTempMessage(
+                    "✅ Your admin request has been submitted. We'll review it as soon as possible.",
+                    4000
+                  );
+                  data.already_requested = true; // Prevent re-submission
+                } else {
+                  showTempMessage(
+                    "❌ " + (response.message || "Failed to submit request."),
+                    4000
+                  );
+                }
+              })
+              .catch((error) => {
+                console.error("Error submitting request:", error);
+                showTempMessage(
+                  "❌ Could not connect to server. Try again later.",
+                  4000
+                );
+              });
+          }
+        });
+      })
+      .catch((error) => {
+        console.error("Error checking admin status:", error);
+        showTempMessage(
+          "❌ Could not check admin status. Try again later.",
+          4000
+        );
       });
-    })
-    .catch((error) => {
-      console.error("Error checking admin status:", error);
-      showTempMessage(
-        "❌ Could not check admin status. Try again later.",
-        4000
-      );
-    });
+  }
 }
 
 /**

@@ -4,7 +4,7 @@ require_once '../../../db.php';
 
 header('Content-Type: application/json');
 
-$user_id = $_SESSION['user_id'] ?? null;
+$user_id = $_SESSION['username'] ?? null;
 $facility_id = $_POST['facility_id'] ?? null;
 
 if (!$user_id || !$facility_id) {

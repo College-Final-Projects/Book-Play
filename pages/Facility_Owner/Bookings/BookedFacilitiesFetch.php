@@ -3,12 +3,12 @@ session_start();
 require_once '../../../db.php';
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['username'])) {
     echo json_encode(['success' => false, 'message' => 'User not logged in']);
     exit;
 }
 
-$user_name = $_SESSION['user_id'];
+$user_name = $_SESSION['username'];
 
 $query = "
     SELECT 

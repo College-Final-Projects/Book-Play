@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../../../db.php';
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['username'])) {
     // Unset all session variables
     session_unset();
     // Destroy the session completely

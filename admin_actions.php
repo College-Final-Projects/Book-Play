@@ -16,7 +16,7 @@ session_start();
 require_once 'db.php';
 
 // Get current user from session
-$username = $_SESSION['user_id'] ?? '';
+$username = $_SESSION['username'] ?? '';
 
 // Check if user is logged in
 if (!$username) {

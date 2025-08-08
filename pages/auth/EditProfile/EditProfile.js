@@ -48,9 +48,16 @@ document.addEventListener("DOMContentLoaded", function () {
   // You can add any additional validation here later
 });
 document.addEventListener("DOMContentLoaded", function () {
+  // Load user data
   fetch("EditProfile.php?action=get_user_data")
     .then((res) => res.json())
     .then((data) => {
+      if (data.error && data.redirect) {
+        // User is not logged in, redirect to login page
+        window.location.href = data.redirect;
+        return;
+      }
+      
       if (data.success && data.user) {
         const u = data.user;
         document.getElementById("firstName").value = u.first_name || "";
@@ -72,6 +79,49 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     })
     .catch((err) => console.error("❌ Error loading profile:", err));
+
+  // Load sports data
+  const favoriteSportsContainer = document.getElementById("favoriteSportsContainer");
+  if (favoriteSportsContainer) {
+    // First get all available sports
+    fetch("EditProfile.php?action=get_sports")
+      .then((res) => res.json())
+      .then((sportsData) => {
+        if (sportsData.success && sportsData.sports) {
+          // Then get user's favorite sports
+          return fetch("EditProfile.php?action=get_user_sports")
+            .then((res) => res.json())
+            .then((userSportsData) => {
+              if (userSportsData.error && userSportsData.redirect) {
+                // User is not logged in, redirect to login page
+                window.location.href = userSportsData.redirect;
+                return;
+              }
+              
+              const userSports = userSportsData.success ? userSportsData.user_sports : [];
+              const userSportIds = userSports.map(sport => sport.sport_id);
+              
+              // Generate HTML for sports checkboxes with proper styling
+              let sportsHTML = '';
+              sportsData.sports.forEach(sport => {
+                const isChecked = userSportIds.includes(sport.sport_id) ? 'checked' : '';
+                sportsHTML += `
+                  <div class="sport-option">
+                    <input type="checkbox" id="sport_${sport.sport_id}" name="favoriteSport[]" value="${sport.sport_name}" ${isChecked}>
+                    <label for="sport_${sport.sport_id}" class="sport-label">${sport.sport_name}</label>
+                  </div>
+                `;
+              });
+              
+              favoriteSportsContainer.innerHTML = sportsHTML;
+            });
+        }
+      })
+      .catch((err) => {
+        console.error("❌ Error loading sports:", err);
+        favoriteSportsContainer.innerHTML = "<p style='color: #ef4444; text-align: center;'>Error loading sports options</p>";
+      });
+  }
 });
 // Show window after saving
 function showModal() {

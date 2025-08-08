@@ -6,12 +6,12 @@ header('Content-Type: application/json');
 
 // Add debugging
 error_log("SubmitRating.php called");
-error_log("Session user_id: " . ($_SESSION['user_id'] ?? 'null'));
+error_log("Session username: " . ($_SESSION['username'] ?? 'null'));
 
 $input = json_decode(file_get_contents("php://input"), true);
 error_log("Input data: " . json_encode($input));
 
-$username = $_SESSION['user_id'] ?? null;
+$username = $_SESSION['username'] ?? null;
 $facilityId = $input['facility_id'] ?? null;
 $rating = $input['rating'] ?? null;
 $comment = $input['comment'] ?? null;

@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const venueContainer = document.getElementById("venueContainer");
   const modal = document.getElementById("reportModal");
   
-  console.log("🔄 Loading venue requests and unaccepted venues...");
+  console.log("🔄 Loading unaccepted facilities...");
   
   // Use the consolidated API endpoint with the 'get_reports' action
   fetch("VenueAPI.php?action=get_reports")
@@ -26,53 +26,48 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
       
-      renderReports(data);
+      renderFacilities(data);
     })
     .catch(err => {
-      console.error("❌ Error loading reports:", err);
-      venueContainer.innerHTML = `<p>❌ Failed to load reports: ${err.message}</p>`;
+      console.error("❌ Error loading facilities:", err);
+      venueContainer.innerHTML = `<p>❌ Failed to load facilities: ${err.message}</p>`;
     });
 
-  function renderReports(reports) {
+  function renderFacilities(facilities) {
     venueContainer.innerHTML = "";
 
-    if (reports.length === 0) {
-      venueContainer.innerHTML = "<p>No venue requests or unaccepted venues found.</p>";
+    if (facilities.length === 0) {
+      venueContainer.innerHTML = "<p>No unaccepted facilities found.</p>";
       return;
     }
 
-    console.log("📋 Rendering", reports.length, "items");
+    console.log("📋 Rendering", facilities.length, "facilities");
     
-    reports.forEach((item, index) => {
-      console.log(`📋 Item ${index + 1}:`, item);
+    facilities.forEach((facility, index) => {
+      console.log(`📋 Facility ${index + 1}:`, facility);
       
       const card = document.createElement("div");
       card.className = "venue-card";
       
-      // Determine if this is a report or venue
-      const isReport = item.source_type === 'report';
-      const placeName = item.place_name || "Unnamed Place";
-      const submittedBy = item.username || "Unknown";
-      const createdAt = item.created_at || "Unknown date";
-      const reportId = item.report_id || null;
-      const facilitiesId = item.facilities_id;
+      const placeName = facility.place_name || "Unnamed Place";
+      const submittedBy = facility.username || "Unknown";
+      const createdAt = facility.created_at || "Unknown date";
+      const facilitiesId = facility.facilities_id;
+      const sportCategory = facility.SportCategory || "Unknown Sport";
+      const description = facility.description || "No description available";
       
       card.innerHTML = `
         <h3>${placeName}</h3>
-        <p><strong>Type:</strong> ${isReport ? 'Venue Suggestion' : 'Unaccepted Venue'}</p>
-        <p><strong>Submitted by:</strong> ${submittedBy}</p>
+        <p><strong>Owner:</strong> ${submittedBy}</p>
+        <p><strong>Sport:</strong> ${sportCategory}</p>
         <p><strong>Created:</strong> ${createdAt}</p>
-        ${item.location ? `<p><strong>Location:</strong> ${item.location}</p>` : ''}
-        ${item.price ? `<p><strong>Price:</strong> ₪${item.price}</p>` : ''}
+        ${facility.location ? `<p><strong>Location:</strong> ${facility.location}</p>` : ''}
+        ${facility.price ? `<p><strong>Price:</strong> ₪${facility.price}</p>` : ''}
+        <p><strong>Description:</strong> ${description}</p>
         <div class="actions">
           <button class="btn-view" onclick="openVenue(${facilitiesId})">View Details</button>
-          ${isReport && reportId ? `
-            <button class="btn-approve" onclick="handleAction('approve', ${reportId}, ${facilitiesId})">Approve</button>
-            <button class="btn-reject" onclick="handleAction('reject', ${reportId}, ${facilitiesId})">Reject</button>
-          ` : `
-            <button class="btn-approve" onclick="handleAction('approve', null, ${facilitiesId})">Approve</button>
-            <button class="btn-reject" onclick="handleAction('reject', null, ${facilitiesId})">Reject</button>
-          `}
+          <button class="btn-approve" onclick="handleAction('approve', ${facilitiesId})">Approve</button>
+          <button class="btn-reject" onclick="handleAction('reject', ${facilitiesId})">Reject</button>
         </div>
       `;
       venueContainer.appendChild(card);
@@ -84,14 +79,14 @@ document.addEventListener("DOMContentLoaded", function () {
       alert("Venue ID not available");
       return;
     }
-    window.location.href = `../VenueDetails/VenueDetails.php?id=${id}`;
+    window.location.href = `../VenueDetails/VenueDetails.php?	facilities_id=${id}`;
   };
 
   window.closeModal = function () {
     modal.style.display = "none";
   };
 
-  window.handleAction = function (subaction, reportId, facilitiesId) {
+  window.handleAction = function (subaction, facilitiesId) {
     // Updated to use the consolidated API with action=handle_action
     fetch("VenueAPI.php", {
       method: "POST",
@@ -101,7 +96,6 @@ document.addEventListener("DOMContentLoaded", function () {
       body: new URLSearchParams({
         action: "handle_action",
         subaction: subaction,
-        report_id: reportId,
         facilities_id: facilitiesId
       })
     })
@@ -116,31 +110,5 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("❌ Something went wrong");
         console.error(err);
       });
-  };
-
-  // Add a function to update report status (previously in UpdateReportStatus.php)
-  window.updateReportStatus = function(reportId, status) {
-    fetch("VenueAPI.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: new URLSearchParams({
-        action: "update_status",
-        report_id: reportId,
-        status: status
-      })
-    })
-    .then(res => res.json())
-    .then(data => {
-      alert(data.message);
-      if (data.success) {
-        location.reload();
-      }
-    })
-    .catch(err => {
-      alert("❌ Something went wrong");
-      console.error(err);
-    });
   };
 });

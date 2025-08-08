@@ -68,13 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if ($role === 'owner') {
                     // Owner authentication - redirect to owner dashboard
-                    $_SESSION['user_id'] = $user['owner_email'];
-                    $_SESSION['user_name'] = 'Administrator';
+                    $_SESSION['username'] = $user['owner_email'];
+                    $_SESSION['fullName'] = 'Administrator';
                     $response['redirect'] = '../../Owner/Owner.php';
                 } else {
                     // Regular user authentication - redirect to user selection
-                    $_SESSION['user_id'] = $user['username'];
-                    $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
+                    $_SESSION['username'] = $user['username'];
+                    $_SESSION['fullName'] = $user['first_name'] . ' ' . $user['last_name'];
                     $response['redirect'] = '../User_Selection_Page/user-selection.php';
                 }
 

@@ -4,7 +4,7 @@ require_once '../../../db.php';
 
 header('Content-Type: application/json');
 
-$sender = $_SESSION['user_id'] ?? '';
+$sender = $_SESSION['username'] ?? '';
 $receiver = $_POST['receiver'] ?? '';
 $message = trim($_POST['message'] ?? '');
 

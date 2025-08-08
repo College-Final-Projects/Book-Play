@@ -12,8 +12,6 @@
   <link rel="stylesheet" href="../../../assets/css/responsive.css" />
   <!-- Edit Profile-specific CSS -->
   <link rel="stylesheet" href="EditProfile.css" />
-  <!-- Shared JavaScript -->
-  <script src="../../../assets/js/shared.js"></script>
   <!-- Edit Profile-specific JavaScript -->
   <script src="EditProfile.js" defer></script>
 </head>
@@ -109,6 +107,9 @@
     <!-- Favorite sports (dynamically included via PHP) -->
     <div class="input-group">
       <label for="favoriteSport">Favorite Sports</label>
+      <small style="color: var(--text-muted); font-size: 0.875rem; display: block; margin-bottom: 8px;">
+        💡 You can select multiple sports by clicking on them
+      </small>
       <div class="favorite-sports" id="favoriteSportsContainer">
        <!-- Load sport checkboxes from backend -->
       </div>

@@ -36,12 +36,12 @@ switch ($action) {
 function getFacilities() {
     global $conn;
 
-    if (!isset($_SESSION['user_id'])) {
+    if (!isset($_SESSION['username'])) {
         echo json_encode(['success' => false, 'message' => 'Not logged in']);
         return;
     }
 
-    $username = $_SESSION['user_id'];
+    $username = $_SESSION['username'];
     $stmt = $conn->prepare("SELECT * FROM sportfacilities WHERE owner_username = ? AND is_Accepted = 1");
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -58,12 +58,12 @@ function getFacilities() {
 function updateAvailability() {
     global $conn;
 
-    if (!isset($_SESSION['user_id'])) {
+    if (!isset($_SESSION['username'])) {
         echo json_encode(['success' => false, 'message' => 'Not logged in']);
         return;
     }
 
-    $username = $_SESSION['user_id'];
+    $username = $_SESSION['username'];
     $facility_id = $_POST['facility_id'] ?? null;
     $is_available = $_POST['is_available'] ?? null;
 
@@ -90,7 +90,9 @@ function updateAvailability() {
 function getSports() {
     global $conn;
     $sports = [];
-    $result = $conn->query("SELECT DISTINCT SportCategory as sport_name FROM sportfacilities WHERE is_Accepted = 1");
+    
+    // Get all sports from the sports table that are accepted
+    $result = $conn->query("SELECT sport_id, sport_name FROM sports WHERE is_accepted = 1 ORDER BY sport_name ASC");
 
     while ($row = $result->fetch_assoc()) {
         $sports[] = $row;
@@ -102,12 +104,12 @@ function getSports() {
 function addFacility() {
     global $conn;
 
-    if (!isset($_SESSION['user_id'])) {
+    if (!isset($_SESSION['username'])) {
         echo json_encode(['success' => false, 'message' => 'User not logged in']);
         return;
     }
 
-    $username = $_SESSION['user_id'];
+    $username = $_SESSION['username'];
     $place_name = $_POST['place_name'] ?? '';
     $sport_type = $_POST['sport_type'] ?? '';
     $description = $_POST['description'] ?? '';
@@ -146,13 +148,6 @@ function addFacility() {
         }
 
         $facility_id = $conn->insert_id;
-        $report_stmt = $conn->prepare("INSERT INTO reports (username, type, suggested_place_name, facilities_id, message, created_at) VALUES (?, 'suggest_place', ?, ?, ?, NOW())");
-        $report_msg = "Sport type: $sport_type\nLocation: $location\nPrice: $price\nDescription: $description\nImages: $image_url_string\nCoordinates: $coordinates";
-        $report_stmt->bind_param("ssis", $username, $place_name, $facility_id, $report_msg);
-
-        if (!$report_stmt->execute()) {
-            throw new Exception("Failed to insert report: " . $conn->error);
-        }
 
         $conn->commit();
         echo json_encode(["success" => true, "message" => "Facility added successfully", "facility_id" => $facility_id]);
@@ -165,12 +160,12 @@ function addFacility() {
 function updateFacility() {
     global $conn;
 
-    if (!isset($_SESSION['user_id'])) {
+    if (!isset($_SESSION['username'])) {
         echo json_encode(['success' => false, 'message' => 'User not logged in']);
         return;
     }
 
-    $username = $_SESSION['user_id'];
+    $username = $_SESSION['username'];
     $facility_id = $_POST['facility_id'] ?? null;
     $place_name = $_POST['place_name'] ?? '';
     $sport_type = $_POST['sport_type'] ?? '';

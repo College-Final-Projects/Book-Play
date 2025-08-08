@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 // Add debugging
 error_log("=== VENUEAPI.PHP DEBUG START ===");
 error_log("Request method: " . $_SERVER['REQUEST_METHOD']);
-error_log("Session user_id: " . ($_SESSION['user_id'] ?? 'null'));
+error_log("Session username: " . ($_SESSION['username'] ?? 'null'));
 
 // Process the request based on the action parameter
 $action = $_REQUEST['action'] ?? '';
@@ -19,45 +19,22 @@ switch ($action) {
     case 'handle_action':
         handleAction();
         break;
-    case 'update_status':
-        updateReportStatus();
-        break;
     default:
         echo json_encode(["success" => false, "message" => "⛔ Invalid action specified."]);
         break;
 }
 
-// Function to get all reports
+// Function to get all unaccepted facilities
 function getReports() {
     global $conn;
     
     error_log("=== GETREPORTS DEBUG START ===");
-    error_log("Session user_id: " . ($_SESSION['user_id'] ?? 'null'));
+    error_log("Session username: " . ($_SESSION['username'] ?? 'null'));
     
-    // Get both venue suggestions (reports) and unaccepted venues
-    // For venue suggestions: exclude suggestions submitted by the current admin
-    // For unaccepted venues: exclude venues owned by the current admin
+    // Get only unaccepted venues from sportfacilities table
+    // Exclude venues owned by the current admin
     $sql = "SELECT 
-                'report' as source_type,
-                r.report_id,
-                r.username,
-                r.suggested_place_name as place_name,
-                r.facilities_id,
-                r.created_at,
-                r.message,
-                sf.location,
-                sf.price,
-                sf.image_url
-            FROM reports r
-            LEFT JOIN sportfacilities sf ON r.facilities_id = sf.facilities_id
-            WHERE r.type = 'suggest_place'
-            AND r.username != ?
-            
-            UNION ALL
-            
-            SELECT 
                 'venue' as source_type,
-                NULL as report_id,
                 sf.owner_username as username,
                 sf.place_name,
                 sf.facilities_id,
@@ -65,19 +42,19 @@ function getReports() {
                 CONCAT('Sport: ', sf.SportCategory, ' | Price: ', sf.price, ' | Location: ', sf.location) as message,
                 sf.location,
                 sf.price,
-                sf.image_url
+                sf.image_url,
+                sf.SportCategory,
+                sf.description
             FROM sportfacilities sf
             WHERE sf.is_Accepted = 0
             AND sf.owner_username != ?
-            
-            ORDER BY created_at DESC";
+            ORDER BY sf.facilities_id DESC";
     
     error_log("SQL Query: " . $sql);
-    error_log("Filtering out suggestions by: " . $_SESSION['user_id']);
-    error_log("Filtering out venues owned by: " . $_SESSION['user_id']);
+    error_log("Filtering out venues owned by: " . $_SESSION['username']);
     
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $_SESSION['user_id'], $_SESSION['user_id']);
+    $stmt->bind_param("s", $_SESSION['username']);
     $stmt->execute();
     $result = $stmt->get_result();
     
@@ -89,20 +66,20 @@ function getReports() {
     
     error_log("Query executed. Found " . ($result ? $result->num_rows : 0) . " items");
     
-    $reports = [];
+    $facilities = [];
     
     if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $reports[] = $row;
-            error_log("Item found: " . $row['source_type'] . " - " . $row['place_name'] . " (Owner: " . $row['username'] . ")");
+            $facilities[] = $row;
+            error_log("Facility found: " . $row['place_name'] . " (Owner: " . $row['username'] . ")");
         }
     } else {
-        error_log("No venue requests or unaccepted venues found");
+        error_log("No unaccepted facilities found");
     }
     
-    error_log("Returning " . count($reports) . " items");
+    error_log("Returning " . count($facilities) . " items");
     error_log("=== GETREPORTS DEBUG END ===");
-    echo json_encode($reports);
+    echo json_encode($facilities);
 }
 
 // Function to handle approve/reject actions
@@ -115,10 +92,9 @@ function handleAction() {
     }
     
     $action = $_POST['subaction'] ?? '';
-    $reportId = $_POST['report_id'] ?? null;
     $facilitiesId = $_POST['facilities_id'] ?? null;
     
-    error_log("Handle action: $action, reportId: $reportId, facilitiesId: $facilitiesId");
+    error_log("Handle action: $action, facilitiesId: $facilitiesId");
     
     if (!$facilitiesId || !in_array($action, ['approve', 'reject'])) {
         echo json_encode(["success" => false, "message" => "❌ Invalid input."]);
@@ -129,66 +105,27 @@ function handleAction() {
         // ✅ Update is_Accepted to 1
         $update = $conn->prepare("UPDATE sportfacilities SET is_Accepted = 1 WHERE facilities_id = ?");
         $update->bind_param("i", $facilitiesId);
-        $update->execute();
-        $update->close();
         
-        // If there's a report_id, delete the report
-        if ($reportId) {
-            $deleteReport = $conn->prepare("DELETE FROM reports WHERE report_id = ?");
-            $deleteReport->bind_param("i", $reportId);
-            $deleteReport->execute();
-            $deleteReport->close();
+        if ($update->execute()) {
+            echo json_encode(["success" => true, "message" => "✅ Facility approved successfully."]);
+        } else {
+            echo json_encode(["success" => false, "message" => "❌ Failed to approve facility."]);
         }
-        
-        echo json_encode(["success" => true, "message" => "✅ Approved successfully."]);
+        $update->close();
         exit;
     } elseif ($action === 'reject') {
         // ❌ Delete from sportfacilities table
         $deleteFacility = $conn->prepare("DELETE FROM sportfacilities WHERE facilities_id = ?");
         $deleteFacility->bind_param("i", $facilitiesId);
-        $deleteFacility->execute();
-        $deleteFacility->close();
         
-        // If there's a report_id, delete the report too
-        if ($reportId) {
-            $deleteReport = $conn->prepare("DELETE FROM reports WHERE report_id = ?");
-            $deleteReport->bind_param("i", $reportId);
-            $deleteReport->execute();
-            $deleteReport->close();
+        if ($deleteFacility->execute()) {
+            echo json_encode(["success" => true, "message" => "❌ Facility rejected and deleted."]);
+        } else {
+            echo json_encode(["success" => false, "message" => "❌ Failed to reject facility."]);
         }
-        
-        echo json_encode(["success" => true, "message" => "❌ Rejected and deleted."]);
+        $deleteFacility->close();
         exit;
     }
-}
-
-// Function to update report status
-function updateReportStatus() {
-    global $conn;
-    
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        echo json_encode(["success" => false, "message" => "⛔ Only POST method allowed."]);
-        exit;
-    }
-    
-    $report_id = $_POST['report_id'] ?? null;
-    $status = $_POST['status'] ?? null;
-    
-    if (!$report_id || !in_array($status, ['accepted', 'rejected'])) {
-        echo json_encode(["success" => false, "message" => "❌ Invalid input."]);
-        exit;
-    }
-    
-    $stmt = $conn->prepare("UPDATE reports SET status = ? WHERE report_id = ?");
-    $stmt->bind_param("si", $status, $report_id);
-    
-    if ($stmt->execute()) {
-        echo json_encode(["success" => true, "message" => "✅ Report updated successfully."]);
-    } else {
-        echo json_encode(["success" => false, "message" => "❌ Failed to update report."]);
-    }
-    
-    $stmt->close();
 }
 
 error_log("=== VENUEAPI.PHP DEBUG END ===");

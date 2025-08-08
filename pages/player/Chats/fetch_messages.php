@@ -4,12 +4,12 @@ require_once '../../db.php'; // adjust according to your project
 
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['username'])) {
     echo json_encode(["success" => false, "message" => "Not logged in"]);
     exit;
 }
 
-$currentUser = $_SESSION['user_id'];
+$currentUser = $_SESSION['username'];
 $chatPartner = $_GET['chat_with'] ?? '';
 
 if (!$chatPartner) {

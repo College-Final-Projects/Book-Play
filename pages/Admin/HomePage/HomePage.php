@@ -6,7 +6,7 @@ $_SESSION['previous_page'] = $_SERVER['PHP_SELF'];
 
 // ✅ 1. Handle AJAX request to get user image and username
 if (isset($_GET['action']) && $_GET['action'] === 'get_user_image') {
-    $username = $_SESSION['user_id'] ?? '';
+    $username = $_SESSION['username'] ?? '';
 
     if (!$username) {
         echo json_encode(['error' => 'Not logged in']);
@@ -31,7 +31,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_user_image') {
 
 // ✅ 2. Protect this page: only accessible if user is an admin
 
-$user_name = $_SESSION['user_id'] ?? null;
+$user_name = $_SESSION['username'] ?? null;
 
 if (!$user_name) {
     // No user session – redirect to login

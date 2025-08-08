@@ -21,7 +21,7 @@ require_once $dbPath;
 header('Content-Type: application/json');
 
 // Add debugging
-error_log("VenueAPI.php called with facility_id: " . ($_GET['facility_id'] ?? 'null'));
+error_log("VenueAPI.php called with facility_id: " . ($_GET['facilities_id'] ?? 'null'));
 error_log("Current working directory: " . getcwd());
 error_log("DB file path: " . realpath('../../../db.php'));
 
@@ -41,7 +41,7 @@ if ($conn->connect_error) {
 
 error_log("✅ Database connection successful");
 
-$facilityId = $_GET['facility_id'] ?? null;
+$facilityId = $_GET['facilities_id'] ?? null;
 error_log("Facility ID received: " . $facilityId);
 
 if (!$facilityId) {
@@ -125,7 +125,7 @@ $avgRatingStmt->bind_param("i", $facilityId);
 $avgRatingStmt->execute();
 $avgRatingResult = $avgRatingStmt->get_result();
 $avgRow = $avgRatingResult->fetch_assoc();
-$averageRating = round($avgRow['avg_rating'], 1); // e.g., 3.7
+$averageRating = $avgRow['avg_rating'] ? round($avgRow['avg_rating'], 1) : 0; // Handle null values
 
 error_log("✅ Average rating calculated: " . $averageRating);
 

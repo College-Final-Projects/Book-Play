@@ -6,10 +6,10 @@ header('Content-Type: application/json');
 // Add debugging
 error_log("=== SUBMITREPORT.PHP DEBUG START ===");
 error_log("Request method: " . $_SERVER['REQUEST_METHOD']);
-error_log("Session user_id: " . ($_SESSION['user_id'] ?? 'null'));
+error_log("Session username: " . ($_SESSION['username'] ?? 'null'));
 
 // Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['username'])) {
     error_log("❌ User not logged in");
     echo json_encode(['success' => false, 'message' => 'User not logged in']);
     exit;
@@ -35,7 +35,7 @@ if (!$input) {
 $facility_id = $input['facility_id'] ?? null;
 $reason = $input['reason'] ?? '';
 $details = $input['details'] ?? '';
-$username = $_SESSION['user_id'];
+$username = $_SESSION['username'];
 
 error_log("Received data - facility_id: $facility_id, reason: $reason, details: $details, username: $username");
 

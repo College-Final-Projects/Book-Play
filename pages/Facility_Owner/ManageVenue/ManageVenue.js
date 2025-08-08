@@ -6,28 +6,66 @@ let marker;
 let geocoder;
 let currentEditingId = null;
 
-// DOM elements
-const venueGrid = document.getElementById('venueGrid');
-const venueModal = document.getElementById('venueModal');
-const addVenueBtn = document.querySelector('.add-venue-btn');
-const closeModalBtn = document.getElementById('closeModal');
-const cancelBtn = document.querySelector('.cancel-btn');
-const searchInput = document.getElementById('searchInput');
-const sortSelect = document.getElementById('sortSelect');
-const sortBySportSelect = document.getElementById('sortbysport');
-const modalTitle = document.getElementById('modalTitle');
-const venueForm = document.querySelector('form');
-const imageInput = document.getElementById('venueImages');
-const imagePreview = document.getElementById('imagePreview');
+// DOM elements - will be initialized after DOM is ready
+let venueGrid;
+let venueModal;
+let addVenueBtn;
+let closeModalBtn;
+let cancelBtn;
+let searchInput;
+let sortSelect;
+let sortBySportSelect;
+let modalTitle;
+let venueForm;
+let imageInput;
+let imagePreview;
+
+// Initialize DOM elements
+function initializeDOMElements() {
+    venueGrid = document.getElementById('venueGrid');
+    venueModal = document.getElementById('venueModal');
+    addVenueBtn = document.querySelector('.add-venue-btn');
+    closeModalBtn = document.getElementById('closeModal');
+    cancelBtn = document.querySelector('.cancel-btn');
+    searchInput = document.getElementById('searchInput');
+    sortSelect = document.getElementById('sortSelect');
+    sortBySportSelect = document.getElementById('sortbysport');
+    modalTitle = document.getElementById('modalTitle');
+    venueForm = document.querySelector('form');
+    imageInput = document.getElementById('venueImages');
+    imagePreview = document.getElementById('imagePreview');
+}
 
 async function initializeApp() {
     window.initializeApp = initializeApp;
+    
     try {
+        // Initialize DOM elements first
+        initializeDOMElements();
+        
+        // Check if all required elements exist
+        if (!venueModal || !addVenueBtn || !closeModalBtn || !cancelBtn) {
+            console.error('Required modal elements not found');
+            console.log('Missing elements:', {
+                venueModal: !!venueModal,
+                addVenueBtn: !!addVenueBtn,
+                closeModalBtn: !!closeModalBtn,
+                cancelBtn: !!cancelBtn
+            });
+            showMessage('Modal elements not found. Please refresh the page.', 'error');
+            return;
+        }
+        
+        console.log('DOM elements initialized successfully');
+        
         await loadSports();
         await loadVenues();
         initializeMap();
         setupEventListeners();
+        // Populate sports filter after venues are loaded
         populateSportsFilter();
+        
+        console.log('App initialization completed successfully');
     } catch (error) {
         console.error('Error initializing app:', error);
         showMessage('Error loading data. Please refresh the page.', 'error');
@@ -65,14 +103,29 @@ async function initMap() {
 // Load sports data from server
 async function loadSports() {
     try {
+        console.log('Loading sports data...');
         const response = await fetch('fetch_venues.php?action=get_sports');
-        if (!response.ok) throw new Error('Failed to fetch sports');
         
-        sportsData = await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const text = await response.text();
+        console.log('Sports API response:', text);
+        
+        try {
+            sportsData = JSON.parse(text);
+        } catch (parseError) {
+            console.error('Failed to parse sports JSON:', text);
+            throw new Error('Invalid JSON response from sports API');
+        }
+        
+        console.log(`Loaded ${sportsData.length} sports:`, sportsData);
         populateSportsDropdown();
     } catch (error) {
         console.error('Error loading sports:', error);
-        showMessage('Error loading sports data', 'error');
+        showMessage('Error loading sports data: ' + error.message, 'error');
+        sportsData = []; // Fallback to empty array
     }
 }
 
@@ -93,73 +146,246 @@ async function loadVenues() {
 // Populate sports dropdown in modal
 function populateSportsDropdown() {
     const sportSelect = document.getElementById('sportType');
-    sportSelect.innerHTML = '<option value="">Select Sport Type</option>';
     
-    sportsData.forEach(sport => {
-        const option = document.createElement('option');
-        option.value = sport.sport_name;
-        option.textContent = sport.sport_name;
-        sportSelect.appendChild(option);
-    });
-}
-
-// Populate sports filter dropdown
-function populateSportsFilter() {
-    sortBySportSelect.innerHTML = '<option value="">All Sports</option>';
-    
-    sportsData.forEach(sport => {
-        const option = document.createElement('option');
-        option.value = sport.sport_name;
-        option.textContent = sport.sport_name;
-        sortBySportSelect.appendChild(option);
-    });
-}
-
-// Initialize Google Maps
-function initializeMap() {
-    const defaultLocation = { lat: 32.0853, lng: 34.7818 };
-
-    map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 13,
-        center: defaultLocation,
-        mapId: 'bec4fd1eef54f71c3e99df68',
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false
-    });
-
-    marker = new google.maps.marker.AdvancedMarkerElement({
-        position: defaultLocation,
-        map: map,
-        title: 'Venue Location'
-    });
-
-    geocoder = new google.maps.Geocoder();
-
-    const locationInput = document.getElementById('locationInput');
-    const autocomplete = new google.maps.places.Autocomplete(locationInput);
-    autocomplete.bindTo('bounds', map);
-
-    autocomplete.addListener('place_changed', function () {
-    const place = autocomplete.getPlace();
-    
-    // ✅ Protection against manual input without selecting suggestion
-    if (!place.geometry || !place.geometry.location) {
-        alert("❌ Please select the location from the list that appears, don't just type the address manually.");
-        document.getElementById('locationInput').value = '';
+    if (!sportSelect) {
+        console.error('Sport select element not found');
         return;
     }
+    
+    // Show loading state
+    sportSelect.innerHTML = '<option value="">Loading sports...</option>';
+    sportSelect.disabled = true;
+    
+    if (sportsData && sportsData.length > 0) {
+        // Clear loading state
+        sportSelect.innerHTML = '<option value="">Select Sport Type</option>';
+        sportSelect.disabled = false;
+        
+        sportsData.forEach(sport => {
+            const option = document.createElement('option');
+            option.value = sport.sport_name;
+            option.textContent = sport.sport_name;
+            sportSelect.appendChild(option);
+        });
+        
+        console.log(`Loaded ${sportsData.length} sports for selection`);
+    } else {
+        sportSelect.innerHTML = '<option value="">No sports available</option>';
+        sportSelect.disabled = true;
+    }
+}
 
-    const location = place.geometry.location;
-    map.setCenter(location);
-    marker.position = location;
-    updateCoordinates(location.lat(), location.lng());
-});
-
-
-    map.addListener('click', function(event) {
-        updateMarkerPosition(event.latLng);
+// Populate sports filter dropdown - only show sports from user's facilities
+function populateSportsFilter() {
+    if (!sortBySportSelect) return;
+    
+    sortBySportSelect.innerHTML = '<option value="">All Sports</option>';
+    
+    // Get unique sports from user's facilities
+    const userSports = [...new Set(venuesData.map(venue => venue.SportCategory))];
+    
+    userSports.forEach(sportName => {
+        if (sportName) {
+            const option = document.createElement('option');
+            option.value = sportName;
+            option.textContent = sportName;
+            sortBySportSelect.appendChild(option);
+        }
     });
+    
+    console.log(`Loaded ${userSports.length} sports from user facilities for filtering`);
+}
+
+// Initialize Google Maps with enhanced location search
+function initializeMap() {
+    // Check if Google Maps is available
+    if (typeof google === 'undefined' || !google.maps) {
+        console.log('Google Maps not available, skipping map initialization');
+        return;
+    }
+    
+    const defaultLocation = { lat: 32.0853, lng: 34.7818 };
+
+    try {
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 13,
+            center: defaultLocation,
+            mapId: 'bec4fd1eef54f71c3e99df68',
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false
+        });
+
+        marker = new google.maps.marker.AdvancedMarkerElement({
+            position: defaultLocation,
+            map: map,
+            title: 'Venue Location'
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        // Initialize location search functionality
+        initializeLocationSearch();
+
+        map.addListener('click', function(event) {
+            updateMarkerPosition(event.latLng);
+        });
+    } catch (error) {
+        console.error('Error initializing Google Maps:', error);
+    }
+}
+
+// Initialize location search with Google Places API
+function initializeLocationSearch() {
+    const locationInput = document.getElementById('locationInput');
+    const searchResults = document.getElementById('searchResults');
+    
+    if (!locationInput || !searchResults) return;
+    
+    let searchTimeout;
+    let placesService;
+    
+    // Initialize Places service
+    if (map) {
+        placesService = new google.maps.places.PlacesService(map);
+    }
+    
+    // Handle input changes
+    locationInput.addEventListener('input', function(e) {
+        const query = e.target.value.trim();
+        
+        if (query.length < 3) {
+            hideSearchResults();
+            return;
+        }
+        
+        // Debounce search
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchPlaces(query);
+        }, 300);
+    });
+    
+    // Handle keyboard navigation
+    locationInput.addEventListener('keydown', function(e) {
+        handleSearchKeyboard(e);
+    });
+    
+    // Hide results when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!locationInput.contains(e.target) && !searchResults.contains(e.target)) {
+            hideSearchResults();
+        }
+    });
+    
+    function searchPlaces(query) {
+        if (!placesService) return;
+        
+        showSearchLoading();
+        
+        const request = {
+            query: query,
+            fields: ['place_id', 'name', 'formatted_address', 'geometry']
+        };
+        
+        placesService.textSearch(request, (results, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                displaySearchResults(results.slice(0, 5)); // Show max 5 results
+            } else {
+                showNoResults();
+            }
+        });
+    }
+    
+    function displaySearchResults(places) {
+        searchResults.innerHTML = '';
+        
+        places.forEach((place, index) => {
+            const resultItem = document.createElement('div');
+            resultItem.className = 'search-result-item';
+            resultItem.dataset.index = index;
+            
+            resultItem.innerHTML = `
+                <div class="search-result-icon">📍</div>
+                <div class="search-result-text">
+                    <div class="search-result-name">${place.name}</div>
+                    <div class="search-result-address">${place.formatted_address}</div>
+                </div>
+            `;
+            
+            resultItem.addEventListener('click', () => {
+                selectPlace(place);
+            });
+            
+            searchResults.appendChild(resultItem);
+        });
+        
+        showSearchResults();
+    }
+    
+    function selectPlace(place) {
+        locationInput.value = place.formatted_address;
+        
+        if (place.geometry && place.geometry.location) {
+            const location = place.geometry.location;
+            map.setCenter(location);
+            map.setZoom(16);
+            marker.position = location;
+            updateCoordinates(location.lat(), location.lng());
+        }
+        
+        hideSearchResults();
+    }
+    
+    function showSearchLoading() {
+        searchResults.innerHTML = '<div class="search-loading">Searching locations...</div>';
+        showSearchResults();
+    }
+    
+    function showNoResults() {
+        searchResults.innerHTML = '<div class="search-loading">No locations found</div>';
+        showSearchResults();
+    }
+    
+    function showSearchResults() {
+        searchResults.classList.add('show');
+    }
+    
+    function hideSearchResults() {
+        searchResults.classList.remove('show');
+    }
+    
+    function handleSearchKeyboard(e) {
+        const items = searchResults.querySelectorAll('.search-result-item');
+        const selected = searchResults.querySelector('.search-result-item.selected');
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (selected) {
+                selected.classList.remove('selected');
+                const next = selected.nextElementSibling || items[0];
+                next.classList.add('selected');
+            } else if (items.length > 0) {
+                items[0].classList.add('selected');
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (selected) {
+                selected.classList.remove('selected');
+                const prev = selected.previousElementSibling || items[items.length - 1];
+                prev.classList.add('selected');
+            } else if (items.length > 0) {
+                items[items.length - 1].classList.add('selected');
+            }
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (selected) {
+                selected.click();
+            }
+        } else if (e.key === 'Escape') {
+            hideSearchResults();
+        }
+    }
 }
 
 // Update marker position and coordinates
@@ -213,6 +439,8 @@ function displayVenues(venues) {
                 <p>No venues found. Click "Add New Venue" to get started!</p>
             </div>
         `;
+        // Update sports filter even if no venues
+        populateSportsFilter();
         return;
     }
     
@@ -220,6 +448,9 @@ function displayVenues(venues) {
     
     // Add event listeners to toggle switches and action buttons
     setupVenueCardEventListeners();
+    
+    // Update sports filter when venues are displayed
+    populateSportsFilter();
 }
 
 // Create venue card HTML
@@ -247,6 +478,7 @@ function createVenueCard(venue) {
                 </div>
                 <div class="venue-actions">
                     <div class="action-buttons">
+                        <button class="action-btn view" onclick="viewVenueDetails(${venue.facilities_id})">👁️ View Details</button>
                         <button class="action-btn edit" onclick="editVenue(${venue.facilities_id})">✏️ Edit</button>
                     </div>
                     <label class="toggle-switch">
@@ -309,6 +541,7 @@ function openModal(venue = null) {
                     img.style.height = '100px';
                     img.style.objectFit = 'cover';
                     img.style.borderRadius = '10px';
+                    img.style.border = '1px solid #ddd';
                     imagePreview.appendChild(img);
                 }
             });
@@ -323,20 +556,99 @@ function openModal(venue = null) {
         updateCoordinates(defaultLocation.lat, defaultLocation.lng);
     }
     
+    // Show modal with enhanced animation
     venueModal.style.display = 'flex';
     document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    
+    // Add opening class for animation
+    setTimeout(() => {
+        venueModal.classList.add('modal-opening');
+    }, 10);
+    
+    // Focus on first input for better UX and ensure sports are loaded
+    setTimeout(() => {
+        const firstInput = document.getElementById('placeName');
+        if (firstInput) {
+            firstInput.focus();
+            firstInput.select(); // Select text if editing
+        }
+        
+        // Ensure sports dropdown is populated
+        if (sportsData && sportsData.length > 0) {
+            populateSportsDropdown();
+        }
+    }, 300);
 }
 
 // Close modal
 function closeModal() {
-    venueModal.style.display = 'none';
-    document.body.style.overflow = 'auto'; // Restore scrolling
-    currentEditingId = null;
+    // Add closing animation
+    venueModal.classList.remove('modal-opening');
+    venueModal.classList.add('modal-closing');
+    
+    setTimeout(() => {
+        venueModal.style.display = 'none';
+        venueModal.classList.remove('modal-closing');
+        document.body.style.overflow = 'auto'; // Restore scrolling
+        currentEditingId = null;
+        
+        // Reset form
+        if (venueForm) {
+            venueForm.reset();
+        }
+        if (imagePreview) {
+            imagePreview.innerHTML = '';
+        }
+        
+        // Re-enable sport select in case it was disabled
+        const sportSelect = document.getElementById('sportType');
+        if (sportSelect) {
+            sportSelect.disabled = false;
+        }
+    }, 200);
 }
 
 // Handle form submission
 async function handleFormSubmit(e) {
     e.preventDefault();
+    
+    // Basic form validation
+    const placeName = document.getElementById('placeName').value.trim();
+    const sportType = document.getElementById('sportType').value;
+    const price = document.getElementById('price').value;
+    const location = document.getElementById('locationInput').value.trim();
+    const latitude = document.getElementById('latitude').value;
+    const longitude = document.getElementById('longitude').value;
+    
+    // Validation checks
+    if (!placeName) {
+        showMessage('Please enter a venue name', 'error');
+        document.getElementById('placeName').focus();
+        return;
+    }
+    
+    if (!sportType) {
+        showMessage('Please select a sport type', 'error');
+        document.getElementById('sportType').focus();
+        return;
+    }
+    
+    if (!price || price <= 0) {
+        showMessage('Please enter a valid price', 'error');
+        document.getElementById('price').focus();
+        return;
+    }
+    
+    if (!location) {
+        showMessage('Please enter a location', 'error');
+        document.getElementById('locationInput').focus();
+        return;
+    }
+    
+    if (!latitude || !longitude) {
+        showMessage('Please select a location on the map', 'error');
+        return;
+    }
     
     const formData = new FormData(venueForm);
     
@@ -349,6 +661,12 @@ async function handleFormSubmit(e) {
     }
     
     try {
+        // Show loading state
+        const saveBtn = document.querySelector('.save-btn');
+        const originalText = saveBtn.textContent;
+        saveBtn.textContent = 'Saving...';
+        saveBtn.disabled = true;
+        
         const response = await fetch('fetch_venues.php', {
             method: 'POST',
             body: formData
@@ -370,6 +688,11 @@ async function handleFormSubmit(e) {
     } catch (error) {
         console.error('Error saving venue:', error);
         showMessage('Error saving venue. Please try again.', 'error');
+    } finally {
+        // Restore button state
+        const saveBtn = document.querySelector('.save-btn');
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
     }
 }
 
@@ -381,8 +704,20 @@ function handleImagePreview(e) {
     // Limit to 3 images
     const limitedFiles = files.slice(0, 3);
     
-    limitedFiles.forEach(file => {
+    if (files.length === 0) {
+        return;
+    }
+    
+    let validFiles = 0;
+    
+    limitedFiles.forEach((file, index) => {
         if (file.type.startsWith('image/')) {
+            // Check file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showMessage(`Image ${index + 1} is too large. Maximum size is 5MB.`, 'warning');
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = document.createElement('img');
@@ -392,15 +727,54 @@ function handleImagePreview(e) {
                 img.style.objectFit = 'cover';
                 img.style.borderRadius = '10px';
                 img.style.border = '1px solid #ddd';
-                imagePreview.appendChild(img);
+                img.style.margin = '5px';
+                
+                // Add remove button
+                const removeBtn = document.createElement('button');
+                removeBtn.innerHTML = '×';
+                removeBtn.style.position = 'absolute';
+                removeBtn.style.top = '-5px';
+                removeBtn.style.right = '-5px';
+                removeBtn.style.background = '#ef4444';
+                removeBtn.style.color = 'white';
+                removeBtn.style.border = 'none';
+                removeBtn.style.borderRadius = '50%';
+                removeBtn.style.width = '20px';
+                removeBtn.style.height = '20px';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.style.fontSize = '12px';
+                removeBtn.onclick = function() {
+                    img.parentElement.remove();
+                };
+                
+                const container = document.createElement('div');
+                container.style.position = 'relative';
+                container.style.display = 'inline-block';
+                container.appendChild(img);
+                container.appendChild(removeBtn);
+                
+                imagePreview.appendChild(container);
+                validFiles++;
             };
             reader.readAsDataURL(file);
+        } else {
+            showMessage(`File ${index + 1} is not an image.`, 'warning');
         }
     });
     
     if (files.length > 3) {
         showMessage('Only the first 3 images will be uploaded.', 'warning');
     }
+    
+    if (validFiles > 0) {
+        showMessage(`${validFiles} image(s) selected successfully.`, 'success');
+    }
+}
+
+// View venue details function
+function viewVenueDetails(venueId) {
+    // Redirect to player's VenueDetails.php with the facility ID
+    window.location.href = `../../player/VenueDetails/VenueDetails.php?facility_id=${venueId}`;
 }
 
 // Edit venue function
@@ -605,4 +979,20 @@ function initializeUIEnhancements() {
 // Call UI enhancements after DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     initializeUIEnhancements();
+    
+    // Fallback initialization if Google Maps doesn't load
+    setTimeout(() => {
+        if (typeof google === 'undefined' || !google.maps) {
+            console.log('Google Maps not loaded, initializing without map');
+            initializeApp();
+        }
+    }, 3000);
+});
+
+// Also initialize when window loads
+window.addEventListener('load', function() {
+    if (typeof google === 'undefined' || !google.maps) {
+        console.log('Google Maps not loaded on window load, initializing without map');
+        initializeApp();
+    }
 });

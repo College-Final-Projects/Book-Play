@@ -13,8 +13,8 @@ include '../../../db.php';
 $response = ['is_admin' => 0];
 
 // Check if user is logged in
-if (isset($_SESSION['user_id'])) {
-    $userId = $_SESSION['user_id'];
+if (isset($_SESSION['username'])) {
+    $userId = $_SESSION['username'];
     
     // Prepare SQL to get is_admin status
     $stmt = $conn->prepare("SELECT is_admin FROM users WHERE username = ?");

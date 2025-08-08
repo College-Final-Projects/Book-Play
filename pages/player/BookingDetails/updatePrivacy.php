@@ -4,7 +4,7 @@ require_once '../../../db.php';
 
 header('Content-Type: application/json');
 
-$username = $_SESSION['user_id'] ?? '';
+$username = $_SESSION['username'] ?? '';
 $groupId = $_POST['group_id'] ?? null;
 $privacy = $_POST['privacy'] ?? null;
 

@@ -6,12 +6,12 @@ require_once '../../../db.php';
 if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
     header('Content-Type: application/json');
 
-    if (!isset($_SESSION['user_id'])) {
+    if (!isset($_SESSION['username'])) {
         echo json_encode(['success' => false, 'message' => 'User not logged in']);
         exit;
     }
 
-    $username = $_SESSION['user_id'];
+    $username = $_SESSION['username'];
 
     $sql = "SELECT b.*, s.place_name, s.image_url, s.price, s.location
         FROM bookings b

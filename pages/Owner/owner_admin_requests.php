@@ -11,12 +11,12 @@ try {
     session_start();
     
     // Debug: Log session info
-    error_log("Session user_id: " . ($_SESSION['user_id'] ?? 'null'));
+    error_log("Session username: " . ($_SESSION['username'] ?? 'null'));
     
     require_once '../../db.php';
 
     // Check if user is logged in
-    $username = $_SESSION['user_id'] ?? '';
+    $username = $_SESSION['username'] ?? '';
     if (!$username) {
         echo json_encode(["success" => false, "message" => "Not logged in"]);
         exit;

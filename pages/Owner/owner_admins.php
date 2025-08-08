@@ -12,7 +12,7 @@ try {
     require_once '../../db.php';
 
     // Check if user is logged in
-    $username = $_SESSION['user_id'] ?? '';
+    $username = $_SESSION['username'] ?? '';
     if (!$username) {
         echo json_encode(["success" => false, "message" => "Not logged in"]);
         exit;

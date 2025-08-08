@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 // Add debugging
 error_log("=== CREATEBOOKINGAPI.PHP DEBUG START ===");
 error_log("Request method: " . $_SERVER['REQUEST_METHOD']);
-error_log("Session user_id: " . ($_SESSION['user_id'] ?? 'null'));
+error_log("Session username: " . ($_SESSION['username'] ?? 'null'));
 
 // Check database connection
 if ($conn->connect_error) {
@@ -18,12 +18,12 @@ if ($conn->connect_error) {
 error_log("✅ Database connection successful");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_SESSION['user_id'])) {
+    if (!isset($_SESSION['username'])) {
         echo json_encode(["success" => false, "message" => "User not logged in"]);
         exit;
     }
 
-    $username = $_SESSION['user_id'];
+    $username = $_SESSION['username'];
     $facility_id = $_POST['facility_id'] ?? null;
     $start_date = $_POST['start_date'] ?? null;
     $start_time = $_POST['start_time'] ?? null;

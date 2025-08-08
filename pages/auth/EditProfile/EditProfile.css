@@ -154,8 +154,14 @@ input[readonly] {
 .favorite-sports {
   display: flex; /* Use flexbox */
   flex-wrap: wrap; /* Allow wrapping */
-  gap: 10px; /* Spacing between items */
-  margin-top: 5px; /* Space on top */
+  gap: 12px; /* Spacing between items */
+  margin-top: 8px; /* Space on top */
+  justify-content: flex-start; /* Align to start */
+  align-items: center; /* Center items vertically */
+}
+
+.sport-option {
+  display: inline-block; /* Allow proper spacing */
 }
 
 .sport-option input[type="checkbox"] {
@@ -164,26 +170,35 @@ input[readonly] {
 
 .sport-label {
   display: inline-block; /* Allow padding */
-  padding: 8px 15px; /* Internal spacing */
+  padding: 10px 18px; /* Internal spacing */
   background: transparent; /* Transparent bg */
   color: var(--primary); /* Blue text */
   border: 2px solid var(--primary); /* Border */
-  border-radius: 20px; /* Pill shape */
+  border-radius: 25px; /* Pill shape */
   cursor: pointer; /* Pointer cursor */
   transition: all 0.3s ease; /* Smooth transition */
   font-size: clamp(0.75rem, 1.5vw, 0.875rem); /* Responsive font */
   white-space: nowrap; /* Prevent wrapping */
+  font-weight: 500; /* Medium weight */
+  user-select: none; /* Prevent text selection */
 }
 
 .sport-label:hover {
   transform: scale(1.05); /* Slight zoom on hover */
+  box-shadow: 0 2px 8px rgba(30, 144, 255, 0.2); /* Subtle shadow */
 }
 
 .sport-option input[type="checkbox"]:checked + .sport-label {
   background: linear-gradient(to right, var(--primary), var(--secondary)); /* Highlight */
   color: white; /* White text */
   border: none; /* Remove border */
-  box-shadow: 0 0 10px rgba(30, 144, 255, 0.3); /* Glow effect */
+  box-shadow: 0 0 15px rgba(30, 144, 255, 0.4); /* Glow effect */
+  transform: scale(1.02); /* Slight scale when selected */
+}
+
+/* Add a subtle animation for better UX */
+.sport-label:active {
+  transform: scale(0.98); /* Slight scale down when clicked */
 }
 
 /* ===================== EDIT PROFILE-SPECIFIC ANIMATIONS ===================== */
