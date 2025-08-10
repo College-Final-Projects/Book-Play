@@ -1,42 +1,5 @@
-// Sample favorite venues data
-const favoriteVenues = [
-    {
-        id: 1,
-        name: "Elite Sports Complex",
-        sport: "Basketball",
-        location: "Downtown Plaza",
-        rating: 4.8,
-        image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=200&fit=crop",
-        isFavorite: true
-    },
-    {
-        id: 2,
-        name: "Ocean View Tennis Club",
-        sport: "Tennis",
-        location: "Marina District",
-        rating: 4.6,
-        image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=200&fit=crop",
-        isFavorite: true
-    },
-    {
-        id: 3,
-        name: "City Football Arena",
-        sport: "Football",
-        location: "Sports Center",
-        rating: 4.9,
-        image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=200&fit=crop",
-        isFavorite: true
-    },
-    {
-        id: 4,
-        name: "Aqua Fitness Center",
-        sport: "Swimming",
-        location: "Health District",
-        rating: 4.7,
-        image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=200&fit=crop",
-        isFavorite: true
-    }
-];
+// Global variable to store favorite venues
+let favoriteVenues = [];
 
 // Generate star rating HTML
 function generateStars(rating) {
@@ -57,27 +20,50 @@ function generateStars(rating) {
 
 // Create venue card HTML
 function createVenueCard(venue) {
+    const availabilityStatus = venue.is_available ? 'Available' : 'Not Available';
+    const availabilityClass = venue.is_available ? 'available' : 'unavailable';
+    
     return `
-        <div class="venue-card">
-            <img src="${venue.image}" alt="${venue.name}" class="venue-image">
+        <div class="venue-card" data-venue-id="${venue.id}">
+            <img src="${venue.image}" alt="${venue.name}" class="venue-image" onerror="this.src='../../../Images/default.jpg'" onload="console.log('✅ Image loaded successfully:', this.src)">
             <div class="favorite-icon" onclick="toggleFavorite(${venue.id})">
                 ❤️
             </div>
+            <div class="availability-badge ${availabilityClass}">${availabilityStatus}</div>
             <div class="card-content">
                 <h3 class="venue-name">${venue.name}</h3>
                 <span class="sport-type">${venue.sport}</span>
                 <div class="location">📍 ${venue.location}</div>
+                <div class="price">💰 $${venue.price}/hour</div>
                 <div class="rating">
                     <span class="stars">${generateStars(venue.rating)}</span>
-                    <span class="rating-text">${venue.rating}/5.0</span>
+                    <span class="rating-text">${venue.rating}/5.0 (${venue.rating_count} reviews)</span>
                 </div>
-             <button class="view-details-btn" onclick="window.location.href='../VenueDetails/VenueDetails.php'">
-  View Details
-</button>
-
+                <button class="view-details-btn" onclick="viewDetails(${venue.id})">
+                    View Details
+                </button>
             </div>
         </div>
     `;
+}
+
+// Fetch favorite venues from API
+async function fetchFavorites() {
+    try {
+        const response = await fetch('fetch_favorites.php');
+        const data = await response.json();
+        
+        if (data.success) {
+            favoriteVenues = data.favorites;
+            loadFavorites();
+        } else {
+            console.error('Error fetching favorites:', data.message);
+            showNotification('Error loading favorites', 'error');
+        }
+    } catch (error) {
+        console.error('Error fetching favorites:', error);
+        showNotification('Error loading favorites', 'error');
+    }
 }
 
 // Load and display favorite venues
@@ -98,35 +84,95 @@ function loadFavorites() {
     }
 }
 
-// Toggle favorite status
-function toggleFavorite(venueId) {
-    const venueIndex = favoriteVenues.findIndex(v => v.id === venueId);
-    
-    if (venueIndex !== -1) {
-        // Remove from favorites with smooth animation
-        const card = document.querySelector(`[onclick="toggleFavorite(${venueId})"]`).closest('.venue-card');
-        card.style.opacity = '0';
-        card.style.transform = 'scale(0.8)';
+// Toggle favorite status (remove from favorites)
+async function toggleFavorite(venueId) {
+    try {
+        const formData = new FormData();
+        formData.append('facility_id', venueId);
         
-        setTimeout(() => {
-            favoriteVenues.splice(venueIndex, 1);
-            loadFavorites();
-        }, 300);
+        const response = await fetch('remove_favorite.php', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Remove from favorites with smooth animation
+            const card = document.querySelector(`[data-venue-id="${venueId}"]`);
+            if (card) {
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                
+                setTimeout(() => {
+                    // Remove from local array
+                    favoriteVenues = favoriteVenues.filter(v => v.id !== venueId);
+                    loadFavorites();
+                    showNotification('Removed from favorites', 'success');
+                }, 300);
+            }
+        } else {
+            showNotification(data.message || 'Error removing from favorites', 'error');
+        }
+    } catch (error) {
+        console.error('Error removing from favorites:', error);
+        showNotification('Error removing from favorites', 'error');
     }
 }
 
 // View venue details
 function viewDetails(venueId) {
-    const venue = favoriteVenues.find(v => v.id === venueId);
-    if (venue) {
-        alert(`Viewing details for: ${venue.name}\n\nThis would normally navigate to the venue details page.`);
-        // In a real app, you would navigate to: window.location.href = `venue-details.html?id=${venueId}`;
+    // Navigate to venue details page
+    window.location.href = `../VenueDetails/VenueDetails.php?facilities_id=${venueId}`;
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    // Add styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+        max-width: 300px;
+    `;
+    
+    // Set background color based on type
+    if (type === 'success') {
+        notification.style.backgroundColor = '#4CAF50';
+    } else if (type === 'error') {
+        notification.style.backgroundColor = '#f44336';
+    } else {
+        notification.style.backgroundColor = '#2196F3';
     }
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
 }
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', function() {
-    loadFavorites();
+    fetchFavorites();
 });
 
 // Add some interactive effects
@@ -146,3 +192,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, 100);
 });
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);

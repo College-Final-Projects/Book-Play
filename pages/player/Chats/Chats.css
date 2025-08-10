@@ -23,6 +23,7 @@ body {
   color: var(--text-main);
   min-height: 100vh;
   padding: 0;
+  padding-top: 80px; /* Add padding to account for fixed navbar */
   box-sizing: border-box;
 }
 
@@ -38,8 +39,10 @@ body {
   padding: 16px 30px;
   background: linear-gradient(to right, var(--bg-light), var(--bg-secondary));
   box-shadow: var(--shadow-sm);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
   flex-wrap: wrap;
   gap: 10px;
@@ -52,8 +55,10 @@ body {
   padding: 14px 5%;
   background: linear-gradient(to right, #e0f7fa, #d0f8ce);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
   border-bottom: 1px solid rgba(0, 0, 0, 0.04);
   flex-wrap: wrap;
@@ -148,7 +153,7 @@ body {
   backdrop-filter: blur(8px);
   display: flex;
   height: 75vh;
-  margin: 0 5%;
+  margin: 20px 5% 0 5%;
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
@@ -300,13 +305,24 @@ body {
   box-shadow: 0 4px 12px rgba(30, 144, 255, 0.15);
 }
 
+.user-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.last-message {
+  display: none;
+}
+
 
 
 .my-freinds-title {
   font-size: 20px;
   text-align: center;
   font-weight: 700;
-  margin-right: 1000px;
+  margin: 20px 0;
   background: linear-gradient(to right, #000000, #000000);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -367,7 +383,7 @@ body {
   font-size: 20px;
   text-align: center;
   font-weight: 700;
-  margin-right: 1000px;
+  margin: 20px 0;
   background: linear-gradient(to right, #000000, #000000);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

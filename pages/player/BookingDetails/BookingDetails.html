@@ -51,8 +51,12 @@
         <div class="password-card">
           <h3>🔒 Private Room Password</h3>
           <div class="password-display">
-            <code id="roomPassword">BP2025-ELITE-9847</code>
+            <input type="text" id="roomPasswordInput" class="password-input" readonly style="display: none;">
+            <code id="roomPassword"></code>
             <button class="copy-btn" id="copyPassword">📋 Copy</button>
+            <button class="edit-password-btn" id="editPasswordBtn" style="display: none;">✏️ Edit</button>
+            <button class="save-password-btn" id="savePasswordBtn" style="display: none;">💾 Save</button>
+            <button class="cancel-password-btn" id="cancelPasswordBtn" style="display: none;">❌ Cancel</button>
           </div>
           <p class="password-note">Share this password with players to join the private room</p>
         </div>
@@ -90,27 +94,29 @@
           <h3 class="timer-title">Payment Deadline</h3>
           <div class="countdown-timer" id="countdown">
             <div class="time-unit">
-              <span class="time-value" id="hours">01</span>
+              <span class="time-value" id="hours"></span>
               <span class="time-label">Hours</span>
             </div>
             <div class="time-separator">:</div>
             <div class="time-unit">
-              <span class="time-value" id="minutes">45</span>
+              <span class="time-value" id="minutes"></span>
               <span class="time-label">Minutes</span>
             </div>
             <div class="time-separator">:</div>
             <div class="time-unit">
-              <span class="time-value" id="seconds">30</span>
+              <span class="time-value" id="seconds"></span>
               <span class="time-label">Seconds</span>
             </div>
           </div>
           <p class="timer-message">
-            You must pay at least <strong>20% ($<span id="minimumAmount">48.00</span>)</strong> of the total booking price before the timer expires, otherwise the booking will be automatically canceled.
+            You must pay at least <strong>20% ($<span id="minimumAmount"></span>)</strong> of the total booking price before the timer expires, otherwise the booking will be automatically canceled.
           </p>
         </div>
       </div>
     </div>
   </section>
+
+
 
   <!-- Action Buttons -->
   <section class="actions-section">
@@ -157,6 +163,65 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div class="modal-overlay" id="paymentModal">
+    <div class="modal-content payment-modal">
+      <button class="modal-close" id="paymentModalClose">&times;</button>
+      <div class="modal-header">
+        <h2>💳 Payment Details</h2>
+      </div>
+      <div class="modal-body">
+        <div class="payment-summary">
+          <div class="payment-item">
+            <span class="payment-label">Total Venue Price:</span>
+            <span class="payment-value">$<span id="modalTotalPrice">0</span></span>
+          </div>
+          <div class="payment-item">
+            <span class="payment-label">Your Required Payment:</span>
+            <span class="payment-value">$<span id="modalRequiredPayment">0</span></span>
+          </div>
+          <div class="payment-item">
+            <span class="payment-label">Amount Already Paid:</span>
+            <span class="payment-value">$<span id="modalAmountPaid">0</span></span>
+          </div>
+          <div class="payment-item total-amount">
+            <span class="payment-label">Amount to Pay:</span>
+            <span class="payment-value">$<span id="modalAmountToPay">0</span></span>
+          </div>
+        </div>
+        
+        <div class="initial-payment-section" id="initialPaymentSection" style="display: none;">
+          <div class="initial-payment-info">
+            <h3>🏦 Initial Deposit (20%)</h3>
+            <p>No one has paid the initial 20% deposit yet. This deposit is required to secure the booking.</p>
+            <div class="checkbox-container">
+              <input type="checkbox" id="payInitialDeposit" class="payment-checkbox">
+              <label for="payInitialDeposit">Pay the initial 20% deposit ($<span id="modalInitialDeposit">0</span>)</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="payment-methods">
+          <h3>Payment Method</h3>
+          <div class="payment-options">
+            <div class="payment-option">
+              <input type="radio" id="creditCard" name="paymentMethod" value="credit" checked>
+              <label for="creditCard">💳 Credit Card</label>
+            </div>
+            <div class="payment-option">
+              <input type="radio" id="paypal" name="paymentMethod" value="paypal">
+              <label for="paypal">📱 PayPal</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancelPayment">Cancel</button>
+        <button class="btn-primary" id="confirmPayment">Confirm Payment</button>
       </div>
     </div>
   </div>

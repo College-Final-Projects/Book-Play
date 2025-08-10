@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Pay Now Button</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .pay-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            margin: 10px;
+        }
+        .pay-btn:hover {
+            background: #0056b3;
+        }
+        .debug-output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Test Pay Now Button</h1>
+        
+        <div>
+            <button class="pay-btn" onclick="testPayNow()">Pay Now</button>
+            <button class="pay-btn" onclick="clearDebug()">Clear Debug</button>
+        </div>
+        
+        <h3>Debug Output:</h3>
+        <div id="debugOutput" class="debug-output">Click "Pay Now" to test...</div>
+        
+        <!-- Simple Modal -->
+        <div class="modal-overlay" id="testModal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <h2>Test Modal</h2>
+                <p>This is a test modal to verify the Pay Now button is working.</p>
+                <p>If you can see this, the button click is working!</p>
+                <button onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function log(message) {
+            const debugOutput = document.getElementById('debugOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            debugOutput.textContent += `[${timestamp}] ${message}\n`;
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+        }
+        
+        function clearDebug() {
+            document.getElementById('debugOutput').textContent = '';
+        }
+        
+        function testPayNow() {
+            log('🎯 Pay Now button clicked!');
+            log('🔍 Testing modal functionality...');
+            
+            const modal = document.getElementById('testModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                log('✅ Modal displayed successfully');
+            } else {
+                log('❌ Modal not found!');
+            }
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('testModal');
+            if (modal) {
+                modal.style.display = 'none';
+                log('🔒 Modal closed');
+            }
+        }
+        
+        // Initialize
+        log('🚀 Test page loaded');
+        log('Click the "Pay Now" button to test functionality');
+    </script>
+</body>
+</html>

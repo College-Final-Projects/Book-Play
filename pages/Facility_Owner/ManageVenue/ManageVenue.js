@@ -243,12 +243,6 @@ function initializeLocationSearch() {
     if (!locationInput || !searchResults) return;
     
     let searchTimeout;
-    let placesService;
-    
-    // Initialize Places service
-    if (map) {
-        placesService = new google.maps.places.PlacesService(map);
-    }
     
     // Handle input changes
     locationInput.addEventListener('input', function(e) {
@@ -278,23 +272,31 @@ function initializeLocationSearch() {
         }
     });
     
-    function searchPlaces(query) {
-        if (!placesService) return;
-        
-        showSearchLoading();
-        
-        const request = {
-            query: query,
-            fields: ['place_id', 'name', 'formatted_address', 'geometry']
-        };
-        
-        placesService.textSearch(request, (results, status) => {
-            if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-                displaySearchResults(results.slice(0, 5)); // Show max 5 results
+    async function searchPlaces(query) {
+        try {
+            showSearchLoading();
+            
+            // Use the new Places API with text search
+            const { Place } = await google.maps.importLibrary("places");
+            
+            const request = {
+                textQuery: query,
+                fields: ['id', 'displayName', 'formattedAddress', 'location'],
+                locationBias: map.getCenter(),
+                maxResultCount: 5
+            };
+            
+            const { places } = await Place.searchByText(request);
+            
+            if (places && places.length > 0) {
+                displaySearchResults(places);
             } else {
                 showNoResults();
             }
-        });
+        } catch (error) {
+            console.error('Error searching places:', error);
+            showNoResults();
+        }
     }
     
     function displaySearchResults(places) {
@@ -308,8 +310,8 @@ function initializeLocationSearch() {
             resultItem.innerHTML = `
                 <div class="search-result-icon">📍</div>
                 <div class="search-result-text">
-                    <div class="search-result-name">${place.name}</div>
-                    <div class="search-result-address">${place.formatted_address}</div>
+                    <div class="search-result-name">${place.displayName}</div>
+                    <div class="search-result-address">${place.formattedAddress}</div>
                 </div>
             `;
             
@@ -324,10 +326,10 @@ function initializeLocationSearch() {
     }
     
     function selectPlace(place) {
-        locationInput.value = place.formatted_address;
+        locationInput.value = place.formattedAddress;
         
-        if (place.geometry && place.geometry.location) {
-            const location = place.geometry.location;
+        if (place.location) {
+            const location = place.location;
             map.setCenter(location);
             map.setZoom(16);
             marker.position = location;
@@ -1158,23 +1160,32 @@ function setupSuggestSportModalEvents() {
     }
 }
 
+// Function to wait for Google Maps to load
+function waitForGoogleMaps(callback) {
+    if (typeof google !== "undefined" && google.maps && google.maps.places) {
+        callback();
+    } else {
+        setTimeout(() => waitForGoogleMaps(callback), 100);
+    }
+}
+
 // Call UI enhancements after DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     initializeUIEnhancements();
     
-    // Fallback initialization if Google Maps doesn't load
-    setTimeout(() => {
-        if (typeof google === 'undefined' || !google.maps) {
-            console.log('Google Maps not loaded, initializing without map');
-            initializeApp();
-        }
-    }, 3000);
+    // Wait for Google Maps to load before initializing
+    waitForGoogleMaps(() => {
+        initializeApp();
+    });
 });
 
-// Also initialize when window loads
+// Also initialize when window loads as fallback
 window.addEventListener('load', function() {
-    if (typeof google === 'undefined' || !google.maps) {
-        console.log('Google Maps not loaded on window load, initializing without map');
-        initializeApp();
-    }
+    // Additional fallback - try to initialize if not already done
+    setTimeout(() => {
+        if (typeof google !== 'undefined' && google.maps && !map) {
+            console.log('Fallback initialization triggered');
+            initializeApp();
+        }
+    }, 1000);
 });

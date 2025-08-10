@@ -305,6 +305,71 @@ input:checked + .slider:before {
     cursor: pointer;
 }
 
+/* Flatpickr Input Styling */
+.time-slot .flatpickr-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: var(--text-main);
+    flex: 1;
+    font-weight: 500;
+    min-width: 80px;
+    padding: 8px 12px;
+    border-radius: var(--radius-small);
+    transition: var(--transition);
+}
+
+.time-slot .flatpickr-input:focus {
+    background: rgba(30, 144, 255, 0.05);
+    box-shadow: 0 0 0 2px rgba(30, 144, 255, 0.2);
+}
+
+.time-slot .flatpickr-input::placeholder {
+    color: var(--text-light);
+    font-weight: 400;
+}
+
+/* Flatpickr Calendar Styling */
+.flatpickr-calendar {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 25px var(--shadow-light), 0 4px 12px var(--shadow-medium);
+    backdrop-filter: blur(12px);
+}
+
+.flatpickr-time {
+    border-top: 1px solid var(--border-subtle);
+}
+
+.flatpickr-time input {
+    background: transparent;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.flatpickr-time input:hover {
+    background: rgba(30, 144, 255, 0.05);
+}
+
+.flatpickr-time input:focus {
+    background: rgba(30, 144, 255, 0.1);
+    box-shadow: 0 0 0 2px rgba(30, 144, 255, 0.3);
+}
+
+.flatpickr-am-pm {
+    background: var(--primary);
+    color: white;
+    border-radius: var(--radius-small);
+    padding: 4px 8px;
+    font-weight: 500;
+}
+
+.flatpickr-am-pm:hover {
+    background: var(--secondary);
+}
+
 .time-slot .delete-slot {
     background: rgba(239, 68, 68, 0.1);
     color: #dc2626;
@@ -458,6 +523,32 @@ input:checked + .slider:before {
     background: var(--text-light);
     color: white;
     cursor: not-allowed;
+}
+
+.add-friend-btn.already-friend {
+    background: #10b981;
+    color: white;
+    cursor: not-allowed;
+    border: 1px solid #10b981;
+}
+
+.add-friend-btn.already-friend:hover {
+    background: #10b981;
+    transform: none;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+
+.add-friend-btn.request-sent {
+    background: var(--text-light);
+    color: white;
+    cursor: not-allowed;
+    border: 1px solid var(--text-light);
+}
+
+.add-friend-btn.request-sent:hover {
+    background: var(--text-light);
+    transform: none;
+    box-shadow: 0 2px 8px rgba(100, 116, 139, 0.25);
 }
 
 .connect-btn {
@@ -652,5 +743,177 @@ input:checked + .slider:before {
     .add-friend-btn,
     .connect-btn {
         width: 100%;
+    }
+}
+
+/* Loading State */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    color: var(--text-muted);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.loading p {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.loading p::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-subtle);
+    border-top: 2px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Location Notice */
+.location-notice {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-main);
+    padding: 0;
+    border-radius: var(--radius);
+    box-shadow: 0 8px 25px var(--shadow-strong);
+    z-index: 1000;
+    max-width: 380px;
+    animation: slideInRight 0.3s ease;
+    backdrop-filter: blur(12px);
+}
+
+.location-notice.permission-request {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border: none;
+}
+
+.location-notice.success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+}
+
+.location-notice.error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border: none;
+}
+
+.location-notice-content {
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.location-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.location-text {
+    flex: 1;
+}
+
+.location-text h4 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.location-text p {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.location-benefits {
+    font-size: 13px !important;
+    opacity: 0.9;
+    margin: 4px 0 !important;
+}
+
+.location-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.location-actions button {
+    padding: 8px 16px;
+    border-radius: var(--radius-small);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    flex: 1;
+}
+
+.btn-primary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-primary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+/* For non-gradient notices (default state) */
+.location-notice:not(.permission-request):not(.success):not(.error) .btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.location-notice:not(.permission-request):not(.success):not(.error) .btn-primary:hover {
+    background: var(--secondary);
+}
+
+.location-notice:not(.permission-request):not(.success):not(.error) .btn-secondary {
+    background: var(--border-subtle);
+    color: var(--text-main);
+}
+
+.location-notice:not(.permission-request):not(.success):not(.error) .btn-secondary:hover {
+    background: var(--border-medium);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
     }
 }

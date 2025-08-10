@@ -19,7 +19,7 @@
 
 // Start session and include database connection
 session_start();
-require_once '../../../db.php'; 
+require_once '../../../db.php';
 
 // Initialize response array
 $response = ['success' => false, 'message' => ''];

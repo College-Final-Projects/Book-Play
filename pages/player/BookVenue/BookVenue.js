@@ -58,11 +58,11 @@ function filterVenuesBySports(sports = [], searchTerm = "") {
 }
 
 function sortVenues(venues, sortOptions) {
-  console.log('Sorting venues with options:', sortOptions);
-  console.log('Before filtering - venues count:', venues.length);
+  console.log('🔄 Sorting venues with options:', sortOptions);
+  console.log('📊 Before filtering - venues count:', venues.length);
   
   // Debug: Log first few venues to check rating data
-  console.log('Sample venue data:', venues.slice(0, 3).map(v => ({
+  console.log('🔍 Sample venue data:', venues.slice(0, 3).map(v => ({
     name: v.place_name,
     rating: v.avg_rating,
     price: v.price,
@@ -72,7 +72,7 @@ function sortVenues(venues, sortOptions) {
   // First filter by availability if needed
   if (sortOptions.available === "Available") {
     venues = venues.filter(v => v.is_available == 1);
-    console.log('After availability filter - venues count:', venues.length);
+    console.log('✅ After availability filter - venues count:', venues.length);
   }
 
   // Sort venues based on selected options
@@ -97,13 +97,11 @@ function sortVenues(venues, sortOptions) {
       const ratingA = parseFloat(a.avg_rating) || 0;
       const ratingB = parseFloat(b.avg_rating) || 0;
       comparison = ratingB - ratingA;
-      console.log(`Rating comparison: ${ratingA} vs ${ratingB} = ${comparison}`);
       if (comparison !== 0) return comparison;
     } else if (sortOptions.rating === "rating-low") {
       const ratingA = parseFloat(a.avg_rating) || 0;
       const ratingB = parseFloat(b.avg_rating) || 0;
       comparison = ratingA - ratingB;
-      console.log(`Rating comparison: ${ratingA} vs ${ratingB} = ${comparison}`);
       if (comparison !== 0) return comparison;
     }
 
@@ -123,7 +121,16 @@ function sortVenues(venues, sortOptions) {
     return 0;
   });
 
-  console.log('After sorting - venues count:', venues.length);
+  console.log('✅ After sorting - venues count:', venues.length);
+  
+  // Log final sorted order for debugging
+  console.log('📋 Final sorted order (first 5):', venues.slice(0, 5).map(v => ({
+    name: v.place_name,
+    price: `₪${v.price}`,
+    rating: v.avg_rating || 0,
+    distance: v.distance ? `${v.distance.toFixed(2)}km` : 'N/A'
+  })));
+  
   return venues;
 }
 
@@ -225,6 +232,13 @@ function testRatingData() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Debug: Check initial radio button states
+  console.log('🔍 Initial radio button states:');
+  console.log('Available:', document.querySelector("input[name='Available-sort']:checked")?.id);
+  console.log('Price:', document.querySelector("input[name='price-sort']:checked")?.id);
+  console.log('Rating:', document.querySelector("input[name='rating-sort']:checked")?.id);
+  console.log('Distance:', document.querySelector("input[name='distance-sort']:checked")?.id);
+  
   waitForGoogleMaps(() => {
     filterVenuesBySports([]);
   });
@@ -233,7 +247,8 @@ document.addEventListener("DOMContentLoaded", () => {
   sortGroups.forEach(group => {
     document.querySelectorAll(`input[name='${group}']`).forEach(radio => {
       radio.addEventListener("change", () => {
-        console.log(`Radio changed: ${group} - ${radio.id}`);
+        console.log(`🔄 Radio changed: ${group} - ${radio.id}`);
+        
         // Only resort existing data, don't make new API call
         if (currentVenuesData.length > 0) {
           const sortOptions = {
@@ -243,14 +258,29 @@ document.addEventListener("DOMContentLoaded", () => {
             distance: document.querySelector("input[name='distance-sort']:checked")?.id
           };
           
-          console.log('Sorting existing data with options:', sortOptions);
-          console.log('Current venues data length:', currentVenuesData.length);
+          console.log('🔄 Sorting existing data with options:', sortOptions);
+          console.log('📊 Current venues data length:', currentVenuesData.length);
           
-          // Test rating data before sorting
-          testRatingData();
+          // Show before/after sorting for debugging
+          const beforeSorting = [...currentVenuesData].slice(0, 3).map(v => ({
+            name: v.place_name,
+            price: v.price,
+            rating: v.avg_rating
+          }));
+          console.log('📋 Before sorting (first 3):', beforeSorting);
           
           const sortedVenues = sortVenues([...currentVenuesData], sortOptions);
+          
+          const afterSorting = sortedVenues.slice(0, 3).map(v => ({
+            name: v.place_name,
+            price: v.price,
+            rating: v.avg_rating
+          }));
+          console.log('📋 After sorting (first 3):', afterSorting);
+          
           renderVenues(sortedVenues);
+        } else {
+          console.log('⚠️ No venues data available for sorting');
         }
       });
     });

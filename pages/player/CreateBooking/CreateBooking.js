@@ -9,8 +9,13 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function initializeDateTimePickers() {
+  // Calculate minimum date (2 days from today)
+  const today = new Date();
+  const minBookingDate = new Date(today);
+  minBookingDate.setDate(today.getDate() + 2);
+  
   startDatePicker = flatpickr("#startDate", {
-    minDate: "today",
+    minDate: minBookingDate,
     dateFormat: "Y-m-d",
     onChange: ([selectedDate]) => {
       updateEndTimeMinTime();
@@ -52,15 +57,28 @@ function setupEventListeners() {
   document.getElementById('bookingForm').addEventListener('submit', handleFormSubmission);
 }
 
-const facilityId = new URLSearchParams(window.location.search).get("facility_id");
+const facilityId = new URLSearchParams(window.location.search).get("facilities_id");
+
+console.log('🔍 CreateBooking - URL parameters:', Object.fromEntries(new URLSearchParams(window.location.search)));
+console.log('🏢 CreateBooking - Facility ID:', facilityId);
 
 if (facilityId) {
+  console.log('✅ CreateBooking - Fetching venue data for facility ID:', facilityId);
   fetch(`CreateBookingAPI.php?facility_id=${facilityId}`)
     .then(res => res.json())
     .then(data => {
+      console.log('📊 CreateBooking - API response:', data);
+      
       if (data.success) {
         const facility = data.facility;
         window.selectedFacilityPrice = facility.price;
+
+        console.log('🏢 CreateBooking - Venue data loaded:', {
+          name: facility.place_name,
+          price: facility.price,
+          location: facility.location,
+          image: facility.image_url
+        });
 
         document.querySelector(".venue-image img").src = `../../../uploads/venues/${facility.image_url}` || "../../../uploads/venues/default.jpg";
         document.querySelector(".venue-title").textContent = facility.place_name;
@@ -69,11 +87,18 @@ if (facilityId) {
 
         document.getElementById("summaryVenue").textContent = facility.place_name;
         document.getElementById("summaryRate").textContent = `₪${facility.price}/hour`;
+        
+        console.log('✅ CreateBooking - Venue UI updated successfully');
       } else {
-        console.warn("Facility not found.");
+        console.error('❌ CreateBooking - Facility not found:', data.message);
       }
     })
-    .catch(err => console.error("Failed to fetch facility", err));
+    .catch(err => {
+      console.error("❌ CreateBooking - Failed to fetch facility:", err);
+    });
+} else {
+  console.error('❌ CreateBooking - No facility ID found in URL parameters');
+  console.log('🔍 CreateBooking - Current URL:', window.location.href);
 }
 
 function toggleGroupType() {
@@ -127,6 +152,21 @@ function validateForm() {
   const startDate = document.getElementById('startDate').value;
   const startTime = document.getElementById('startTime').value;
   const endTime = document.getElementById('endTime').value;
+
+  // Check if booking date is at least 2 days from today
+  const today = new Date();
+  const minBookingDate = new Date(today);
+  minBookingDate.setDate(today.getDate() + 2);
+  minBookingDate.setHours(0, 0, 0, 0); // Set to start of day for comparison
+  
+  const selectedDate = new Date(startDate);
+  selectedDate.setHours(0, 0, 0, 0); // Set to start of day for comparison
+  
+  if (selectedDate < minBookingDate) {
+    alert("Bookings must be made at least 2 days in advance. Please select a date from " + 
+          minBookingDate.toLocaleDateString() + " onwards.");
+    return false;
+  }
 
   const now = new Date();
   const selectedStartFull = new Date(`${startDate}T${startTime}`);

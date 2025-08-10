@@ -1,4 +1,22 @@
-fetchBookingDetails();
+// Initialize when page loads
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("✅ BookingDetails.js is loaded");
+  
+  // Initialize global variables
+  window.isPrivate = false;
+  window.isEditingPrices = false;
+  window.timeRemaining = 6330; // 1:45:30
+  window.originalPrices = {};
+  window.players = [];
+  window.currentGroupId = null;
+  
+  // Initialize UI components
+  initializeScrolling();
+  initializeEditPrices();
+  
+  // Fetch booking data first, then start countdown
+  fetchBookingDetails();
+});
 
 function fetchBookingDetails() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -9,31 +27,52 @@ function fetchBookingDetails() {
     return;
   }
 
+  console.log("🔍 Fetching booking details for ID:", bookingId);
+
   fetch(`getBookingDetails.php?booking_id=${bookingId}`)
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
     .then(data => {
+      console.log("📊 Booking data received:", data);
+      
       if (data.error) {
         showNotification(data.error, "error");
         return;
       }
 
-      window.players = data.players; // ✅ Set players globally
-      window.currentGroupId = data.booking.group_id; // ✅ Set group ID globally
+        // Set global variables
+  window.players = data.players || [];
+  window.currentGroupId = data.booking?.group_id || null;
+  window.currentBookingId = data.booking?.booking_id || null;
+  window.totalVenuePrice = data.booking?.total_price || 0;
+  window.countdownData = data.countdown || null;
+  window.currentUserRole = data.current_user?.role || 'guest';
 
+      // Debug countdown data
+      console.log('🔍 Countdown data received:', window.countdownData);
+      console.log('👤 Current user role:', window.currentUserRole);
+      console.log('👤 Current user data:', data.current_user);
+      
+      // Populate UI
       populateBookingDetails(data.booking);
       populatePlayerList(data.players);
       
-      // ✅ Initialize privacy toggle after data is loaded
+      // Initialize privacy toggle after data is loaded
       initializePrivacyToggle();
       
-      // ✅ Test if privacy toggle can be manually enabled
-      setTimeout(() => {
-        testPrivacyToggle();
-      }, 1000);
+      // Initialize action buttons based on user role
+      initializeActionButtons();
+      
+      // Start countdown timer with fetched data
+      startCountdown();
     })
     .catch(err => {
-      console.error(err);
-      showNotification("Failed to fetch booking details", "error");
+      console.error("❌ Failed to fetch booking details:", err);
+      showNotification("Failed to fetch booking details: " + err.message, "error");
     });
 }
 
@@ -55,6 +94,8 @@ function populateBookingDetails(booking) {
   const privacyToggle = document.getElementById("privacyToggle");
   const passwordSection = document.getElementById("passwordSection");
   const roomPassword = document.getElementById("roomPassword");
+  const roomPasswordInput = document.getElementById("roomPasswordInput");
+  const editPasswordBtn = document.getElementById("editPasswordBtn");
 
   if (booking.privacy === "private") {
     window.isPrivate = true;
@@ -62,11 +103,22 @@ function populateBookingDetails(booking) {
     privacyToggle.classList.add("private");
     passwordSection.style.display = "block";
     roomPassword.textContent = booking.group_password;
+    roomPasswordInput.value = booking.group_password;
+    
+    // Hide edit password button initially (will be shown in initializePrivacyToggle if user is host)
+    if (editPasswordBtn) {
+      editPasswordBtn.style.display = "none";
+    }
   } else {
     window.isPrivate = false;
     privacyToggle.innerHTML = `<span class="privacy-status">Public</span><span class="privacy-icon">🌐</span>`;
     privacyToggle.classList.remove("private");
     passwordSection.style.display = "none";
+    
+    // Hide edit password button for public rooms
+    if (editPasswordBtn) {
+      editPasswordBtn.style.display = "none";
+    }
   }
 }
 
@@ -83,7 +135,7 @@ function populatePlayerList(players) {
   uniquePlayers.forEach(p => {
     console.log("🎯 Adding player card", p.username);
     const isHost = p.is_host == "1";
-    const isCurrentUser = p.username === currentUsername;
+    const isCurrentUser = p.username === window.currentUsername;
 
     const playerCard = document.createElement("div");
     playerCard.className = "player-card";
@@ -107,22 +159,24 @@ function populatePlayerList(players) {
 
     // Buttons
     let buttonsHTML = "";
-    if (!isCurrentUser && currentUsername === getHostUsername(uniquePlayers)) {
+    if (!isCurrentUser && window.currentUsername === getHostUsername(uniquePlayers)) {
       buttonsHTML += `<button class="switch-host-btn">👑 Make Host</button>`;
     }
     if (!isCurrentUser) {
       buttonsHTML += `<button class="friend-btn">👥 Add Friend</button>`;
     }
+    
+
 
     playerCard.innerHTML = `
       ${badgeHTML}
       <img class="player-image" src="${p.user_image}" alt="${p.username}" data-player="${p.username}">
       <div class="player-name">${p.username}</div>
-      <div class="player-status">${p.payment_status === "paid" ? "✅ Paid" : "💸 Not Paid"}</div>
+      <div class="player-status">₪${p.payment_amount || 0}</div>
       <div class="payment-amount" data-player="${p.username}">
-        <span class="amount-value">${p.price}</span> 
+        <span class="amount-value">${p.required_payment || 0}</span> 
       </div>
-      <input class="payment-input" data-player="${p.username}" style="display: none;" value="${p.price}" />
+      <input class="payment-input" data-player="${p.username}" style="display: none;" value="${p.required_payment || 0}" />
       <div class="player-actions">${buttonsHTML}</div>
     `;
 
@@ -133,9 +187,9 @@ function populatePlayerList(players) {
   const hostControls = document.getElementById("hostControls");
   const currentHost = getHostUsername(uniquePlayers);
   
-  console.log("🎯 Host controls check:", { currentUsername, currentHost, isHost: currentUsername === currentHost });
+  console.log("🎯 Host controls check:", { currentUsername: window.currentUsername, currentHost, isHost: window.currentUsername === currentHost });
   
-  if (currentHost === currentUsername) {
+  if (currentHost === window.currentUsername) {
     hostControls.style.display = "flex";
   } else {
     hostControls.style.display = "none";
@@ -149,132 +203,335 @@ function getHostUsername(players) {
 }
 
 
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("✅ BookingDetails.js is loaded");
-  
-  // Initialize variables (move to global scope)
-  window.isPrivate = false;
-  window.isEditingPrices = false;
-  window.timeRemaining = 6330; // 1:45:30
-  window.originalPrices = {};
-  window.currentHost = "1";
-  
-  // Initialize all functions (except privacy toggle - called after data load)
-  initializeScrolling();
-  initializeEditPrices();
-  initializePlayerActions();
-  initializeActionButtons();
-  startCountdown();
-});
+// Removed duplicate initialization - using the one at the top
 
 function initializePrivacyToggle() {
   const privacyToggle = document.getElementById('privacyToggle');
   const passwordSection = document.getElementById('passwordSection');
   const copyPasswordBtn = document.getElementById('copyPassword');
+  const editPasswordBtn = document.getElementById('editPasswordBtn');
+  const savePasswordBtn = document.getElementById('savePasswordBtn');
+  const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
 
   if (!privacyToggle) {
     console.log("❌ Privacy toggle element not found");
     return;
   }
 
-  // ✅ Check if current user is the host
-  const isHost = window.players && window.players.find(p => 
-    p.username === currentUsername && p.is_host == "1"
-  );
+  // Check if current user is the host
+  const currentUser = window.players?.find(p => p.username === window.currentUsername);
+  const isHost = currentUser && currentUser.is_host == "1";
 
-  console.log("🔍 Host check:", { 
-    currentUsername, 
-    players: window.players, 
+  console.log("🔍 Privacy toggle initialization:", { 
+    currentUsername: window.currentUsername, 
+    currentUser,
     isHost,
-    playersLength: window.players ? window.players.length : 0,
-    privacyToggleFound: !!privacyToggle
+    playersCount: window.players?.length || 0
   });
 
-  // If not host, disable
+  // Configure toggle based on host status
   if (!isHost) {
     console.log("❌ Not host - disabling privacy toggle");
     privacyToggle.disabled = true;
     privacyToggle.style.cursor = "not-allowed";
     privacyToggle.style.opacity = "0.6";
-    privacyToggle.style.pointerEvents = "none";
+    privacyToggle.title = "Only the host can change privacy settings";
+    
+    // Hide edit password button for non-hosts
+    if (editPasswordBtn) {
+      editPasswordBtn.style.display = "none";
+    }
     return;
   }
 
   console.log("✅ Is host - enabling privacy toggle");
-
-  // ✅ Enable the toggle for host
+  
+  // Enable toggle for host
   privacyToggle.disabled = false;
   privacyToggle.style.cursor = "pointer";
   privacyToggle.style.opacity = "1";
-  privacyToggle.style.pointerEvents = "auto";
+  privacyToggle.title = "Click to toggle privacy";
 
-  // ✅ Remove any existing event listeners to prevent duplicates
-  const newToggle = privacyToggle.cloneNode(true);
-  privacyToggle.parentNode.replaceChild(newToggle, privacyToggle);
+  // Show edit password button for host (only when room is private)
+  if (editPasswordBtn && window.isPrivate) {
+    editPasswordBtn.style.display = "inline-block";
+  }
+
+  // Add click handler (remove existing first to prevent duplicates)
+  privacyToggle.replaceWith(privacyToggle.cloneNode(true));
+  const newToggle = document.getElementById('privacyToggle');
   
-  // ✅ Get the new reference
-  const freshToggle = document.getElementById('privacyToggle');
+  newToggle.addEventListener('click', handlePrivacyToggle);
 
-  // ✅ Host can toggle
-  freshToggle.addEventListener('click', function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log("🔒 Privacy toggle clicked");
-    
-    window.isPrivate = !window.isPrivate;
-    const newPrivacy = window.isPrivate ? 'private' : 'public';
-
-    if (window.isPrivate) {
-      this.innerHTML = '<span class="privacy-status">Private</span><span class="privacy-icon">🔒</span>';
-      this.classList.add('private');
-      passwordSection.style.display = 'block';
-      showNotification('Room is now private. Password generated!', 'success');
-    } else {
-      this.innerHTML = '<span class="privacy-status">Public</span><span class="privacy-icon">🌐</span>';
-      this.classList.remove('private');
-      passwordSection.style.display = 'none';
-      showNotification('Room is now public. Anyone can join!', 'info');
-    }
-
-    // notify backend about the change
-    if (window.currentGroupId) {
-      const formData = new URLSearchParams();
-      formData.append('group_id', window.currentGroupId);
-      formData.append('privacy', newPrivacy);
-
-      fetch('updatePrivacy.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData.toString()
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (!data.success) {
-            showNotification(data.error || 'Failed to update privacy', 'error');
-          } else {
-            console.log("✅ Privacy updated successfully");
-          }
-        })
-        .catch((error) => {
-          console.error("❌ Privacy update failed:", error);
-          showNotification('Failed to update privacy', 'error');
+  // Initialize copy password button
+  if (copyPasswordBtn) {
+    copyPasswordBtn.addEventListener('click', function () {
+      const passwordElement = document.getElementById('roomPassword');
+      const passwordInput = document.getElementById('roomPasswordInput');
+      const password = passwordElement.style.display === 'none' ? 
+        passwordInput.value : passwordElement.textContent;
+      
+      if (password) {
+        navigator.clipboard.writeText(password).then(() => {
+          showNotification('Password copied to clipboard!', 'success');
+          this.textContent = '✅ Copied';
+          setTimeout(() => {
+            this.innerHTML = '📋 Copy';
+          }, 2000);
+        }).catch(() => {
+          showNotification('Failed to copy password', 'error');
         });
-    }
-  });
-
-  copyPasswordBtn?.addEventListener('click', function () {
-    const password = document.getElementById('roomPassword').textContent;
-    navigator.clipboard.writeText(password).then(() => {
-      showNotification('Password copied to clipboard!', 'success');
-      this.textContent = '✅ Copied';
-      setTimeout(() => {
-        this.innerHTML = '📋 Copy';
-      }, 2000);
+      }
     });
+  }
+
+  // Initialize password editing buttons (host only)
+  if (isHost) {
+    initializePasswordEditing();
+  }
+}
+
+function handlePrivacyToggle(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  console.log("🔒 Privacy toggle clicked, current state:", window.isPrivate);
+  
+  const passwordSection = document.getElementById('passwordSection');
+  const editPasswordBtn = document.getElementById('editPasswordBtn');
+  const newPrivacy = window.isPrivate ? 'public' : 'private';
+  
+  // Update UI immediately for better UX
+  window.isPrivate = !window.isPrivate;
+  
+  if (window.isPrivate) {
+    this.innerHTML = '<span class="privacy-status">Private</span><span class="privacy-icon">🔒</span>';
+    this.classList.add('private');
+    passwordSection.style.display = 'block';
+    
+    // Show edit password button for host
+    if (editPasswordBtn) {
+      editPasswordBtn.style.display = 'inline-block';
+    }
+    
+    showNotification('Room is now private!', 'success');
+  } else {
+    this.innerHTML = '<span class="privacy-status">Public</span><span class="privacy-icon">🌐</span>';
+    this.classList.remove('private');
+    passwordSection.style.display = 'none';
+    
+    // Hide edit password button when public
+    if (editPasswordBtn) {
+      editPasswordBtn.style.display = 'none';
+    }
+    
+    showNotification('Room is now public!', 'info');
+  }
+
+  // Update backend
+  updatePrivacyOnServer(newPrivacy);
+}
+
+function updatePrivacyOnServer(privacy) {
+  if (!window.currentGroupId) {
+    console.error("❌ No group ID available");
+    showNotification('Error: No group ID found', 'error');
+    return;
+  }
+
+  const formData = new URLSearchParams();
+  formData.append('group_id', window.currentGroupId);
+  formData.append('privacy', privacy);
+
+  console.log("🔄 Updating privacy on server:", { groupId: window.currentGroupId, privacy });
+
+  fetch('updatePrivacy.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData.toString()
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    return res.json();
+  })
+  .then(data => {
+    console.log("📊 Privacy update response:", data);
+    if (!data.success) {
+      showNotification(data.error || 'Failed to update privacy', 'error');
+      // Revert UI changes on failure
+      window.isPrivate = !window.isPrivate;
+      initializePrivacyToggle();
+    } else {
+      console.log("✅ Privacy updated successfully on server");
+    }
+  })
+  .catch(error => {
+    console.error("❌ Privacy update failed:", error);
+    showNotification('Failed to update privacy: ' + error.message, 'error');
+    // Revert UI changes on failure
+    window.isPrivate = !window.isPrivate;
+    initializePrivacyToggle();
   });
 }
 
+function initializePasswordEditing() {
+  const editPasswordBtn = document.getElementById('editPasswordBtn');
+  const savePasswordBtn = document.getElementById('savePasswordBtn');
+  const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
 
+  // Remove existing listeners to prevent duplicates
+  if (editPasswordBtn) {
+    editPasswordBtn.replaceWith(editPasswordBtn.cloneNode(true));
+    const newEditBtn = document.getElementById('editPasswordBtn');
+    newEditBtn.addEventListener('click', handleEditPassword);
+  }
+
+  if (savePasswordBtn) {
+    savePasswordBtn.replaceWith(savePasswordBtn.cloneNode(true));
+    const newSaveBtn = document.getElementById('savePasswordBtn');
+    newSaveBtn.addEventListener('click', handleSavePassword);
+  }
+
+  if (cancelPasswordBtn) {
+    cancelPasswordBtn.replaceWith(cancelPasswordBtn.cloneNode(true));
+    const newCancelBtn = document.getElementById('cancelPasswordBtn');
+    newCancelBtn.addEventListener('click', handleCancelPasswordEdit);
+  }
+}
+
+function handleEditPassword() {
+  console.log("✏️ Edit password clicked");
+  
+  const passwordElement = document.getElementById('roomPassword');
+  const passwordInput = document.getElementById('roomPasswordInput');
+  const editBtn = document.getElementById('editPasswordBtn');
+  const saveBtn = document.getElementById('savePasswordBtn');
+  const cancelBtn = document.getElementById('cancelPasswordBtn');
+
+  // Switch to edit mode
+  passwordInput.value = passwordElement.textContent;
+  passwordElement.style.display = 'none';
+  passwordInput.style.display = 'inline-block';
+  passwordInput.readOnly = false;
+  passwordInput.focus();
+  passwordInput.select();
+
+  // Show/hide buttons
+  editBtn.style.display = 'none';
+  saveBtn.style.display = 'inline-block';
+  cancelBtn.style.display = 'inline-block';
+
+  // Store original password for cancel functionality
+  window.originalPassword = passwordElement.textContent;
+
+  // Add keyboard support
+  passwordInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSavePassword();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      handleCancelPasswordEdit();
+    }
+  });
+}
+
+function handleSavePassword() {
+  if (!window.currentGroupId) {
+    showNotification('Error: No group ID found', 'error');
+    return;
+  }
+
+  const passwordInput = document.getElementById('roomPasswordInput');
+  const newPassword = passwordInput.value.trim();
+
+  if (!newPassword) {
+    showNotification('Password cannot be empty', 'error');
+    return;
+  }
+
+  if (newPassword.length < 4) {
+    showNotification('Password must be at least 4 characters long', 'error');
+    return;
+  }
+
+  console.log("💾 Saving password:", newPassword);
+
+  // Show loading state
+  const saveBtn = document.getElementById('savePasswordBtn');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '⏳ Saving...';
+  }
+
+  // Call backend to save custom password
+  const formData = new URLSearchParams();
+  formData.append('group_id', window.currentGroupId);
+  formData.append('action', 'save_custom_password');
+  formData.append('password', newPassword);
+
+  fetch('updatePrivacy.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData.toString()
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    return res.json();
+  })
+  .then(data => {
+    console.log("📊 Save password response:", data);
+    
+    if (data.success) {
+      // Update password display
+      const passwordElement = document.getElementById('roomPassword');
+      passwordElement.textContent = newPassword;
+      exitPasswordEditMode();
+      showNotification('Password saved successfully!', 'success');
+    } else {
+      throw new Error(data.error || 'Failed to save password');
+    }
+  })
+  .catch(error => {
+    console.error("❌ Save password failed:", error);
+    showNotification('Failed to save password: ' + error.message, 'error');
+  })
+  .finally(() => {
+    // Restore save button
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '💾 Save';
+    }
+  });
+}
+
+function handleCancelPasswordEdit() {
+  console.log("❌ Cancel password edit");
+  exitPasswordEditMode();
+  showNotification('Password edit cancelled', 'info');
+}
+
+function exitPasswordEditMode() {
+  const passwordElement = document.getElementById('roomPassword');
+  const passwordInput = document.getElementById('roomPasswordInput');
+  const editBtn = document.getElementById('editPasswordBtn');
+  const saveBtn = document.getElementById('savePasswordBtn');
+  const cancelBtn = document.getElementById('cancelPasswordBtn');
+
+  // Switch back to display mode
+  passwordElement.style.display = 'inline';
+  passwordInput.style.display = 'none';
+  passwordInput.readOnly = true;
+
+  // Show/hide buttons
+  editBtn.style.display = 'inline-block';
+  saveBtn.style.display = 'none';
+  cancelBtn.style.display = 'none';
+}
 
 function initializeScrolling() {
   const scrollContainer = document.getElementById('playersScroll');
@@ -337,11 +594,18 @@ function initializePlayerActions() {
       });
     }
   });
+  
+
 }
 
 function initializeActionButtons() {
+  console.log("🔧 Initializing action buttons...");
+  console.log("👤 Current user role:", window.currentUserRole);
+  console.log("👁️ View only mode:", window.viewOnly);
+  
   // Hide action buttons if in view-only mode (from JoinGroup image click)
   if (window.viewOnly) {
+    console.log("🚫 Hiding buttons due to view-only mode");
     const actionButtons = document.querySelector('.action-buttons');
     if (actionButtons) {
       actionButtons.style.display = 'none';
@@ -359,70 +623,202 @@ function initializeActionButtons() {
     return;
   }
   
-  document.querySelector('.pay-btn')?.addEventListener('click', handlePayNow);
-  document.querySelector('.cancel-btn')?.addEventListener('click', handleCancelBooking);
+  // Get current user role from the fetched data
+  const currentUserRole = window.currentUserRole || 'guest';
+  console.log("🎭 Setting up buttons for role:", currentUserRole);
+  
+  const actionButtons = document.querySelector('.action-buttons');
+  const payBtn = document.querySelector('.pay-btn');
+  const cancelBtn = document.querySelector('.cancel-btn');
+  
+  console.log("🔍 Found elements:", {
+    actionButtons: !!actionButtons,
+    payBtn: !!payBtn,
+    cancelBtn: !!cancelBtn
+  });
+  
+  if (actionButtons && payBtn && cancelBtn) {
+    // Make sure buttons are visible first
+    actionButtons.style.display = 'flex';
+    
+    // Clear existing event listeners by cloning the buttons
+    const newPayBtn = payBtn.cloneNode(true);
+    const newCancelBtn = cancelBtn.cloneNode(true);
+    payBtn.parentNode.replaceChild(newPayBtn, payBtn);
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+    
+    // Set up buttons based on user role
+    if (currentUserRole === 'host') {
+      console.log("👑 Setting up HOST buttons");
+      // Host sees "Cancel Booking" and "Pay Now"
+      newCancelBtn.textContent = 'Cancel Booking';
+      newCancelBtn.className = 'cancel-btn';
+      newCancelBtn.addEventListener('click', handleCancelBooking);
+      
+      newPayBtn.textContent = 'Pay Now';
+      newPayBtn.className = 'pay-btn';
+      console.log("🔗 Adding click listener to Pay Now button (HOST)");
+              newPayBtn.addEventListener('click', function(e) {
+          console.log("🎯 Pay Now button clicked via event listener (HOST)");
+          handlePayNow();
+        });
+      
+    } else if (currentUserRole === 'member') {
+      console.log("👥 Setting up MEMBER buttons");
+      // Group member sees "Leave Group" and "Pay Now"
+      newCancelBtn.textContent = 'Leave Group';
+      newCancelBtn.className = 'leave-btn';
+      newCancelBtn.addEventListener('click', handleLeaveGroup);
+      
+      newPayBtn.textContent = 'Pay Now';
+      newPayBtn.className = 'pay-btn';
+      console.log("🔗 Adding click listener to Pay Now button (MEMBER)");
+              newPayBtn.addEventListener('click', function(e) {
+          console.log("🎯 Pay Now button clicked via event listener (MEMBER)");
+          handlePayNow();
+        });
+      
+    } else {
+      console.log("🚫 Hiding buttons for GUEST role");
+      // Guest sees no action buttons
+      actionButtons.style.display = 'none';
+    }
+  } else {
+    console.error("❌ Could not find required button elements");
+  }
 }
 
-function switchHost(newHostId) {
-  const currentHostCard = document.querySelector('.host-player');
-  if (currentHostCard) {
-    currentHostCard.classList.remove('host-player');
-    currentHostCard.querySelector('.host-badge')?.remove();
-    
-    // Add switch-host button back to old host
-    const playerActions = currentHostCard.querySelector('.player-actions');
-    const friendBtn = playerActions.querySelector('.friend-btn');
-    
-    if (!playerActions.querySelector('.switch-host-btn')) {
-      const switchBtn = document.createElement('button');
-      switchBtn.className = 'switch-host-btn';
-      switchBtn.innerHTML = '👑 Make Host';
-      switchBtn.addEventListener('click', function() {
-        const playerId = this.closest('.player-card').querySelector('.player-image').dataset.player;
-        switchHost(playerId);
-      });
-      playerActions.insertBefore(switchBtn, friendBtn);
-    }
-    
-    friendBtn.disabled = false;
-    friendBtn.innerHTML = '👥 Add Friend';
+function switchHost(newHostUsername) {
+  if (!window.currentGroupId) {
+    showNotification('Error: No group ID found', 'error');
+    return;
   }
 
-  const newHostCard = document.querySelector(`[data-player="${newHostId}"]`).closest('.player-card');
+  console.log("👑 Switching host to:", newHostUsername);
   
-  if (newHostCard) {
-    newHostCard.classList.add('host-player');
-
-    const hostBadge = document.createElement('div');
-    hostBadge.className = 'host-badge';
-    hostBadge.textContent = 'HOST (YOU)';
-    newHostCard.appendChild(hostBadge);
-
-    // Remove switch-host button and disable friend button
-    const switchBtn = newHostCard.querySelector('.switch-host-btn');
-    if (switchBtn) switchBtn.remove();
-    
-    const friendBtn = newHostCard.querySelector('.friend-btn');
-    friendBtn.disabled = true;
-    friendBtn.innerHTML = '👤 You';
-
-    showNotification('You are now the host!', 'success');
+  // Show loading state
+  const switchBtn = document.querySelector(`[data-player="${newHostUsername}"]`)
+    ?.closest('.player-card')?.querySelector('.switch-host-btn');
+  
+  if (switchBtn) {
+    switchBtn.disabled = true;
+    switchBtn.innerHTML = '⏳ Switching...';
   }
+
+  // Call backend API
+  const formData = new URLSearchParams();
+  formData.append('group_id', window.currentGroupId);
+  formData.append('username', newHostUsername);
+
+  fetch('makeHost.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData.toString()
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    return res.json();
+  })
+  .then(data => {
+    console.log("📊 Switch host response:", data);
+    
+    if (data.success) {
+      // Update local data
+      window.players.forEach(player => {
+        player.is_host = (player.username === newHostUsername) ? "1" : "0";
+      });
+      
+      // Re-render player list to reflect changes
+      populatePlayerList(window.players);
+      
+      // Re-initialize privacy toggle for new host
+      initializePrivacyToggle();
+      
+      showNotification(`${newHostUsername} is now the host!`, 'success');
+    } else {
+      throw new Error(data.error || 'Failed to switch host');
+    }
+  })
+  .catch(error => {
+    console.error("❌ Switch host failed:", error);
+    showNotification('Failed to switch host: ' + error.message, 'error');
+    
+    // Restore button state
+    if (switchBtn) {
+      switchBtn.disabled = false;
+      switchBtn.innerHTML = '👑 Make Host';
+    }
+  });
 }
 
 function toggleFriend(playerId) {
-  const friendBtn = document.querySelector(`[data-player="${playerId}"]`).closest('.player-card').querySelector('.friend-btn');
-  const isFriend = friendBtn.classList.contains('friends');
+  const friendBtn = document.querySelector(`[data-player="${playerId}"]`)
+    ?.closest('.player-card')?.querySelector('.friend-btn');
+  
+  if (!friendBtn) return;
 
-  if (isFriend) {
-    friendBtn.classList.remove('friends');
-    friendBtn.innerHTML = '👥 Add Friend';
-    showNotification('Removed from friends', 'warning');
-  } else {
-    friendBtn.classList.add('friends');
-    friendBtn.innerHTML = '✅ Friends';
-    showNotification('Added as friend!', 'success');
-  }
+  const isFriend = friendBtn.classList.contains('friends');
+  
+  // Show loading state
+  friendBtn.disabled = true;
+  friendBtn.innerHTML = '⏳ Loading...';
+
+  console.log("👥 Toggling friend status for:", playerId, "Current status:", isFriend);
+
+  // Call friends API
+  const action = isFriend ? 'remove_friend' : 'send_request';
+  const formData = new URLSearchParams();
+  formData.append('action', action);
+  formData.append('friend_username', playerId);
+
+  fetch('../MyFriends/friends_api.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData.toString()
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    return res.json();
+  })
+  .then(data => {
+    console.log("📊 Friend action response:", data);
+    
+    if (data.success) {
+      if (isFriend) {
+        // Was friend, now removed
+        friendBtn.classList.remove('friends');
+        friendBtn.innerHTML = '👥 Add Friend';
+        showNotification('Removed from friends', 'warning');
+      } else {
+        // Wasn't friend, now sent request
+        friendBtn.classList.add('pending');
+        friendBtn.innerHTML = '📤 Request Sent';
+        showNotification('Friend request sent!', 'success');
+      }
+    } else {
+      throw new Error(data.message || 'Friend action failed');
+    }
+  })
+  .catch(error => {
+    console.error("❌ Friend action failed:", error);
+    showNotification('Failed to update friend status: ' + error.message, 'error');
+    
+    // Restore original state
+    if (isFriend) {
+      friendBtn.classList.add('friends');
+      friendBtn.innerHTML = '✅ Friends';
+    } else {
+      friendBtn.classList.remove('friends', 'pending');
+      friendBtn.innerHTML = '👥 Add Friend';
+    }
+  })
+  .finally(() => {
+    friendBtn.disabled = false;
+  });
 }
 
 function enterEditMode() {
@@ -431,22 +827,145 @@ function enterEditMode() {
     amount.style.display = 'none';
   });
   
-  document.querySelectorAll('.payment-input').forEach(input => input.style.display = 'inline-block');
+  document.querySelectorAll('.payment-input').forEach(input => {
+    input.style.display = 'inline-block';
+    // Add real-time validation on input change
+    input.addEventListener('input', validatePriceSum);
+  });
   
   document.getElementById('editPricesBtn').style.display = 'none';
   document.getElementById('savePricesBtn').style.display = 'inline-block';
   document.getElementById('cancelEditBtn').style.display = 'inline-block';
+  
+  // Add auto-balance button
+  addAutoBalanceButton();
+  
+  // Reset validation state
+  window.lastValidationState = false;
+  
+  // Initial validation
+  validatePriceSum();
 }
 
 function saveChanges() {
+  if (!window.currentGroupId) {
+    showNotification('Error: No group ID found', 'error');
+    return;
+  }
+
+  // Validate price sum before saving
+  if (!validatePriceSum()) {
+    showNotification('Cannot save: Sum of player prices must equal total venue price!', 'error');
+    return;
+  }
+
+  // Collect all price changes
+  const priceUpdates = [];
   document.querySelectorAll('.payment-input').forEach(input => {
-    const playerId = input.dataset.player;
-    const value = parseFloat(input.value).toFixed(2);
-    const amountDisplay = document.querySelector(`.payment-amount[data-player="${playerId}"] .amount-value`);
-    amountDisplay.textContent = value;
+    const username = input.dataset.player;
+    const newPrice = parseFloat(input.value) || 0;
+    const originalPrice = parseFloat(window.originalPrices[username]) || 0;
+    
+    if (newPrice !== originalPrice) {
+      priceUpdates.push({ username, price: newPrice });
+    }
   });
-  exitEditMode();
-  showNotification('Prices saved!', 'success');
+
+  if (priceUpdates.length === 0) {
+    exitEditMode();
+    showNotification('No changes to save', 'info');
+    return;
+  }
+
+  console.log("💰 Saving price changes:", priceUpdates);
+
+  // Show loading state
+  const saveBtn = document.getElementById('savePricesBtn');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '⏳ Saving...';
+  }
+
+  // Send updates to backend
+  const promises = priceUpdates.map(update => {
+    const formData = new URLSearchParams();
+    formData.append('group_id', window.currentGroupId);
+    formData.append('username', update.username);
+    formData.append('price', update.price);
+
+    console.log("💰 Updating price for", update.username, "to ₪" + update.price);
+    console.log("📤 POST data:", {
+      group_id: window.currentGroupId,
+      username: update.username,
+      price: update.price
+    });
+
+    return fetch('updatePlayerPrice.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData.toString()
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.text(); // Get response as text first
+    })
+            .then(text => {
+          console.log("📋 Raw response for", update.username + ":", text);
+          try {
+            const data = JSON.parse(text);
+            if (!data.success) {
+              // Don't treat "Price unchanged" as an error
+              if (data.message && data.message.includes('unchanged')) {
+                console.log("ℹ️ Price unchanged for", update.username);
+                return { username: update.username, success: true, message: data.message };
+              }
+              throw new Error(data.error || 'Failed to update price');
+            }
+            return { username: update.username, success: true, message: data.message };
+          } catch (parseError) {
+            console.error("❌ JSON parse error for", update.username + ":", parseError);
+            console.error("📋 Raw response was:", text);
+            throw new Error(`Invalid JSON response: ${text.substring(0, 100)}...`);
+          }
+        });
+  });
+
+  Promise.all(promises)
+    .then(results => {
+      console.log("📊 Price update results:", results);
+      
+      // Update UI with new prices
+      results.forEach(result => {
+        if (result.success) {
+          const input = document.querySelector(`[data-player="${result.username}"].payment-input`);
+          const amountDisplay = document.querySelector(`.payment-amount[data-player="${result.username}"] .amount-value`);
+          if (input && amountDisplay) {
+            amountDisplay.textContent = parseFloat(input.value).toFixed(2);
+          }
+        }
+      });
+      
+      exitEditMode();
+      showNotification('Prices saved successfully!', 'success');
+      
+      // Refresh the booking details to show updated values
+      setTimeout(() => {
+        fetchBookingDetails();
+      }, 500);
+    })
+    .catch(error => {
+      console.error("❌ Price update failed:", error);
+      showNotification('Failed to save prices: ' + error.message, 'error');
+    })
+    .finally(() => {
+      // Restore save button
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '💾 Save Changes';
+      }
+    });
 }
 
 function cancelChanges() {
@@ -459,41 +978,583 @@ function cancelChanges() {
 
 function exitEditMode() {
   document.querySelectorAll('.payment-amount').forEach(amount => amount.style.display = 'inline-block');
-  document.querySelectorAll('.payment-input').forEach(input => input.style.display = 'none');
+  document.querySelectorAll('.payment-input').forEach(input => {
+    input.style.display = 'none';
+    // Remove validation listeners
+    input.removeEventListener('input', validatePriceSum);
+  });
   
   document.getElementById('editPricesBtn').style.display = 'inline-block';
   document.getElementById('savePricesBtn').style.display = 'none';
   document.getElementById('cancelEditBtn').style.display = 'none';
+  
+  // Remove auto-balance button
+  removeAutoBalanceButton();
+  
+  // Clear validation state
+  window.lastValidationState = false;
 }
 
+
+
+function validatePriceSum() {
+  const inputs = document.querySelectorAll('.payment-input');
+  let sum = 0;
+  let hasNonZeroValues = false;
+  
+  inputs.forEach(input => {
+    const value = parseFloat(input.value) || 0;
+    sum += value;
+    if (value > 0) {
+      hasNonZeroValues = true;
+    }
+  });
+  
+  const targetTotal = parseFloat(window.totalVenuePrice) || 0;
+  const saveBtn = document.getElementById('savePricesBtn');
+  
+  // Update validation status
+  const isValid = Math.abs(sum - targetTotal) < 0.01; // Allow small floating point differences
+  
+  // Show success notification popup only if it wasn't valid before (first time achieving balance)
+  if (isValid && hasNonZeroValues && !window.lastValidationState) {
+    showNotification(
+      `✅ Perfect! Sum matches total venue price\nSum: ₪${sum.toFixed(2)} / Total: ₪${targetTotal}`, 
+      'success'
+    );
+    window.lastValidationState = true;
+  } else if (!isValid) {
+    window.lastValidationState = false;
+  }
+  
+  // Enable/disable save button based on validation
+  // Only enforce validation if there are non-zero values
+  if (saveBtn) {
+    const shouldDisable = hasNonZeroValues && !isValid;
+    saveBtn.disabled = shouldDisable;
+    saveBtn.title = shouldDisable ? 'Sum must equal total venue price to save' : 'Save changes';
+  }
+  
+  return !hasNonZeroValues || isValid; // Valid if no values entered OR sum matches
+}
+
+function addAutoBalanceButton() {
+  const hostControls = document.getElementById('hostControls');
+  if (hostControls && !document.getElementById('autoBalanceBtn')) {
+    const autoBalanceBtn = document.createElement('button');
+    autoBalanceBtn.id = 'autoBalanceBtn';
+    autoBalanceBtn.className = 'auto-balance-btn';
+    autoBalanceBtn.innerHTML = '⚖️ Auto Balance';
+    autoBalanceBtn.title = 'Distribute total price equally among all players';
+    autoBalanceBtn.addEventListener('click', autoBalancePrices);
+    
+    // Insert before save button
+    const saveBtn = document.getElementById('savePricesBtn');
+    hostControls.insertBefore(autoBalanceBtn, saveBtn);
+  }
+}
+
+function removeAutoBalanceButton() {
+  const autoBalanceBtn = document.getElementById('autoBalanceBtn');
+  if (autoBalanceBtn) {
+    autoBalanceBtn.remove();
+  }
+}
+
+function autoBalancePrices() {
+  const inputs = document.querySelectorAll('.payment-input');
+  const totalPrice = parseFloat(window.totalVenuePrice) || 0;
+  const playerCount = inputs.length;
+  
+  if (playerCount === 0) {
+    showNotification('No players to balance prices for', 'warning');
+    return;
+  }
+  
+  const pricePerPlayer = totalPrice / playerCount;
+  
+  console.log(`💰 Auto-balancing: ₪${totalPrice} ÷ ${playerCount} players = ₪${pricePerPlayer.toFixed(2)} per player`);
+  
+  inputs.forEach(input => {
+    input.value = pricePerPlayer.toFixed(2);
+  });
+  
+  // Reset validation state so the success popup will show
+  window.lastValidationState = false;
+  
+  // Trigger validation (this will show the success popup)
+  validatePriceSum();
+  
+  // Also show the auto-balance confirmation
+  setTimeout(() => {
+      showNotification(`Prices auto-balanced: ₪${pricePerPlayer.toFixed(2)} per player`, 'info');
+}, 500);
+}
+
+
+
 function startCountdown() {
-  setInterval(() => {
+  console.log('🚀 startCountdown() called');
+  console.log('🔍 window.countdownData:', window.countdownData);
+  
+  if (!window.countdownData) {
+    console.log('❌ No countdown data available - using default timer');
+    // Fallback to default static timer if no countdown data
+    window.timeRemaining = 6330; // Default 1:45:30
+    window.countdownPhase = 1;
+    window.twentyPercentAmount = window.totalVenuePrice * 0.20;
+    window.totalPaid = 0;
+    window.paymentDeadlineMet = false;
+  } else {
+    // Initialize countdown with data from server
+    window.timeRemaining = window.countdownData.seconds_remaining;
+    window.countdownPhase = window.countdownData.phase;
+    window.twentyPercentAmount = window.countdownData.twenty_percent_amount;
+    window.totalPaid = window.countdownData.total_paid;
+    window.paymentDeadlineMet = window.countdownData.payment_deadline_met;
+  }
+  
+  console.log(`🕐 Starting countdown - Phase ${window.countdownPhase}, ${window.timeRemaining} seconds remaining`);
+  console.log(`💰 Twenty percent amount: ₪${window.twentyPercentAmount}, Total paid: ₪${window.totalPaid}`);
+  
+  // Update display immediately
+  updateCountdownDisplay();
+  
+  // Start the countdown interval
+  if (window.countdownInterval) {
+    clearInterval(window.countdownInterval); // Clear any existing interval
+  }
+  
+  window.countdownInterval = setInterval(() => {
     if (window.timeRemaining > 0) {
       window.timeRemaining--;
       updateCountdownDisplay();
+    } else {
+      // Countdown expired - handle deadline
+      handleCountdownExpired();
     }
   }, 1000);
 }
 
 function updateCountdownDisplay() {
-  const hours = Math.floor(window.timeRemaining / 3600);
+  const days = Math.floor(window.timeRemaining / 86400);
+  const hours = Math.floor((window.timeRemaining % 86400) / 3600);
   const minutes = Math.floor((window.timeRemaining % 3600) / 60);
   const seconds = window.timeRemaining % 60;
 
-  document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-  document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-  document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+  console.log(`⏰ Updating display: ${hours}h ${minutes}m ${seconds}s (${window.timeRemaining} total seconds)`);
+
+  // Update countdown elements
+  const hoursElement = document.getElementById('hours');
+  const minutesElement = document.getElementById('minutes');
+  const secondsElement = document.getElementById('seconds');
+  
+  console.log('🔍 Timer elements found:', {
+    hours: !!hoursElement,
+    minutes: !!minutesElement, 
+    seconds: !!secondsElement
+  });
+  
+  if (hoursElement) hoursElement.textContent = hours.toString().padStart(2, '0');
+  if (minutesElement) minutesElement.textContent = minutes.toString().padStart(2, '0');
+  if (secondsElement) secondsElement.textContent = seconds.toString().padStart(2, '0');
+  
+  // Update countdown message based on phase
+  updateCountdownMessage(days, hours, minutes, seconds);
+}
+
+function updateCountdownMessage(days, hours, minutes, seconds) {
+  const timerTitle = document.querySelector('.timer-title');
+  const timerMessage = document.querySelector('.timer-message');
+  const minimumAmount = document.getElementById('minimumAmount');
+  
+  if (!timerTitle || !timerMessage) {
+    console.log('❌ Timer elements not found');
+    return;
+  }
+  
+  if (window.countdownPhase === 1) {
+    // Phase 1: Need to pay 20%
+    timerTitle.textContent = '⏰ Payment Deadline';
+    if (minimumAmount) {
+      minimumAmount.textContent = window.twentyPercentAmount;
+    }
+    
+    timerMessage.innerHTML = `
+      You must pay at least <strong>20% (₪<span id="minimumAmount">${window.twentyPercentAmount}</span>)</strong> of the total booking price before the timer expires, otherwise the booking will be automatically canceled.
+      <br><br>
+      <div class="payment-status">
+        <span class="current-paid">Currently paid: <strong>₪${window.totalPaid}</strong></span>
+      </div>
+    `;
+  } else if (window.countdownPhase === 2) {
+    // Phase 2: Need full payment
+    timerTitle.textContent = '⏰ Full Payment Required';
+    const remaining = window.totalVenuePrice - window.totalPaid;
+    
+    timerMessage.innerHTML = `
+      <div class="phase-2-message">
+        <div class="success-message">✅ 20% deposit requirement met!</div>
+        <div class="full-payment-requirement">
+          Complete full payment of <strong>₪${window.totalVenuePrice}</strong> before 24 hours prior to your booking time.
+        </div>
+        <div class="payment-status">
+          <span class="current-paid">Currently paid: <strong>₪${window.totalPaid}</strong></span>
+          <span class="remaining-amount">Remaining: <strong>₪${remaining.toFixed(2)}</strong></span>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function handleCountdownExpired() {
+  console.log(`⏰ Countdown expired for phase ${window.countdownPhase}`);
+  
+  // Stop the countdown
+  if (window.countdownInterval) {
+    clearInterval(window.countdownInterval);
+  }
+  
+  // Show expiration message
+  const timerMessage = document.querySelector('.timer-message');
+  if (timerMessage) {
+    if (window.countdownPhase === 1) {
+      timerMessage.innerHTML = `
+        <div class="countdown-expired">
+          <div class="countdown-expired-title">⚠️ Payment Deadline Expired</div>
+          <div class="countdown-expired-message">The booking will be cancelled automatically due to insufficient payment.</div>
+          <div class="countdown-expired-info">Required: ₪${window.twentyPercentAmount} | Paid: ₪${window.totalPaid}</div>
+        </div>
+      `;
+    } else if (window.countdownPhase === 2) {
+      timerMessage.innerHTML = `
+        <div class="countdown-expired">
+          <div class="countdown-expired-title">⚠️ Payment Deadline Expired</div>
+          <div class="countdown-expired-message">Full payment was not completed in time.</div>
+          <div class="countdown-expired-info">Required: ₪${window.totalVenuePrice} | Paid: ₪${window.totalPaid}</div>
+        </div>
+      `;
+    }
+  }
+  
+  // Check payment status and potentially cancel booking
+  setTimeout(() => {
+    checkPaymentStatusAndCancel();
+  }, 2000);
+}
+
+function checkPaymentStatusAndCancel() {
+  // This would typically make an API call to check current payment status
+  // and handle cancellation if needed
+  fetch('checkPaymentStatus.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `booking_id=${window.currentBookingId}&group_id=${window.currentGroupId}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.should_cancel) {
+      showNotification('Booking cancelled due to payment deadline', 'error');
+      // Redirect or refresh page
+      setTimeout(() => {
+        window.location.href = '../HomePage/HomePage.php';
+      }, 3000);
+    }
+  })
+  .catch(error => {
+    console.error('❌ Error checking payment status:', error);
+  });
 }
 
 function handlePayNow() {
-  showNotification('Redirecting to payment...', 'info');
-  setTimeout(() => alert('Payment gateway would be here'), 1500);
+  console.log("🎯 PAY NOW BUTTON CLICKED!");
+  console.log("💳 Opening payment modal...");
+  console.log("👤 Current username:", window.currentUsername);
+  console.log("👥 Players data:", window.players);
+  console.log("💰 Total venue price:", window.totalVenuePrice);
+  console.log("🔍 Current URL:", window.location.href);
+  
+  openPaymentModal();
+}
+
+function openPaymentModal() {
+  console.log("🔍 Looking for payment modal elements...");
+  const modal = document.getElementById('paymentModal');
+  const closeBtn = document.getElementById('paymentModalClose');
+  const cancelBtn = document.getElementById('cancelPayment');
+  const confirmBtn = document.getElementById('confirmPayment');
+  const payInitialCheckbox = document.getElementById('payInitialDeposit');
+  
+  console.log("🔍 Modal elements found:", {
+    modal: !!modal,
+    closeBtn: !!closeBtn,
+    cancelBtn: !!cancelBtn,
+    confirmBtn: !!confirmBtn,
+    payInitialCheckbox: !!payInitialCheckbox
+  });
+  
+  if (!modal) {
+    console.error("❌ Payment modal not found!");
+    showNotification("Payment modal not found. Please refresh the page.", "error");
+    return;
+  }
+  
+  // Populate modal with payment data
+  populatePaymentModal();
+  
+  // Show modal
+  modal.style.display = 'flex';
+  console.log("✅ Payment modal displayed");
+  
+  // Event listeners
+  closeBtn.onclick = closePaymentModal;
+  cancelBtn.onclick = closePaymentModal;
+  confirmBtn.onclick = handleConfirmPayment;
+  
+  // Close modal when clicking outside
+  modal.onclick = function(e) {
+    if (e.target === modal) {
+      closePaymentModal();
+    }
+  };
+  
+  // Handle initial deposit checkbox change
+  payInitialCheckbox.onchange = function() {
+    updatePaymentAmount();
+  };
+}
+
+function closePaymentModal() {
+  const modal = document.getElementById('paymentModal');
+  modal.style.display = 'none';
+}
+
+function populatePaymentModal() {
+  console.log("💰 Populating payment modal...");
+  
+  // Get current user's payment data
+  const currentUser = window.players.find(p => p.username === window.currentUsername);
+  console.log("👤 Current user data:", currentUser);
+  
+  const totalPrice = window.totalVenuePrice || 0;
+  const requiredPayment = currentUser?.required_payment || 0;
+  const amountPaid = currentUser?.payment_amount || 0;
+  const amountToPay = requiredPayment - amountPaid;
+  
+  console.log("💰 Payment calculations:", {
+    totalPrice,
+    requiredPayment,
+    amountPaid,
+    amountToPay
+  });
+  
+  // Calculate total paid by all members
+  const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
+  const twentyPercentAmount = Math.round(totalPrice * 0.20);
+  const needsInitialDeposit = totalPaidByAll < twentyPercentAmount;
+  
+  console.log("💰 Group payment data:", {
+    totalPaidByAll,
+    twentyPercentAmount,
+    needsInitialDeposit
+  });
+  
+  // Populate modal fields
+  const totalPriceElement = document.getElementById('modalTotalPrice');
+  const requiredPaymentElement = document.getElementById('modalRequiredPayment');
+  const amountPaidElement = document.getElementById('modalAmountPaid');
+  const amountToPayElement = document.getElementById('modalAmountToPay');
+  const initialDepositElement = document.getElementById('modalInitialDeposit');
+  
+  console.log("🔍 Modal field elements:", {
+    totalPriceElement: !!totalPriceElement,
+    requiredPaymentElement: !!requiredPaymentElement,
+    amountPaidElement: !!amountPaidElement,
+    amountToPayElement: !!amountToPayElement,
+    initialDepositElement: !!initialDepositElement
+  });
+  
+  if (totalPriceElement) totalPriceElement.textContent = totalPrice;
+  if (requiredPaymentElement) requiredPaymentElement.textContent = requiredPayment;
+  if (amountPaidElement) amountPaidElement.textContent = amountPaid;
+  if (amountToPayElement) amountToPayElement.textContent = amountToPay;
+  if (initialDepositElement) initialDepositElement.textContent = twentyPercentAmount;
+  
+  // Show/hide initial deposit section
+  const initialPaymentSection = document.getElementById('initialPaymentSection');
+  if (initialPaymentSection) {
+    if (needsInitialDeposit) {
+      initialPaymentSection.style.display = 'block';
+      // Update the message based on current user's payment
+      const message = amountPaid === 0 ? 
+        'No one has paid the initial 20% deposit yet. This deposit is required to secure the booking.' :
+        'The initial 20% deposit has not been fully paid yet. You can contribute to this deposit.';
+      const messageElement = initialPaymentSection.querySelector('p');
+      if (messageElement) messageElement.textContent = message;
+    } else {
+      initialPaymentSection.style.display = 'none';
+    }
+  }
+  
+  // Update payment amount based on checkbox
+  updatePaymentAmount();
+  console.log("✅ Payment modal populated");
+}
+
+function updatePaymentAmount() {
+  const payInitialCheckbox = document.getElementById('payInitialDeposit');
+  const amountToPayElement = document.getElementById('modalAmountToPay');
+  const currentUser = window.players.find(p => p.username === window.currentUsername);
+  const requiredPayment = currentUser?.required_payment || 0;
+  const amountPaid = currentUser?.payment_amount || 0;
+  const baseAmountToPay = requiredPayment - amountPaid;
+  
+  if (payInitialCheckbox.checked) {
+    const totalPrice = window.totalVenuePrice || 0;
+    const twentyPercentAmount = Math.round(totalPrice * 0.20);
+    const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
+    const remainingInitialDeposit = Math.max(0, twentyPercentAmount - totalPaidByAll);
+    
+    amountToPayElement.textContent = baseAmountToPay + remainingInitialDeposit;
+  } else {
+    amountToPayElement.textContent = baseAmountToPay;
+  }
+}
+
+function handleConfirmPayment() {
+  console.log("💳 Starting payment confirmation...");
+  
+  const confirmBtn = document.getElementById('confirmPayment');
+  const payInitialCheckbox = document.getElementById('payInitialDeposit');
+  
+  if (!confirmBtn) {
+    console.error("❌ Confirm button not found!");
+    return;
+  }
+  
+  // Show loading state
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = 'Processing...';
+  
+  // Prepare payment data
+  const paymentData = {
+    group_id: window.currentGroupId,
+    booking_id: window.currentBookingId,
+    pay_initial_deposit: payInitialCheckbox ? payInitialCheckbox.checked : false,
+    payment_method: document.querySelector('input[name="paymentMethod"]:checked')?.value || 'credit'
+  };
+  
+  console.log("💳 Processing payment:", paymentData);
+  console.log("🔗 API URL: process_payment.php");
+  
+  // Call payment API
+  console.log("🔗 Making fetch request to: ./process_payment.php");
+  fetch('./process_payment.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(paymentData)
+  })
+  .then(res => {
+    console.log("📡 Response status:", res.status);
+    console.log("📡 Response headers:", res.headers);
+    console.log("📡 Response URL:", res.url);
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    return res.json();
+  })
+  .then(data => {
+    console.log("📊 Payment response:", data);
+    
+    if (data.success) {
+      showNotification(data.message, 'success');
+      closePaymentModal();
+      
+      // Refresh booking details to show updated payment status
+      setTimeout(() => {
+        fetchBookingDetails();
+      }, 1000);
+    } else {
+      throw new Error(data.error || 'Payment failed');
+    }
+  })
+  .catch(error => {
+    console.error("❌ Payment failed:", error);
+    showNotification('Payment failed: ' + error.message, 'error');
+    
+    // Restore button state
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Confirm Payment';
+    }
+  });
 }
 
 function handleCancelBooking() {
   if (confirm('Cancel this booking?')) {
     showNotification('Booking canceled', 'warning');
   }
+}
+
+function handleLeaveGroup() {
+  if (!window.currentGroupId) {
+    showNotification('Error: No group ID found', 'error');
+    return;
+  }
+
+  // Show confirmation dialog
+  if (!confirm('Are you sure you want to leave this group? This action cannot be undone.')) {
+    return;
+  }
+
+  console.log("👋 Leaving group:", window.currentGroupId);
+  
+  // Show loading state
+  const leaveBtn = document.querySelector('.leave-btn');
+  if (leaveBtn) {
+    leaveBtn.disabled = true;
+    leaveBtn.textContent = 'Leaving...';
+  }
+
+  // Call backend API
+  const formData = new URLSearchParams();
+  formData.append('group_id', window.currentGroupId);
+
+  fetch('leave_group_api.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData.toString()
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    return res.json();
+  })
+  .then(data => {
+    console.log("📊 Leave group response:", data);
+    
+    if (data.success) {
+      showNotification(data.message, 'success');
+      // Redirect to JoinGroup page after a short delay
+      setTimeout(() => {
+        window.location.href = '../JoinGroup/JoinGroup.php';
+      }, 1500);
+    } else {
+      throw new Error(data.error || 'Failed to leave group');
+    }
+  })
+  .catch(error => {
+    console.error("❌ Leave group failed:", error);
+    showNotification('Failed to leave group: ' + error.message, 'error');
+    
+    // Restore button state
+    if (leaveBtn) {
+      leaveBtn.disabled = false;
+      leaveBtn.textContent = 'Leave Group';
+    }
+  });
 }
 
 function showNotification(message, type = 'info') {
@@ -554,6 +1615,8 @@ function testPrivacyToggle() {
   }
 }
 
+
+
 // ✅ Go back function
 function goBack() {
   if (window.viewOnly) {
@@ -565,21 +1628,4 @@ function goBack() {
   }
 }
 
-window.onload = function () {
-  console.log("✅ BookingDetails.js is loaded");
-  
-  // Initialize variables (move to global scope)
-  window.isPrivate = false;
-  window.isEditingPrices = false;
-  window.timeRemaining = 6330; // 1:45:30
-  window.originalPrices = {};
-  window.currentHost = "1";
-  
-  // Initialize all functions
-  initializePrivacyToggle();
-  initializeScrolling();
-  initializeEditPrices();
-  initializePlayerActions();
-  initializeActionButtons();
-  startCountdown();
-};
+// Removed duplicate window.onload - using DOMContentLoaded at the top

@@ -33,16 +33,22 @@ function loadChat(username) {
 
       if (data.success) {
         data.messages.forEach(msg => {
-          const messageElement = document.createElement("p");
-          messageElement.classList.add("message");
+          const messageDiv = document.createElement("div");
+          messageDiv.classList.add("message");
 
           if (msg.sender_username === sessionUsername) {
-            messageElement.classList.add("right");
+            messageDiv.classList.add("right");
+          } else {
+            messageDiv.classList.add("left");
           }
 
-          messageElement.textContent = msg.message_text;
-          chatBody.appendChild(messageElement);
+          // Create message content
+          messageDiv.textContent = msg.message_text;
+
+          chatBody.appendChild(messageDiv);
         });
+        // Scroll to bottom
+        chatBody.scrollTop = chatBody.scrollHeight;
       }
     });
 }
@@ -68,11 +74,13 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(data => {
         if (data.success) {
           const chatBody = document.getElementById("chatBody");
-          const msg = document.createElement("p");
-          msg.className = "message right";
-          msg.textContent = message;
-          chatBody.appendChild(msg);
+          const messageDiv = document.createElement("div");
+          messageDiv.classList.add("message", "right");
+          messageDiv.textContent = message;
+          
+          chatBody.appendChild(messageDiv);
           messageInput.value = "";
+          chatBody.scrollTop = chatBody.scrollHeight;
         } else {
           alert("❌ Failed to send message.");
         }

@@ -328,6 +328,32 @@
   box-shadow: 0 4px 12px rgba(30, 144, 255, 0.2);
 }
 
+.join-btn.disabled {
+  background: linear-gradient(135deg, #ccc, #999);
+  color: #666;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.join-btn.disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.join-btn:disabled {
+  background: linear-gradient(135deg, #ccc, #999);
+  color: #666;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.join-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 /* Modal Styles */
 .modal {
   display: none;

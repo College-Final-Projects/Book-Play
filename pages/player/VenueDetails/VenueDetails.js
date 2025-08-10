@@ -1,8 +1,74 @@
 // Make currentRating global
 let currentRating = 0;
 
+// Smart back button function - goes to previous page or fallback
+window.goBack = function goBack() {
+  console.log('🔙 Back button clicked');
+  
+  fetch('VenueDetails.php?action=get_previous_page')
+    .then(res => {
+      console.log('📡 Response received:', res.status);
+      return res.json();
+    })
+    .then(data => {
+      console.log('📊 Previous page data:', data);
+      if (data.debug) {
+        console.log('🔍 Debug info:', data.debug);
+      }
+      
+      if (data.url && data.url !== window.location.href) {
+        // Check if it's a valid previous page
+        const url = data.url.toLowerCase();
+        
+        // Prefer these pages as valid previous pages
+        const validPages = ['bookvenue', 'managevenue', 'favorites', 'homepage'];
+        const isValidPage = validPages.some(page => url.includes(page.toLowerCase()));
+        
+        if (isValidPage) {
+          console.log('✅ Going to stored previous page:', data.url);
+          window.location.href = data.url;
+        } else {
+          console.log('⚠️ Previous page not in valid list, using BookVenue fallback');
+          window.location.href = '../BookVenue/BookVenue.php';
+        }
+      } else {
+        console.log('⚠️ No valid previous page, using fallback');
+        // Fallback to browser history or default page
+        if (window.history.length > 1) {
+          console.log('📜 Using browser history back');
+          window.history.back();
+        } else {
+          console.log('🏠 Going to BookVenue page (ultimate fallback)');
+          window.location.href = '../BookVenue/BookVenue.php';
+        }
+      }
+    })
+    .catch(error => {
+      console.error('❌ Error getting previous page:', error);
+      // Fallback on error
+      if (window.history.length > 1) {
+        console.log('📜 Error fallback: using browser history back');
+        window.history.back();
+      } else {
+        console.log('🏠 Error fallback: going to BookVenue page');
+        window.location.href = '../BookVenue/BookVenue.php';
+      }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   console.log('🚀 VenueDetails.js DOMContentLoaded triggered');
+  
+  // Add event listener to back button as backup
+  const backButton = document.getElementById('backButton');
+  if (backButton) {
+    backButton.addEventListener('click', (e) => {
+      console.log('🔙 Back button clicked via event listener');
+      e.preventDefault();
+      goBack();
+    });
+    console.log('✅ Back button event listener added');
+  }
   
   const params = new URLSearchParams(window.location.search);
   const facilityId = params.get('facilities_id');
@@ -60,9 +126,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Populate venue info
       const imageElement = document.getElementById('venue-image');
-      const imagePath = `../../../uploads/venues/${facility.image_url}`;
+      
+      // Handle image path - check if it's already a full path or just filename
+      let imagePath;
+      if (facility.image_url && facility.image_url !== 'null' && facility.image_url.trim() !== '') {
+        if (facility.image_url.startsWith('http') || facility.image_url.startsWith('/')) {
+          // Full URL or absolute path
+          imagePath = facility.image_url;
+        } else {
+          // Just filename, construct full path
+          imagePath = `../../../uploads/venues/${facility.image_url}`;
+        }
+      } else {
+        // No image or null, use default
+        imagePath = '../../../Images/default.jpg';
+      }
+      
       console.log('🖼️ Setting image path:', imagePath);
       imageElement.src = imagePath;
+      
+      // Add error handling for image
+      imageElement.onerror = function() {
+        console.log('❌ Image failed to load, using default');
+        this.src = '../../../Images/default.jpg';
+      };
       
       document.getElementById('venue-name').textContent = facility.place_name;
       document.getElementById('venue-location').textContent = `📍 Location: ${facility.location}`;

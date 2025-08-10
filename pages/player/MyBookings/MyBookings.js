@@ -27,12 +27,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Filter when typing
     searchInput.addEventListener('input', function () {
-        const query = searchInput.value.trim();
+        const query = searchInput.value.trim().toLowerCase();
         if (query === '') {
             renderBookings(allBookings);
         } else {
             const filtered = allBookings.filter(booking =>
-                booking.booking_id.toString().startsWith(query)
+                booking.booking_id.toString().startsWith(query) ||
+                (booking.group_name && booking.group_name.toLowerCase().includes(query)) ||
+                booking.place_name.toLowerCase().includes(query)
             );
             renderBookings(filtered);
         }
@@ -54,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="booking-card">
                 <div class="booking-header">
                     <div class="venue-image">
-                        <img src="../../../uploads/venues/${booking.image_url}" alt="${booking.place_name}">
+                        <img src="../../../uploads/venues/${booking.image_url}" alt="${booking.place_name}" onerror="this.src='../../../Images/staduim_icon.png'">
                     </div>
                     <div class="booking-info">
                         <div class="venue-name">${booking.place_name}</div>
@@ -63,10 +65,12 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="booking-detail">⏰ ${booking.start_time} - ${booking.end_time}</div>
                             <div class="booking-detail">📍 ${booking.location ?? 'Location not available'}</div>
                             <div class="booking-detail">🆔 Booking ID: ${booking.booking_id}</div>
+                            ${booking.user_role === 'member' ? `<div class="booking-detail">👥 Group: ${booking.group_name || 'Unnamed Group'}</div>` : ''}
                         </div>
                     </div>
                     <div class="booking-price">₪${booking.Total_Price}</div>
                     <div class="booking-actions">
+                        <div class="role-badge ${booking.user_role}">${booking.user_role === 'owner' ? 'Owner' : 'Member'}</div>
                         <button class="action-btn" onclick="viewBookingDetails(${booking.booking_id})">View Details</button>
                     </div>
                 </div>

@@ -9,11 +9,21 @@ window.addEventListener('DOMContentLoaded', () => {
         const sidebar = document.getElementById("sidebar");
         sidebar.innerHTML = "";
 
-        data.users.forEach(username => {
+        data.users.forEach(user => {
           const userDiv = document.createElement("div");
           userDiv.className = "user-entry";
-          userDiv.textContent = username;
-          userDiv.onclick = () => loadChat(username);
+          
+          const usernameDiv = document.createElement("div");
+          usernameDiv.className = "user-name";
+          usernameDiv.textContent = user.username;
+          
+          const lastMessageDiv = document.createElement("div");
+          lastMessageDiv.className = "last-message";
+          lastMessageDiv.textContent = user.last_message;
+          
+          userDiv.appendChild(usernameDiv);
+          userDiv.appendChild(lastMessageDiv);
+          userDiv.onclick = () => loadChat(user.username);
           sidebar.appendChild(userDiv);
         });
       }
@@ -24,6 +34,14 @@ window.addEventListener('DOMContentLoaded', () => {
 function loadChat(username) {
   currentChatUser = username;
   document.getElementById("chatHeader").textContent = username;
+  
+  // Remove active class from all user entries
+  document.querySelectorAll('.user-entry').forEach(entry => {
+    entry.classList.remove('active');
+  });
+  
+  // Add active class to clicked user entry
+  event.target.closest('.user-entry').classList.add('active');
 
   fetch(`fetch_messages.php?chat_with=${encodeURIComponent(username)}`)
     .then(res => res.json())

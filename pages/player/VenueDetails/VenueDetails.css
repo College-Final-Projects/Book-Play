@@ -136,21 +136,25 @@ textarea {
   margin-bottom: 20px;
 }
 
-.back-button a {
+.back-button .back-btn {
   display: inline-block;
   padding: 10px 20px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: linear-gradient(135deg, #1e90ff, #22c55e);
   color: white;
-  border-radius: var(--radius-small);
+  border: none;
+  border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
-  box-shadow: 0 2px 8px var(--shadow-light);
-  transition: var(--transition);
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
-.back-button a:hover {
+.back-button .back-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px var(--shadow-medium);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #0066cc, #16a34a);
 }
 
 /* View more comments button */

@@ -59,6 +59,7 @@ function renderGroups(groups) {
     const isPrivate = group.privacy === 'private';
     const current = group.current_members;
     const max = group.max_members;
+    const isMember = group.is_member === 1;
 
     const card = document.createElement("div");
     card.className = "venue-card";
@@ -86,7 +87,9 @@ function renderGroups(groups) {
         </div>
         <div class="venue-footer">
           <span class="venue-price">₪${group.price}<span class="per">/person</span></span>
-          <button class="join-btn" data-group='${groupDataEncoded}' onclick="handleJoinClick(this)">Join Group</button>
+          <button class="join-btn ${isMember ? 'disabled' : ''}" data-group='${groupDataEncoded}' onclick="handleJoinClick(this)" ${isMember ? 'disabled' : ''}>
+            ${isMember ? 'Already Joined' : 'Join Group'}
+          </button>
         </div>
       </div>
     `;
@@ -97,6 +100,11 @@ function renderGroups(groups) {
 
 // ✅ Handle Join Button Click Safely
 function handleJoinClick(button) {
+  // Check if button is disabled (user already joined)
+  if (button.disabled || button.classList.contains('disabled')) {
+    return;
+  }
+
   try {
     const groupData = JSON.parse(button.dataset.group.replace(/&apos;/g, "'"));
     joinGroup(groupData);
@@ -113,7 +121,8 @@ function joinGroup(group) {
     document.getElementById('accessCodeInput').value = '';
     document.getElementById('privateModal').style.display = 'block';
   } else {
-    redirectToBooking(group.booking_id);
+    // For public groups, join directly
+    joinGroupAPI(group.group_id, '');
   }
 }
 
@@ -126,23 +135,65 @@ function validateAccessCode() {
     return;
   }
 
-  if (enteredCode === selectedGroup.group_password) {
-    closeModal();
-    redirectToBooking(selectedGroup.booking_id);
-  } else {
-    alert("The code you entered is not correct for this group.");
-    document.getElementById('accessCodeInput').value = '';
-    document.getElementById('accessCodeInput').focus();
+  // Join the group with the access code
+  joinGroupAPI(selectedGroup.group_id, enteredCode);
+}
+
+// ✅ New function to handle joining via API
+function joinGroupAPI(groupId, accessCode) {
+  const formData = new FormData();
+  formData.append('group_id', groupId);
+  formData.append('access_code', accessCode);
+
+  // Show loading state
+  const joinBtn = document.querySelector(`[data-group*='"group_id":"${groupId}"']`);
+  if (joinBtn) {
+    joinBtn.disabled = true;
+    joinBtn.textContent = 'Joining...';
   }
+
+  fetch('join_group_api.php', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      closeModal();
+      alert(data.message);
+      // Redirect to BookingDetails page
+      window.location.href = data.redirect_url;
+    } else {
+      alert(data.error || 'Failed to join group');
+      if (selectedGroup.privacy === 'private') {
+        document.getElementById('accessCodeInput').value = '';
+        document.getElementById('accessCodeInput').focus();
+      }
+      // Reset button state on error
+      if (joinBtn) {
+        joinBtn.disabled = false;
+        joinBtn.textContent = 'Join Group';
+      }
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while joining the group');
+    // Reset button state on error
+    if (joinBtn) {
+      joinBtn.disabled = false;
+      joinBtn.textContent = 'Join Group';
+    }
+  });
 }
 
 function closeModal() {
   document.getElementById('privateModal').style.display = 'none';
-}
-
-function redirectToBooking(booking_id) {
-  const url = `../BookingDetails/BookingDetails.php?booking_id=${encodeURIComponent(booking_id)}`;
-  window.location.href = url;
 }
 
 // 🌍 Location helpers

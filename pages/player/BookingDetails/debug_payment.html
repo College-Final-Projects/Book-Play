@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Modal Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-btn:hover {
+            background: #0056b3;
+        }
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        
+        /* Payment Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .payment-modal {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            padding: 20px 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .payment-summary {
+            margin-bottom: 20px;
+        }
+        
+        .payment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .payment-item:last-child {
+            border-bottom: none;
+        }
+        
+        .payment-item.total-amount {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #007bff;
+            border-top: 2px solid #007bff;
+            margin-top: 10px;
+            padding-top: 15px;
+        }
+        
+        .payment-label {
+            color: #666;
+        }
+        
+        .payment-value {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .initial-payment-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .initial-payment-info h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .initial-payment-info p {
+            margin: 0 0 15px 0;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .payment-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checkbox-container label {
+            cursor: pointer;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .payment-methods {
+            margin-top: 20px;
+        }
+        
+        .payment-methods h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+        }
+        
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .payment-option:hover {
+            background: #f8f9fa;
+        }
+        
+        .payment-option input[type="radio"] {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .payment-option label {
+            cursor: pointer;
+            margin: 0;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            z-index: 1;
+        }
+        
+        .modal-close:hover {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Payment Modal Debug Test</h1>
+    
+    <div class="test-section">
+        <h3>Test Controls</h3>
+        <button class="test-btn" onclick="testOpenModal()">Open Payment Modal</button>
+        <button class="test-btn" onclick="testPopulateModal()">Populate Modal Data</button>
+        <button class="test-btn" onclick="testPaymentAPI()">Test Payment API</button>
+        <button class="test-btn" onclick="clearDebug()">Clear Debug</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Debug Information</h3>
+        <div id="debugOutput" class="debug-info">Click a test button to see debug information...</div>
+    </div>
+    
+    <!-- Payment Modal -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-content payment-modal">
+            <button class="modal-close" id="paymentModalClose">&times;</button>
+            <div class="modal-header">
+                <h2>💳 Payment Details</h2>
+            </div>
+            <div class="modal-body">
+                <div class="payment-summary">
+                    <div class="payment-item">
+                        <span class="payment-label">Total Venue Price:</span>
+                        <span class="payment-value">$<span id="modalTotalPrice">0</span></span>
+                    </div>
+                    <div class="payment-item">
+                        <span class="payment-label">Your Required Payment:</span>
+                        <span class="payment-value">$<span id="modalRequiredPayment">0</span></span>
+                    </div>
+                    <div class="payment-item">
+                        <span class="payment-label">Amount Already Paid:</span>
+                        <span class="payment-value">$<span id="modalAmountPaid">0</span></span>
+                    </div>
+                    <div class="payment-item total-amount">
+                        <span class="payment-label">Amount to Pay:</span>
+                        <span class="payment-value">$<span id="modalAmountToPay">0</span></span>
+                    </div>
+                </div>
+                
+                <div class="initial-payment-section" id="initialPaymentSection" style="display: none;">
+                    <div class="initial-payment-info">
+                        <h3>🏦 Initial Deposit (20%)</h3>
+                        <p>No one has paid the initial 20% deposit yet. This deposit is required to secure the booking.</p>
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="payInitialDeposit" class="payment-checkbox">
+                            <label for="payInitialDeposit">Pay the initial 20% deposit ($<span id="modalInitialDeposit">0</span>)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="payment-methods">
+                    <h3>Payment Method</h3>
+                    <div class="payment-options">
+                        <div class="payment-option">
+                            <input type="radio" id="creditCard" name="paymentMethod" value="credit" checked>
+                            <label for="creditCard">💳 Credit Card</label>
+                        </div>
+                        <div class="payment-option">
+                            <input type="radio" id="paypal" name="paymentMethod" value="paypal">
+                            <label for="paypal">📱 PayPal</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelPayment">Cancel</button>
+                <button class="btn-primary" id="confirmPayment">Confirm Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data for testing
+        window.currentUsername = 'testuser';
+        window.players = [
+            {
+                username: 'testuser',
+                required_payment: 50,
+                payment_amount: 10
+            },
+            {
+                username: 'otheruser',
+                required_payment: 50,
+                payment_amount: 5
+            }
+        ];
+        window.totalVenuePrice = 200;
+        window.currentGroupId = 123;
+        window.currentBookingId = 456;
+        
+        function log(message) {
+            const debugOutput = document.getElementById('debugOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            debugOutput.textContent += `[${timestamp}] ${message}\n`;
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+        }
+        
+        function clearDebug() {
+            document.getElementById('debugOutput').textContent = '';
+        }
+        
+        function testOpenModal() {
+            log('🔍 Testing modal opening...');
+            
+            const modal = document.getElementById('paymentModal');
+            const closeBtn = document.getElementById('paymentModalClose');
+            const cancelBtn = document.getElementById('cancelPayment');
+            const confirmBtn = document.getElementById('confirmPayment');
+            const payInitialCheckbox = document.getElementById('payInitialDeposit');
+            
+            log(`Modal elements found:
+  - modal: ${!!modal}
+  - closeBtn: ${!!closeBtn}
+  - cancelBtn: ${!!cancelBtn}
+  - confirmBtn: ${!!confirmBtn}
+  - payInitialCheckbox: ${!!payInitialCheckbox}`);
+            
+            if (!modal) {
+                log('❌ Payment modal not found!');
+                return;
+            }
+            
+            // Show modal
+            modal.style.display = 'flex';
+            log('✅ Payment modal displayed');
+            
+            // Set up event listeners
+            closeBtn.onclick = () => {
+                modal.style.display = 'none';
+                log('🔒 Modal closed via X button');
+            };
+            
+            cancelBtn.onclick = () => {
+                modal.style.display = 'none';
+                log('🔒 Modal closed via Cancel button');
+            };
+            
+            confirmBtn.onclick = () => {
+                log('💳 Confirm payment clicked');
+                testPaymentAPI();
+            };
+            
+            // Close modal when clicking outside
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    log('🔒 Modal closed via outside click');
+                }
+            };
+            
+            // Handle initial deposit checkbox change
+            payInitialCheckbox.onchange = function() {
+                log('☑️ Initial deposit checkbox changed: ' + this.checked);
+                updatePaymentAmount();
+            };
+        }
+        
+        function testPopulateModal() {
+            log('💰 Testing modal population...');
+            
+            // Get current user's payment data
+            const currentUser = window.players.find(p => p.username === window.currentUsername);
+            log(`Current user data: ${JSON.stringify(currentUser, null, 2)}`);
+            
+            const totalPrice = window.totalVenuePrice || 0;
+            const requiredPayment = currentUser?.required_payment || 0;
+            const amountPaid = currentUser?.payment_amount || 0;
+            const amountToPay = requiredPayment - amountPaid;
+            
+            log(`Payment calculations:
+  - totalPrice: ${totalPrice}
+  - requiredPayment: ${requiredPayment}
+  - amountPaid: ${amountPaid}
+  - amountToPay: ${amountToPay}`);
+            
+            // Calculate total paid by all members
+            const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
+            const twentyPercentAmount = Math.round(totalPrice * 0.20);
+            const needsInitialDeposit = totalPaidByAll < twentyPercentAmount;
+            
+            log(`Group payment data:
+  - totalPaidByAll: ${totalPaidByAll}
+  - twentyPercentAmount: ${twentyPercentAmount}
+  - needsInitialDeposit: ${needsInitialDeposit}`);
+            
+            // Populate modal fields
+            const totalPriceElement = document.getElementById('modalTotalPrice');
+            const requiredPaymentElement = document.getElementById('modalRequiredPayment');
+            const amountPaidElement = document.getElementById('modalAmountPaid');
+            const amountToPayElement = document.getElementById('modalAmountToPay');
+            const initialDepositElement = document.getElementById('modalInitialDeposit');
+            
+            log(`Modal field elements:
+  - totalPriceElement: ${!!totalPriceElement}
+  - requiredPaymentElement: ${!!requiredPaymentElement}
+  - amountPaidElement: ${!!amountPaidElement}
+  - amountToPayElement: ${!!amountToPayElement}
+  - initialDepositElement: ${!!initialDepositElement}`);
+            
+            if (totalPriceElement) totalPriceElement.textContent = totalPrice;
+            if (requiredPaymentElement) requiredPaymentElement.textContent = requiredPayment;
+            if (amountPaidElement) amountPaidElement.textContent = amountPaid;
+            if (amountToPayElement) amountToPayElement.textContent = amountToPay;
+            if (initialDepositElement) initialDepositElement.textContent = twentyPercentAmount;
+            
+            // Show/hide initial deposit section
+            const initialPaymentSection = document.getElementById('initialPaymentSection');
+            if (initialPaymentSection) {
+                if (needsInitialDeposit) {
+                    initialPaymentSection.style.display = 'block';
+                    log('✅ Initial deposit section shown');
+                } else {
+                    initialPaymentSection.style.display = 'none';
+                    log('❌ Initial deposit section hidden');
+                }
+            }
+            
+            log('✅ Payment modal populated');
+        }
+        
+        function updatePaymentAmount() {
+            const payInitialCheckbox = document.getElementById('payInitialDeposit');
+            const amountToPayElement = document.getElementById('modalAmountToPay');
+            const currentUser = window.players.find(p => p.username === window.currentUsername);
+            const requiredPayment = currentUser?.required_payment || 0;
+            const amountPaid = currentUser?.payment_amount || 0;
+            const baseAmountToPay = requiredPayment - amountPaid;
+            
+            if (payInitialCheckbox.checked) {
+                const totalPrice = window.totalVenuePrice || 0;
+                const twentyPercentAmount = Math.round(totalPrice * 0.20);
+                const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
+                const remainingInitialDeposit = Math.max(0, twentyPercentAmount - totalPaidByAll);
+                
+                amountToPayElement.textContent = baseAmountToPay + remainingInitialDeposit;
+                log(`💰 Updated amount to pay (with deposit): ${baseAmountToPay + remainingInitialDeposit}`);
+            } else {
+                amountToPayElement.textContent = baseAmountToPay;
+                log(`💰 Updated amount to pay (without deposit): ${baseAmountToPay}`);
+            }
+        }
+        
+        function testPaymentAPI() {
+            log('💳 Testing payment API...');
+            
+            const payInitialCheckbox = document.getElementById('payInitialDeposit');
+            
+            // Prepare payment data
+            const paymentData = {
+                group_id: window.currentGroupId,
+                booking_id: window.currentBookingId,
+                pay_initial_deposit: payInitialCheckbox ? payInitialCheckbox.checked : false,
+                payment_method: document.querySelector('input[name="paymentMethod"]:checked')?.value || 'credit'
+            };
+            
+            log(`Payment data: ${JSON.stringify(paymentData, null, 2)}`);
+            log('🔗 API URL: process_payment.php');
+            
+            // Simulate API call (since we're not on the actual page)
+            log('📡 Simulating API call...');
+            setTimeout(() => {
+                log('✅ Payment API call simulated successfully');
+                log('📊 Response: {"success": true, "message": "Payment processed successfully"}');
+            }, 1000);
+        }
+        
+        // Initialize
+        log('🚀 Debug page loaded');
+        log(`Mock data:
+  - currentUsername: ${window.currentUsername}
+  - totalVenuePrice: ${window.totalVenuePrice}
+  - currentGroupId: ${window.currentGroupId}
+  - currentBookingId: ${window.currentBookingId}
+  - players: ${window.players.length} players`);
+    </script>
+</body>
+</html>

@@ -17,12 +17,12 @@ if (!$chatPartner) {
     exit;
 }
 
-$sql = "SELECT sender_username, receiver_username, message_text, sent_at 
+$sql = "SELECT sender_username, receiver_username, message_text, message_id 
         FROM messages
         WHERE 
             (sender_username = ? AND receiver_username = ?)
          OR (sender_username = ? AND receiver_username = ?)
-        ORDER BY sent_at ASC";
+        ORDER BY message_id ASC";
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ssss", $currentUser, $chatPartner, $chatPartner, $currentUser);
