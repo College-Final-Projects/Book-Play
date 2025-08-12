@@ -48,4 +48,49 @@ function sendVerificationCode($to, $code) {
         return false;
     }
 }
+
+/**
+ * Booking Cancellation Email System
+ * 
+ * This function sends cancellation and refund notification emails.
+ * Used when a host cancels a booking to notify all group members.
+ *
+ * @param string $to      Recipient's email address
+ * @param string $subject Email subject
+ * @param string $message HTML message content
+ * @return bool           True if email sent successfully, false otherwise
+ */
+function sendCancellationEmail($to, $subject, $message) {
+    // Initialize PHPMailer with exception handling enabled
+    $mail = new PHPMailer(true);
+    
+    try {
+        // Configure SMTP settings
+        $mail->isSMTP();                                      // Use SMTP protocol
+        $mail->Host = 'smtp.gmail.com';                       // Gmail SMTP server
+        $mail->SMTPAuth = true;                               // Enable SMTP authentication
+        $mail->Username = 'bookandplay.team@gmail.com';       // SMTP username
+        $mail->Password = 'zfdi dqpm tyug tfvh';             // App Password (not regular password)
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;   // Enable TLS encryption
+        $mail->Port = 587;                                    // TCP port for TLS connection
+
+        // Set email sender and recipient
+        $mail->setFrom('bookandplay.team@gmail.com', 'Book And Play');
+        $mail->addAddress($to);                               // Add recipient
+
+        // Set email content
+        $mail->isHTML(true);                                  // Set email format to HTML
+        $mail->Subject = $subject;                            // Email subject
+        $mail->Body = $message;                               // HTML message
+
+        // Send email and return success
+        $mail->send();
+        return true;
+
+    } catch (Exception $e) {
+        // Log error and return failure
+        error_log("Error sending cancellation email: {$mail->ErrorInfo}");
+        return false;
+    }
+}
 ?>

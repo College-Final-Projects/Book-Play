@@ -32,7 +32,7 @@ if (!$input) {
 }
 
 // Extract data
-$facility_id = $input['facility_id'] ?? null;
+$facility_id = $input['facilities_id'] ?? null; // Changed from 'facility_id' to 'facilities_id' to match JS
 $reason = $input['reason'] ?? '';
 $details = $input['details'] ?? '';
 $username = $_SESSION['username'];
@@ -41,7 +41,7 @@ error_log("Received data - facility_id: $facility_id, reason: $reason, details: 
 
 // Validate required fields
 if (!$facility_id || !$reason) {
-    error_log("❌ Missing required fields");
+    error_log("❌ Missing required fields - facility_id: $facility_id, reason: $reason");
     echo json_encode(['success' => false, 'message' => 'Missing required fields']);
     exit;
 }

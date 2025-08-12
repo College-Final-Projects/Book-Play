@@ -150,9 +150,9 @@ function populatePlayerList(players) {
     // Badge
     let badgeHTML = "";
     if (isHost && isCurrentUser) {
-      badgeHTML = `<div class="host-badge">HOST (YOU)</div>`;
+      badgeHTML = `<div class="host-badge">HOST (YOU)<br><small>🏦 20% Deposit Responsible</small></div>`;
     } else if (isHost) {
-      badgeHTML = `<div class="host-badge">HOST</div>`;
+      badgeHTML = `<div class="host-badge">HOST<br><small>🏦 20% Deposit Responsible</small></div>`;
     } else if (isCurrentUser) {
       badgeHTML = `<div class="me-badge">ME</div>`;
     }
@@ -1013,15 +1013,33 @@ function validatePriceSum() {
   const targetTotal = parseFloat(window.totalVenuePrice) || 0;
   const saveBtn = document.getElementById('savePricesBtn');
   
-  // Update validation status
-  const isValid = Math.abs(sum - targetTotal) < 0.01; // Allow small floating point differences
+  // Calculate total paid by all members for smart validation
+  const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
+  const twentyPercentAmount = Math.round((targetTotal * 0.20) * 100) / 100;
+  const needsInitialDeposit = totalPaidByAll < twentyPercentAmount;
+  
+  let isValid = false;
+  let validationMessage = '';
+  
+  if (needsInitialDeposit) {
+    // No one paid the 20% - sum must be >= 80% of total price
+    const eightyPercentAmount = targetTotal * 0.8;
+    isValid = Math.abs(sum - eightyPercentAmount) < 0.01; // Must equal exactly 80%
+    validationMessage = `Sum must equal exactly ₪${eightyPercentAmount.toFixed(2)} (80% of total price)`;
+  } else {
+    // Someone paid the 20% - sum must equal remaining amount
+    const remainingAmount = targetTotal - totalPaidByAll;
+    isValid = Math.abs(sum - remainingAmount) < 0.01; // Allow small floating point differences
+    validationMessage = `Sum must equal remaining amount: ₪${remainingAmount.toFixed(2)}`;
+  }
   
   // Show success notification popup only if it wasn't valid before (first time achieving balance)
   if (isValid && hasNonZeroValues && !window.lastValidationState) {
-    showNotification(
-      `✅ Perfect! Sum matches total venue price\nSum: ₪${sum.toFixed(2)} / Total: ₪${targetTotal}`, 
-      'success'
-    );
+    const successMessage = needsInitialDeposit 
+      ? `✅ Perfect! Sum equals exactly 80%\nSum: ₪${sum.toFixed(2)} / Required: ₪${(targetTotal * 0.8).toFixed(2)}`
+      : `✅ Perfect! Sum matches remaining amount\nSum: ₪${sum.toFixed(2)} / Remaining: ₪${(targetTotal - totalPaidByAll).toFixed(2)}`;
+    
+    showNotification(successMessage, 'success');
     window.lastValidationState = true;
   } else if (!isValid) {
     window.lastValidationState = false;
@@ -1032,10 +1050,10 @@ function validatePriceSum() {
   if (saveBtn) {
     const shouldDisable = hasNonZeroValues && !isValid;
     saveBtn.disabled = shouldDisable;
-    saveBtn.title = shouldDisable ? 'Sum must equal total venue price to save' : 'Save changes';
+    saveBtn.title = shouldDisable ? validationMessage : 'Save changes';
   }
   
-  return !hasNonZeroValues || isValid; // Valid if no values entered OR sum matches
+  return !hasNonZeroValues || isValid; // Valid if no values entered OR sum matches requirements
 }
 
 function addAutoBalanceButton() {
@@ -1044,8 +1062,8 @@ function addAutoBalanceButton() {
     const autoBalanceBtn = document.createElement('button');
     autoBalanceBtn.id = 'autoBalanceBtn';
     autoBalanceBtn.className = 'auto-balance-btn';
-    autoBalanceBtn.innerHTML = '⚖️ Auto Balance';
-    autoBalanceBtn.title = 'Distribute total price equally among all players';
+    autoBalanceBtn.innerHTML = '⚖️ Smart Split';
+    autoBalanceBtn.title = 'Smart price distribution based on payment status';
     autoBalanceBtn.addEventListener('click', autoBalancePrices);
     
     // Insert before save button
@@ -1071,12 +1089,65 @@ function autoBalancePrices() {
     return;
   }
   
-  const pricePerPlayer = totalPrice / playerCount;
+  // Calculate total paid by all members
+  const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
+  const twentyPercentAmount = Math.round((totalPrice * 0.20) * 100) / 100;
+  const needsInitialDeposit = totalPaidByAll < twentyPercentAmount;
   
-  console.log(`💰 Auto-balancing: ₪${totalPrice} ÷ ${playerCount} players = ₪${pricePerPlayer.toFixed(2)} per player`);
+  console.log("💰 Smart price splitting analysis:", {
+    totalPrice,
+    totalPaidByAll,
+    twentyPercentAmount,
+    needsInitialDeposit
+  });
+  
+  let pricePerPlayer;
+  let message;
+  
+  if (needsInitialDeposit) {
+    // No one paid the 20% - distribute 80% of total price among all players
+    // Host pays less share since they're responsible for the 20% deposit
+    const eightyPercentAmount = totalPrice * 0.8;
+    const hostUsername = getHostUsername(window.players);
+    
+    // Calculate prices for each player
+    inputs.forEach(input => {
+      const playerUsername = input.dataset.player;
+      if (playerUsername === hostUsername) {
+        // Host pays 30% of the 80% (so they pay less share)
+        const hostShare = eightyPercentAmount * 0.3;
+        input.value = hostShare; // Removed .toFixed(2)
+      } else {
+        // Other players pay 70% of the 80% divided among them
+        const nonHostCount = playerCount - 1;
+        const nonHostShare = (eightyPercentAmount * 0.7) / nonHostCount;
+        input.value = nonHostShare; // Removed .toFixed(2)
+      }
+    });
+    
+    message = `Smart split (20% not paid): Host pays ₪${eightyPercentAmount * 0.3} + 20% deposit, others pay ₪${(eightyPercentAmount * 0.7) / (playerCount - 1)}`;
+    
+    // Reset validation state and trigger validation
+    window.lastValidationState = false;
+    validatePriceSum();
+    
+    // Show the smart auto-balance confirmation
+    setTimeout(() => {
+      showNotification(message, 'info');
+    }, 500);
+    
+    return; // Exit early since we've handled the distribution
+  } else {
+    // Someone paid the 20% - distribute remaining amount
+    const remainingAmount = totalPrice - totalPaidByAll;
+    pricePerPlayer = remainingAmount / playerCount;
+    message = `Smart split (20% paid): ₪${pricePerPlayer} per player (Remaining: ₪${remainingAmount})`;
+  }
+  
+  console.log(`💰 Smart auto-balancing: ${message}`);
   
   inputs.forEach(input => {
-    input.value = pricePerPlayer.toFixed(2);
+    input.value = pricePerPlayer; // Removed .toFixed(2)
   });
   
   // Reset validation state so the success popup will show
@@ -1085,36 +1156,71 @@ function autoBalancePrices() {
   // Trigger validation (this will show the success popup)
   validatePriceSum();
   
-  // Also show the auto-balance confirmation
+  // Show the smart auto-balance confirmation
   setTimeout(() => {
-      showNotification(`Prices auto-balanced: ₪${pricePerPlayer.toFixed(2)} per player`, 'info');
-}, 500);
+    showNotification(message, 'info');
+  }, 500);
 }
 
-
+function calculateCountdownDeadline() {
+  // Get booking date and time from the page
+  const bookingDate = document.getElementById('bookingDate').textContent;
+  const bookingTime = document.getElementById('bookingTime').textContent;
+  
+  if (!bookingDate || !bookingTime) {
+    console.log('❌ No booking date/time found');
+    return null;
+  }
+  
+  // Parse booking date and time
+  const [startTime] = bookingTime.split(' - '); // Get start time only
+  const deadlineDate = new Date(`${bookingDate} ${startTime}`);
+  
+  // Subtract 24 hours (1 day) from the booking time
+  deadlineDate.setDate(deadlineDate.getDate() - 1);
+  
+  console.log('📅 Booking date/time:', `${bookingDate} ${startTime}`);
+  console.log('⏰ Deadline date/time:', deadlineDate.toLocaleString());
+  
+  return deadlineDate;
+}
 
 function startCountdown() {
   console.log('🚀 startCountdown() called');
-  console.log('🔍 window.countdownData:', window.countdownData);
   
-  if (!window.countdownData) {
-    console.log('❌ No countdown data available - using default timer');
-    // Fallback to default static timer if no countdown data
-    window.timeRemaining = 6330; // Default 1:45:30
-    window.countdownPhase = 1;
-    window.twentyPercentAmount = window.totalVenuePrice * 0.20;
-    window.totalPaid = 0;
-    window.paymentDeadlineMet = false;
-  } else {
-    // Initialize countdown with data from server
-    window.timeRemaining = window.countdownData.seconds_remaining;
-    window.countdownPhase = window.countdownData.phase;
-    window.twentyPercentAmount = window.countdownData.twenty_percent_amount;
-    window.totalPaid = window.countdownData.total_paid;
-    window.paymentDeadlineMet = window.countdownData.payment_deadline_met;
+  // Check if full payment is already made
+  const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
+  const isFullyPaid = totalPaidByAll >= window.totalVenuePrice;
+  
+  if (isFullyPaid) {
+    console.log('✅ Full payment made - disabling countdown timer');
+    disableCountdownTimer();
+    return;
   }
   
-  console.log(`🕐 Starting countdown - Phase ${window.countdownPhase}, ${window.timeRemaining} seconds remaining`);
+  // Calculate deadline (24 hours before booking)
+  const deadlineDate = calculateCountdownDeadline();
+  
+  if (!deadlineDate) {
+    console.log('❌ Could not calculate deadline - using fallback');
+    window.timeRemaining = 6330; // Default fallback
+  } else {
+    // Calculate seconds remaining until deadline
+    const now = new Date();
+    const timeDiff = deadlineDate.getTime() - now.getTime();
+    window.timeRemaining = Math.max(0, Math.floor(timeDiff / 1000));
+    
+    console.log(`⏰ Countdown deadline: ${deadlineDate.toLocaleString()}`);
+    console.log(`⏰ Seconds remaining: ${window.timeRemaining}`);
+  }
+  
+  // Initialize countdown variables
+  window.countdownPhase = 1;
+  window.twentyPercentAmount = Math.round((window.totalVenuePrice * 0.20) * 100) / 100;
+  window.totalPaid = totalPaidByAll;
+  window.paymentDeadlineMet = totalPaidByAll >= window.twentyPercentAmount;
+  
+  console.log(`⏰ Starting countdown - Phase ${window.countdownPhase}, ${window.timeRemaining} seconds remaining`);
   console.log(`💰 Twenty percent amount: ₪${window.twentyPercentAmount}, Total paid: ₪${window.totalPaid}`);
   
   // Update display immediately
@@ -1136,24 +1242,46 @@ function startCountdown() {
   }, 1000);
 }
 
+function disableCountdownTimer() {
+  // Stop the countdown interval
+  if (window.countdownInterval) {
+    clearInterval(window.countdownInterval);
+  }
+  
+  // Update timer display to show payment complete
+  const timerTitle = document.querySelector('.timer-title');
+  const timerMessage = document.querySelector('.timer-message');
+  const countdownTimer = document.getElementById('countdown');
+  
+  if (timerTitle) timerTitle.textContent = '✅ Payment Complete';
+  if (timerMessage) {
+    timerMessage.innerHTML = `
+      <div class="payment-complete">
+        <div class="success-message">🎉 Full payment has been completed!</div>
+        <div class="payment-info">Total paid: <strong>₪${window.totalVenuePrice}</strong></div>
+        <div class="booking-confirmed">Your booking is confirmed and ready.</div>
+      </div>
+    `;
+  }
+  
+  // Hide the countdown timer
+  if (countdownTimer) {
+    countdownTimer.style.display = 'none';
+  }
+}
+
 function updateCountdownDisplay() {
   const days = Math.floor(window.timeRemaining / 86400);
   const hours = Math.floor((window.timeRemaining % 86400) / 3600);
   const minutes = Math.floor((window.timeRemaining % 3600) / 60);
   const seconds = window.timeRemaining % 60;
 
-  console.log(`⏰ Updating display: ${hours}h ${minutes}m ${seconds}s (${window.timeRemaining} total seconds)`);
 
   // Update countdown elements
   const hoursElement = document.getElementById('hours');
   const minutesElement = document.getElementById('minutes');
   const secondsElement = document.getElementById('seconds');
-  
-  console.log('🔍 Timer elements found:', {
-    hours: !!hoursElement,
-    minutes: !!minutesElement, 
-    seconds: !!secondsElement
-  });
+ 
   
   if (hoursElement) hoursElement.textContent = hours.toString().padStart(2, '0');
   if (minutesElement) minutesElement.textContent = minutes.toString().padStart(2, '0');
@@ -1173,6 +1301,22 @@ function updateCountdownMessage(days, hours, minutes, seconds) {
     return;
   }
   
+  // Check if full payment is made
+  const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
+  const isFullyPaid = totalPaidByAll >= window.totalVenuePrice;
+  
+  if (isFullyPaid) {
+    timerTitle.textContent = '✅ Payment Complete';
+    timerMessage.innerHTML = `
+      <div class="payment-complete">
+        <div class="success-message">🎉 Full payment has been completed!</div>
+        <div class="payment-info">Total paid: <strong>₪${window.totalVenuePrice}</strong></div>
+        <div class="booking-confirmed">Your booking is confirmed and ready.</div>
+      </div>
+    `;
+    return;
+  }
+  
   if (window.countdownPhase === 1) {
     // Phase 1: Need to pay 20%
     timerTitle.textContent = '⏰ Payment Deadline';
@@ -1181,7 +1325,7 @@ function updateCountdownMessage(days, hours, minutes, seconds) {
     }
     
     timerMessage.innerHTML = `
-      You must pay at least <strong>20% (₪<span id="minimumAmount">${window.twentyPercentAmount}</span>)</strong> of the total booking price before the timer expires, otherwise the booking will be automatically canceled.
+      You must pay at least <strong>20% (₪<span id="minimumAmount">${window.twentyPercentAmount}</span>)</strong> of the total booking price before 24 hours prior to your booking time, otherwise the booking will be automatically canceled.
       <br><br>
       <div class="payment-status">
         <span class="current-paid">Currently paid: <strong>₪${window.totalPaid}</strong></span>
@@ -1278,6 +1422,7 @@ function handlePayNow() {
 }
 
 function openPaymentModal() {
+  console.log("🎯 openPaymentModal function called!");
   console.log("🔍 Looking for payment modal elements...");
   const modal = document.getElementById('paymentModal');
   const closeBtn = document.getElementById('paymentModalClose');
@@ -1299,12 +1444,76 @@ function openPaymentModal() {
     return;
   }
   
+  console.log("🔍 Modal element details:");
+  console.log("  - Modal element:", modal);
+  console.log("  - Modal ID:", modal.id);
+  console.log("  - Modal classes:", modal.className);
+  console.log("  - Modal parent:", modal.parentElement);
+  console.log("  - Modal in document:", document.contains(modal));
+  
   // Populate modal with payment data
   populatePaymentModal();
   
-  // Show modal
+  // Show modal with proper visibility
   modal.style.display = 'flex';
-  console.log("✅ Payment modal displayed");
+  modal.style.zIndex = '9999';
+  modal.style.position = 'fixed';
+  modal.style.top = '0';
+  modal.style.left = '0';
+  modal.style.width = '100%';
+  modal.style.height = '100%';
+  modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+  modal.style.alignItems = 'center';
+  modal.style.justifyContent = 'center';
+  modal.style.visibility = 'visible';
+  modal.style.pointerEvents = 'auto';
+  
+  // Force modal content to be visible
+  const modalContent = modal.querySelector('.modal-content');
+  if (modalContent) {
+    modalContent.style.display = 'block';
+    modalContent.style.zIndex = '10000';
+    modalContent.style.backgroundColor = 'white';
+    modalContent.style.borderRadius = '12px';
+    modalContent.style.padding = '20px';
+    modalContent.style.maxWidth = '500px';
+    modalContent.style.width = '90%';
+    modalContent.style.maxHeight = '80vh';
+    modalContent.style.overflowY = 'auto';
+    modalContent.style.transform = 'translate(-50%, -50%) scale(1)'; // Force scale to 1
+    modalContent.style.position = 'absolute';
+    modalContent.style.top = '50%';
+    modalContent.style.left = '50%';
+    modalContent.style.visibility = 'visible';
+    modalContent.style.opacity = '1';
+  }
+  
+  // Use setTimeout to ensure the modal is visible after display is set
+  setTimeout(() => {
+    modal.style.opacity = '1'; // Force opacity to 1
+    console.log("🔍 Modal opacity set to 1");
+    console.log("🔍 Final modal style:", {
+      display: modal.style.display,
+      opacity: modal.style.opacity,
+      zIndex: modal.style.zIndex,
+      visibility: modal.style.visibility,
+      position: modal.style.position
+    });
+  }, 10);
+  
+  console.log("✅ Payment modal displayed with forced visibility");
+  console.log("🔍 Modal display style:", modal.style.display);
+  console.log("🔍 Modal z-index:", modal.style.zIndex);
+  console.log("🔍 Modal position:", modal.style.position);
+  
+  // Check modal content
+  console.log("🔍 Modal content found:", !!modalContent);
+  if (modalContent) {
+    console.log("🔍 Modal content display:", modalContent.style.display);
+    console.log("🔍 Modal content z-index:", modalContent.style.zIndex);
+    console.log("🔍 Modal content background:", modalContent.style.backgroundColor);
+    console.log("🔍 Modal content transform:", modalContent.style.transform);
+  }
   
   // Event listeners
   closeBtn.onclick = closePaymentModal;
@@ -1322,11 +1531,23 @@ function openPaymentModal() {
   payInitialCheckbox.onchange = function() {
     updatePaymentAmount();
   };
+  
+  // Show host responsibility notification
+  const hostUsername = getHostUsername(window.players);
+  const isHost = window.currentUsername === hostUsername;
+  if (isHost) {
+    const totalPrice = window.totalVenuePrice || 0;
+    const twentyPercentAmount = Math.round((totalPrice * 0.20) * 100) / 100; // Keep 2 decimal places like backend
+    showNotification(`As the host, you are responsible for the 20% deposit (₪${twentyPercentAmount}) to secure this booking.`, 'info');
+  }
 }
 
 function closePaymentModal() {
   const modal = document.getElementById('paymentModal');
-  modal.style.display = 'none';
+  if (modal) {
+    modal.style.display = 'none';
+    modal.style.opacity = '0'; // Reset opacity
+  }
 }
 
 function populatePaymentModal() {
@@ -1350,7 +1571,7 @@ function populatePaymentModal() {
   
   // Calculate total paid by all members
   const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
-  const twentyPercentAmount = Math.round(totalPrice * 0.20);
+  const twentyPercentAmount = Math.round((totalPrice * 0.20) * 100) / 100; // Keep 2 decimal places like backend
   const needsInitialDeposit = totalPaidByAll < twentyPercentAmount;
   
   console.log("💰 Group payment data:", {
@@ -1385,12 +1606,43 @@ function populatePaymentModal() {
   if (initialPaymentSection) {
     if (needsInitialDeposit) {
       initialPaymentSection.style.display = 'block';
-      // Update the message based on current user's payment
-      const message = amountPaid === 0 ? 
-        'No one has paid the initial 20% deposit yet. This deposit is required to secure the booking.' :
-        'The initial 20% deposit has not been fully paid yet. You can contribute to this deposit.';
+      
+      // Get host information
+      const hostUsername = getHostUsername(window.players);
+      const isHost = window.currentUsername === hostUsername;
+      
+      // Update the message based on user role
+      let message;
+      if (isHost) {
+        message = 'As the host, you are responsible for paying the initial 20% deposit to secure the booking.';
+      } else {
+        message = 'The host needs to pay the initial 20% deposit. You can contribute if they haven\'t paid yet.';
+      }
+      
       const messageElement = initialPaymentSection.querySelector('p');
       if (messageElement) messageElement.textContent = message;
+      
+      // Auto-check the deposit checkbox for host and update label
+      const payInitialCheckbox = document.getElementById('payInitialDeposit');
+      const checkboxLabel = document.querySelector('label[for="payInitialDeposit"]');
+      
+      if (payInitialCheckbox) {
+        if (isHost) {
+          payInitialCheckbox.checked = true;
+          // Trigger the change event to update payment amount
+          payInitialCheckbox.dispatchEvent(new Event('change'));
+          
+          // Update label for host
+          if (checkboxLabel) {
+            checkboxLabel.innerHTML = `Pay the initial 20% deposit (₪<span id="modalInitialDeposit">${twentyPercentAmount}</span>) <strong>- Your Responsibility as Host</strong>`;
+          }
+        } else {
+          // Update label for non-host
+          if (checkboxLabel) {
+            checkboxLabel.innerHTML = `Contribute to the initial 20% deposit (₪<span id="modalInitialDeposit">${twentyPercentAmount}</span>)`;
+          }
+        }
+      }
     } else {
       initialPaymentSection.style.display = 'none';
     }
@@ -1411,7 +1663,7 @@ function updatePaymentAmount() {
   
   if (payInitialCheckbox.checked) {
     const totalPrice = window.totalVenuePrice || 0;
-    const twentyPercentAmount = Math.round(totalPrice * 0.20);
+    const twentyPercentAmount = Math.round((totalPrice * 0.20) * 100) / 100; // Keep 2 decimal places like backend
     const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
     const remainingInitialDeposit = Math.max(0, twentyPercentAmount - totalPaidByAll);
     
@@ -1492,9 +1744,68 @@ function handleConfirmPayment() {
 }
 
 function handleCancelBooking() {
-  if (confirm('Cancel this booking?')) {
-    showNotification('Booking canceled', 'warning');
+  if (!window.currentBookingId) {
+    showNotification('Error: No booking ID found', 'error');
+    return;
   }
+
+  // Show confirmation dialog with more details
+  if (!confirm('Are you sure you want to cancel this booking?\n\nThis action will:\n• Delete the booking permanently\n• Remove all group members\n• Send refund notifications to all players\n• This action cannot be undone.')) {
+    return;
+  }
+
+  console.log("🚫 Cancelling booking:", window.currentBookingId);
+  
+  // Show loading state
+  const cancelBtn = document.querySelector('.cancel-btn');
+  if (cancelBtn) {
+    cancelBtn.disabled = true;
+    cancelBtn.textContent = 'Cancelling...';
+  }
+
+  // Call backend API
+  const formData = new URLSearchParams();
+  formData.append('booking_id', window.currentBookingId);
+
+  fetch('cancel_booking.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData.toString()
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    return res.json();
+  })
+  .then(data => {
+    console.log("📊 Cancel booking response:", data);
+    
+    if (data.success) {
+      showNotification(data.message, 'success');
+      
+      // Show success message with details
+      const successMessage = `Booking cancelled successfully!\n\nVenue: ${data.cancelled_booking.venue_name}\nMembers notified: ${data.cancelled_booking.members_notified}\n\nAll players will receive refund emails.`;
+      alert(successMessage);
+      
+      // Redirect to MyBookings page after a short delay
+      setTimeout(() => {
+        window.location.href = '../MyBookings/MyBookings.php';
+      }, 2000);
+    } else {
+      throw new Error(data.message || 'Failed to cancel booking');
+    }
+  })
+  .catch(error => {
+    console.error("❌ Cancel booking failed:", error);
+    showNotification('Failed to cancel booking: ' + error.message, 'error');
+    
+    // Restore button state
+    if (cancelBtn) {
+      cancelBtn.disabled = false;
+      cancelBtn.textContent = 'Cancel Booking';
+    }
+  });
 }
 
 function handleLeaveGroup() {
@@ -1625,6 +1936,19 @@ function goBack() {
   } else {
     // Otherwise, go back to previous page
     window.history.back();
+  }
+}
+
+// Test function to manually show payment modal
+function testModal() {
+  console.log("🧪 Testing payment modal...");
+  const modal = document.getElementById('paymentModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.style.zIndex = '9999';
+    console.log("✅ Modal forced to show");
+  } else {
+    console.log("❌ Modal not found");
   }
 }
 

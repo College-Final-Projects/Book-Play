@@ -672,6 +672,16 @@ body {
   font-size: 0.65rem;
   font-weight: 700;
   box-shadow: 0 3px 10px rgba(255, 107, 53, 0.4);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.host-badge small {
+  display: block;
+  font-size: 0.5rem;
+  font-weight: 600;
+  opacity: 0.9;
+  margin-top: 1px;
 }
 .me-player {
   border: 2px solid #22c55e; /* green border */
@@ -1251,7 +1261,7 @@ body {
 }
 
 .payment-modal .modal-header h2 {
-  color: var(--text-main);
+  color: white;
   font-size: 24px;
   font-weight: 700;
   margin: 0;
