@@ -538,7 +538,7 @@ function renderPlayers(playersToRender = currentPlayers) {
     playersGrid.innerHTML = playersToRender.map(player => `
         <div class="player-card" onclick="openPlayerModal('${player.username}', '${player.name}', '${player.favorite_sports.join(', ')}', '${player.age}', '${player.gender}', '${player.phone}', '${player.distance}', '${player.image}')">
             <div class="player-image">
-                <img src="${player.image}" alt="${player.name}" onerror="this.src='../../../Images/default.jpg'" />
+                <img src="${player.image}" alt="${player.name}" onerror="this.src='../../../uploads/users/default.jpg'" />
             </div>
             <div class="player-details">
                 <h4 class="player-name">${player.name}</h4>
@@ -721,36 +721,6 @@ function closePlayerModal() {
         playerModal.style.display = 'none';
     }
 }
-
-// Debug function - call this from console to check userAvailability
-window.debugAvailability = function() {
-    console.log('=== AVAILABILITY DEBUG ===');
-    console.log('Current userAvailability object:', userAvailability);
-    console.log('Available to play:', isAvailableToPlay);
-    console.log('Object.keys(userAvailability):', Object.keys(userAvailability));
-    console.log('Is userAvailability an array?', Array.isArray(userAvailability));
-    console.log('Type of userAvailability:', typeof userAvailability);
-    
-    for (let day in userAvailability) {
-        console.log(`Day: ${day}, Slots:`, userAvailability[day]);
-        if (userAvailability[day].length === 0) {
-            console.log(`  -> ${day} is ALL DAY available`);
-        } else {
-            console.log(`  -> ${day} has specific time slots:`, userAvailability[day]);
-        }
-    }
-    
-    // Check checkboxes state
-    days.forEach(day => {
-        const checkbox = document.getElementById(day.substring(0, 3));
-        console.log(`${day} checkbox checked:`, checkbox ? checkbox.checked : 'NOT FOUND');
-    });
-    
-    console.log('JSON that would be sent:', JSON.stringify(userAvailability));
-    console.log('=== END DEBUG ===');
-    
-    return userAvailability;
-};
 
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');

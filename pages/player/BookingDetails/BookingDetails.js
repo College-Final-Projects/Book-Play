@@ -1912,22 +1912,6 @@ function viewBookingDetails(booking_id) {
   window.location.href = url;
 }
 
-// ✅ Test function to manually test privacy toggle
-function testPrivacyToggle() {
-  console.log("🧪 Testing privacy toggle manually");
-  const privacyToggle = document.getElementById('privacyToggle');
-  if (privacyToggle) {
-    privacyToggle.disabled = false;
-    privacyToggle.style.cursor = "pointer";
-    privacyToggle.style.opacity = "1";
-    console.log("✅ Privacy toggle enabled for testing");
-  } else {
-    console.log("❌ Privacy toggle element not found");
-  }
-}
-
-
-
 // ✅ Go back function
 function goBack() {
   if (window.viewOnly) {
@@ -1938,18 +1922,3 @@ function goBack() {
     window.history.back();
   }
 }
-
-// Test function to manually show payment modal
-function testModal() {
-  console.log("🧪 Testing payment modal...");
-  const modal = document.getElementById('paymentModal');
-  if (modal) {
-    modal.style.display = 'flex';
-    modal.style.zIndex = '9999';
-    console.log("✅ Modal forced to show");
-  } else {
-    console.log("❌ Modal not found");
-  }
-}
-
-// Removed duplicate window.onload - using DOMContentLoaded at the top

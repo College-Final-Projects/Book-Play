@@ -225,8 +225,7 @@ function getAllPlayers($username) {
         FROM users u
         LEFT JOIN user_favorite_sports ufs ON u.username = ufs.username
         LEFT JOIN sports s ON ufs.sport_id = s.sport_id
-        WHERE u.username != ? 
-        AND u.is_admin = 0
+        WHERE u.username != ?
     ";
     
     $params = [$username];
@@ -263,7 +262,7 @@ function getAllPlayers($username) {
     echo json_encode($players);
 }
 
-// Sort By Me - FIXED to support time overlap instead of exact match
+// Sort By Me
 function sortByMe($username) {
     global $conn;
     
@@ -308,7 +307,6 @@ function sortByMe($username) {
         LEFT JOIN sports s ON ufs.sport_id = s.sport_id
         LEFT JOIN user_availability ua ON u.username = ua.username
         WHERE u.username != ? 
-        AND u.is_admin = 0
         AND ua.is_available = 1
     ";
     
@@ -337,7 +335,6 @@ function sortByMe($username) {
                 $types .= "i";
             } else {
                 // I have SPECIFIC TIMES on this day
-                // FIXED: Show people with OVERLAPPING times (not exact match)
                 // Time overlap condition: their_start_time < my_end_time AND their_end_time > my_start_time
                 $availabilityConditions[] = "(ua.day_of_week = ? AND ua.start_time < ? AND ua.end_time > ?)";
                 $params[] = $slot['day_of_week'];
@@ -350,9 +347,6 @@ function sortByMe($username) {
         if (!empty($availabilityConditions)) {
             $conditions[] = "(" . implode(" OR ", $availabilityConditions) . ")";
         }
-    } else {
-        // If I have no availability set, just match by sports only
-        // This is already handled by the sports condition above
     }
     
     // Apply all conditions
