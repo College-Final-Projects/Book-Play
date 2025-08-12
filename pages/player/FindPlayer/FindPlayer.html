@@ -3,11 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Find nearby sports players and connect with them. Location access helps show distances to other players for better matchmaking." />
-  <meta name="theme-color" content="#3b82f6" />
   <title>Find Player - Book&Play</title>
   <link rel="stylesheet" href="FindPlayer.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
 </head>
 <body>
   <div class="container">
@@ -17,13 +14,34 @@
         <input type="text" id="searchInput" placeholder="Search players by username..." />
         <button class="search-btn">🔍</button>
       </div>
-      <button class="sort-btn" id="sortByMeBtn">Sort By Me</button>
+      <div class="sort-section">
+        <button class="sort-btn" id="sortByMeBtn">
+          Sort By Me
+        </button>
+        <div class="sort-explanation">
+          <p><strong>🎯 Sort By Me Explanation:</strong></p>
+          <p>This feature finds players who match both:</p>
+          <ul>
+            <li>✅ <strong>Same Sports:</strong> Players who like the same sports as you</li>
+            <li>✅ <strong>Overlapping Schedule:</strong> Players available at the same times as you</li>
+          </ul>
+          <p><em>💡 Make sure to set your favorite sports in your profile and your availability schedule below!</em></p>
+        </div>
+      </div>
     </div>
 
     <!-- 📅 Availability Section -->
     <div class="availability-section">
       <div class="availability-header">
         <h3>Your Availability</h3>
+        <div class="availability-explanation">
+          <p><strong>📅 How to set your availability:</strong></p>
+          <ul>
+            <li><strong>Check a day:</strong> Available all day on that day</li>
+            <li><strong>Add time slots:</strong> Available only during specific hours</li>
+            <li><strong>Multiple slots:</strong> You can add up to 3 time slots per day</li>
+          </ul>
+        </div>
         <div class="availability-controls">
           <button class="select-all-btn" id="selectAllBtn">Select Everyday</button>
           <div class="toggle-container">
@@ -32,6 +50,11 @@
               <input type="checkbox" id="availableToggle" checked />
               <span class="slider"></span>
             </label>
+            <div class="toggle-explanation">
+              <p><strong>🎮 Available to Play:</strong></p>
+              <p><strong>ON:</strong> Other players can find you when they use "Sort By Me"</p>
+              <p><strong>OFF:</strong> You're hidden from "Sort By Me" results</p>
+            </div>
           </div>
         </div>
       </div>
@@ -88,65 +111,49 @@
           <div class="time-slots" id="slots-saturday"></div>
         </div>
       </div>
+
+      <!-- Save Button -->
+      <div class="save-section">
+        <button class="save-btn" id="saveAvailabilityBtn">
+          <span class="save-icon">💾</span>
+          Save Availability & Settings
+        </button>
+        <div class="save-status" id="saveStatus"></div>
+      </div>
     </div>
 
     <!-- 👥 Players Display Section -->
     <div class="players-section">
       <h3>Suggested Players</h3>
-      <div class="players-grid" id="playersGrid">
-        <!-- Player cards will be dynamically loaded here -->
-
-  <!-- 📋 Player Modal -->
-  <div class="modal" id="playerModal">
-    <div class="modal-content">
-      <span class="close" onclick="closePlayerModal()">&times;</span>
-      
-      <!-- Modal Header with Gradient Background -->
-      <div class="modal-header">
-        <div class="modal-avatar">
-          <img id="modalPlayerImage" src="" alt="Player" />
+      <div class="search-explanation">
+        <p><strong>🔍 Search vs Sort By Me:</strong></p>
+        <div class="explanation-grid">
+          <div class="explanation-item">
+            <h4>🔍 Search Bar</h4>
+            <p>Shows <strong>ALL players</strong> matching your search term (name, username, sports)</p>
+          </div>
+          <div class="explanation-item">
+            <h4>🎯 Sort By Me</h4>
+            <p>Shows <strong>ONLY players</strong> who match your sports AND availability times</p>
+          </div>
         </div>
-        <h2 id="modalPlayerName">Player Name</h2>
-        <p class="modal-subtitle">Profile Information</p>
       </div>
-      
-      <!-- Modal Body with Player Details -->
-      <div class="modal-body">
-        <div class="profile-info">
-          <div class="info-row">
-            <span class="info-label">Username:</span>
-            <span class="info-value" id="modalUsername">-</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Email:</span>
-            <span class="info-value" id="modalEmail">-</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Favorite Sport:</span>
-            <span class="info-value" id="modalSport">-</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Age:</span>
-            <span class="info-value" id="modalAge">-</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Gender:</span>
-            <span class="info-value" id="modalGender">-</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Phone Number:</span>
-            <span class="info-value" id="modalPhone">-</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Location:</span>
-            <span class="info-value" id="modalLocation">-</span>
-          </div>
-        </div>
+      <div class="players-grid" id="playersGrid">
+        <!-- Dynamic content will be loaded here -->
       </div>
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+  <!-- 📋 Player Modal -->
+  <div class="modal" id="playerModal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="modalBody">
+        <!-- Dynamic modal content will be loaded here -->
+      </div>
+    </div>
+  </div>
+
   <script src="FindPlayer.js" defer></script>
 </body>
 </html>
