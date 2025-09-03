@@ -16,6 +16,21 @@
   color: var(--text-muted);
 }
 
+/* Required field indicator */
+.required-field {
+  color: #ef4444;
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+/* Field help text */
+.field-help {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
 /* Search & Sort */
 .search-sort-container {
   display: flex;
@@ -562,32 +577,7 @@ input:checked + .toggle-slider:before {
   border-radius: 2px;
 }
 
-.close-modal {
-  position: absolute;
-  top: 20px;
-  right: 25px;
-  font-size: 28px;
-  cursor: pointer;
-  color: #64748b;
-  background: rgba(248, 250, 252, 0.8);
-  border: none;
-  padding: 8px;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
 
-.close-modal:hover {
-  background: linear-gradient(135deg, #ef4444, #f87171);
-  color: white;
-  transform: rotate(90deg) scale(1.1);
-  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
-}
 
 .modal-content form input,
 .modal-content form select,

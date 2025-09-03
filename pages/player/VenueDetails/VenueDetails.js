@@ -1,6 +1,34 @@
 // Make currentRating global
 let currentRating = 0;
 
+// Function to hide review-related elements in view-only mode
+function hideReviewElements() {
+  // Hide Report Venue button
+  const reportBtn = document.querySelector('.report-btn');
+  if (reportBtn) {
+    reportBtn.style.display = 'none';
+    console.log('🚫 Hidden Report Venue button');
+  }
+  
+  // Hide Add your review section
+  const addCommentSection = document.querySelector('.add-comment');
+  if (addCommentSection) {
+    addCommentSection.style.display = 'none';
+    console.log('🚫 Hidden Add your review section');
+  }
+  
+  // Optionally hide the Reviews section title if no reviews exist
+  const reviewsTitle = document.querySelector('.section-title');
+  if (reviewsTitle && reviewsTitle.textContent === 'Reviews') {
+    // Only hide if there are no comments
+    const commentsContainer = document.getElementById('commentsContainer');
+    if (commentsContainer && commentsContainer.children.length === 0) {
+      reviewsTitle.style.display = 'none';
+      console.log('🚫 Hidden Reviews section title (no reviews)');
+    }
+  }
+}
+
 // Smart back button function - goes to previous page or fallback
 window.goBack = function goBack() {
   console.log('🔙 Back button clicked');
@@ -59,6 +87,16 @@ window.goBack = function goBack() {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('🚀 VenueDetails.js DOMContentLoaded triggered');
   
+  // Check if this is view-only mode
+  const params = new URLSearchParams(window.location.search);
+  const facilityId = params.get('facilities_id');
+  const isViewOnly = params.get('view_only') === 'true';
+  
+  if (isViewOnly) {
+    console.log('👁️ View-only mode detected, hiding review elements');
+    hideReviewElements();
+  }
+  
   // Add event listener to back button as backup
   const backButton = document.getElementById('backButton');
   if (backButton) {
@@ -69,9 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     console.log('✅ Back button event listener added');
   }
-  
-  const params = new URLSearchParams(window.location.search);
-  const facilityId = params.get('facilities_id');
 
   console.log('🔍 VenueDetails loading for facility_id:', facilityId);
   console.log('📍 Current URL:', window.location.href);

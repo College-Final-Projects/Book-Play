@@ -3,6 +3,12 @@ session_start();
 require_once '../../../db.php';
 header('Content-Type: application/json');
 
+// Check if user is logged in
+if (!isset($_SESSION['username'])) {
+    echo json_encode(['success' => false, 'message' => 'User not logged in']);
+    exit;
+}
+
 // Get the requested action from the frontend
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
@@ -10,26 +16,55 @@ switch ($action) {
 
     // 📊 1. Fetch monthly booking analytics per facility
     case 'fetch_monthly_analytics':
-        $facilities_id = intval($_GET['facilities_id'] ?? 0);
+        $venueName = $_GET['venue'] ?? '';
+        $year = intval($_GET['year'] ?? date('Y'));
 
-        if ($facilities_id <= 0) {
-            echo json_encode(['success' => false, 'message' => 'Invalid facility ID.']);
+        if (empty($venueName)) {
+            echo json_encode(['success' => false, 'message' => 'Venue name is required.']);
             exit;
         }
 
+        // Get the facility ID first
+        $stmt = $conn->prepare("SELECT facilities_id FROM sportfacilities WHERE place_name = ? AND owner_username = ?");
+        $stmt->bind_param("ss", $venueName, $_SESSION['username']);
+        $stmt->execute();
+        $facilityResult = $stmt->get_result();
+        
+        if ($facilityResult->num_rows === 0) {
+            echo json_encode(['success' => false, 'message' => 'Venue not found or not owned by you.']);
+            exit;
+        }
+        
+        $facility = $facilityResult->fetch_assoc();
+        $facilities_id = $facility['facilities_id'];
+
+        // Fetch actual booking data grouped by month and date
         $stmt = $conn->prepare("
-            SELECT booking_day, booking_month, booking_year, total_bookings 
-            FROM facilityinsights 
-            WHERE facilities_id = ?
-            ORDER BY booking_year DESC, booking_month DESC, booking_day DESC
+            SELECT 
+                DATE(booking_date) as date,
+                COUNT(*) as bookings,
+                SUM(Total_Price) as total_price
+            FROM bookings 
+            WHERE facilities_id = ? 
+            AND YEAR(booking_date) = ?
+            GROUP BY DATE(booking_date)
+            ORDER BY date ASC
         ");
-        $stmt->bind_param("i", $facilities_id);
+        $stmt->bind_param("ii", $facilities_id, $year);
         $stmt->execute();
         $result = $stmt->get_result();
 
         $analytics = [];
         while ($row = $result->fetch_assoc()) {
-            $analytics[] = $row;
+            $month = date('F', strtotime($row['date']));
+            if (!isset($analytics[$month])) {
+                $analytics[$month] = [];
+            }
+            $analytics[$month][] = [
+                'date' => date('M d, Y', strtotime($row['date'])),
+                'bookings' => intval($row['bookings']),
+                'total' => floatval($row['total_price'])
+            ];
         }
 
         echo json_encode(['success' => true, 'data' => $analytics]);
@@ -53,12 +88,38 @@ switch ($action) {
     // 🏟️ 3. Fetch all accepted venues
     case 'fetch_venues':
         $venues = [];
-        $sql = "SELECT * FROM sportfacilities WHERE is_Accepted = 1";
+        
+        // More specific query to ensure we get all necessary fields
+        $sql = "SELECT 
+                    facilities_id, 
+                    place_name, 
+                    location, 
+                    description, 
+                    image_url, 
+                    owner_username, 
+                    SportCategory, 
+                    price, 
+                    is_Accepted 
+                FROM sportfacilities 
+                WHERE is_Accepted = 1";
+        
         $result = $conn->query($sql);
 
-        if ($result && $result->num_rows > 0) {
+        if (!$result) {
+            echo json_encode(['success' => false, 'message' => 'Database query failed: ' . $conn->error]);
+            exit;
+        }
+
+        if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                $row['image_url'] = explode(",", $row['image_url'])[0]; // Return only first image
+                // Handle image_url - get first image if it's a comma-separated list
+                if (!empty($row['image_url']) && $row['image_url'] !== 'null' && $row['image_url'] !== '') {
+                    $images = explode(",", $row['image_url']);
+                    $row['image_url'] = trim($images[0]); // Return only first image, trimmed
+                } else {
+                    $row['image_url'] = null; // Set to null if no image
+                }
+                
                 $venues[] = $row;
             }
         }

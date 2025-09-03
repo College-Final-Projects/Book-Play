@@ -113,11 +113,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     const emptyStars = 5 - fullStars - halfStar;
                     const starsHTML = '★'.repeat(fullStars) + (halfStar ? '½' : '') + '✩'.repeat(emptyStars);
 
+                    // Handle image path - check if it's already a full path or just filename
+                    let imagePath;
+                    if (venue.image && venue.image !== 'null' && venue.image.trim() !== '') {
+                        if (venue.image.startsWith('http') || venue.image.startsWith('/')) {
+                            // Full URL or absolute path
+                            imagePath = venue.image;
+                        } else {
+                            // Just filename, construct full path
+                            imagePath = `../../../uploads/venues/${venue.image}`;
+                        }
+                    } else {
+                        // No image or null, use default
+                        imagePath = '../../../uploads/venues/default.jpg';
+                                        }
+                    
                     card.innerHTML = `
                         <div class="venue-header">
                             <div class="venue-rating">${starsHTML} (${venue.rating ?? 'N/A'})</div>
                         </div>
-                        <img src="${venue.image}" class="venue-image" />
+                        <img src="${imagePath}" class="venue-image" alt="${venue.name}" onerror="this.src='../../../uploads/venues/default.jpg'" />
                         <h2 class="venue-name">${venue.name}</h2>
                         <p class="venue-location">${venue.location}</p>
                         <div class="venue-stats">

@@ -9,21 +9,42 @@ let venueAnalyticsData = {};
 
 // 📥 Load all venues from AnalyticsAPI
 function loadFacilities() {
+  console.log('🔍 Loading facilities from AnalyticsAPI...');
+  
   fetch('AnalyticsAPI.php?action=fetch_venues')
-    .then(response => response.json())
+    .then(response => {
+      console.log('📡 API Response status:', response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
     .then(data => {
-      if (!Array.isArray(data.venues)) {
-        console.error('Invalid data format:', data);
+      console.log('📊 API Response data:', data);
+      
+      if (!data.success) {
+        console.error('❌ API returned error:', data.message);
+        const venueGrid = document.getElementById('venueCards');
+        if (venueGrid) {
+          venueGrid.innerHTML = `<div class="no-venues-message">API Error: ${data.message}</div>`;
+        }
         return;
       }
+      
+      if (!Array.isArray(data.venues)) {
+        console.error('❌ Invalid data format:', data);
+        return;
+      }
+      
+      console.log(`✅ Loaded ${data.venues.length} venues`);
       facilities = data.venues;
       applyFilters();
     })
     .catch(error => {
-      console.error('Error loading facilities:', error);
+      console.error('❌ Error loading facilities:', error);
       const venueGrid = document.getElementById('venueCards');
       if (venueGrid) {
-        venueGrid.innerHTML = '<div class="no-venues-message">Failed to load venues.</div>';
+        venueGrid.innerHTML = '<div class="no-venues-message">Failed to load venues. Please check console for details.</div>';
       }
     });
 }
@@ -38,16 +59,35 @@ function displayVenues(data) {
     return;
   }
 
+
+
   data.forEach(facility => {
+    // Handle image path - check if it's already a full path or just filename
+    let imagePath;
+    if (facility.image_url && facility.image_url !== 'null' && facility.image_url.trim() !== '') {
+      if (facility.image_url.startsWith('http') || facility.image_url.startsWith('/')) {
+        // Full URL or absolute path
+        imagePath = facility.image_url;
+      } else {
+        // Just filename, construct full path
+        imagePath = `../../../uploads/venues/${facility.image_url}`;
+      }
+    } else {
+      // No image or null, use default
+      imagePath = '../../../uploads/venues/default.jpg';
+    }
+
     const card = document.createElement('div');
     card.className = 'venue-card';
+    
     card.innerHTML = `
-      <img src="${facility.image_url || '../../../uploads/venues/default.jpg'}" class="venue-image" />
+      <img src="${imagePath}" class="venue-image" alt="${facility.place_name}" onerror="this.src='../../../uploads/venues/default.jpg'" />
       <div class="venue-name">${facility.place_name}</div>
       <div class="venue-sport">${facility.SportCategory}</div>
       <div class="venue-rating">📍 ${facility.location || 'Unknown location'}</div>
       <button class="view-button" onclick="openBookings('${facility.place_name}')">View Analytics</button>
     `;
+    
     grid.appendChild(card);
   });
 }
@@ -73,6 +113,7 @@ function applyFilters() {
 window.onload = () => {
   loadFacilities();
   loadSports();
+  populateYearSelector();
 
   // 🔎 Handle user input and filters
   document.getElementById('searchInput').addEventListener('input', e => {
@@ -86,6 +127,14 @@ window.onload = () => {
   document.getElementById('sportSelect').addEventListener('change', e => {
     currentSport = e.target.value;
     applyFilters();
+  });
+  
+  // Handle year selection change
+  document.getElementById('yearSelect').addEventListener('change', e => {
+    if (currentVenue) {
+      // If we're viewing analytics for a venue, refresh the data for the new year
+      fetchMonthlyData(currentVenue, e.target.value);
+    }
   });
 };
 
@@ -107,6 +156,30 @@ function loadSports() {
     });
 }
 
+// 📅 Populate year selector with last 3 years
+function populateYearSelector() {
+  const yearSelect = document.getElementById('yearSelect');
+  const currentYear = new Date().getFullYear();
+  
+  // Clear existing options
+  yearSelect.innerHTML = '';
+  
+  // Add last 3 years (current year and 2 previous years)
+  for (let i = 0; i < 3; i++) {
+    const year = currentYear - i;
+    const option = document.createElement('option');
+    option.value = year;
+    option.textContent = year;
+    
+    // Set current year as default selected
+    if (i === 0) {
+      option.selected = true;
+    }
+    
+    yearSelect.appendChild(option);
+  }
+}
+
 // 📊 Open analytics view for a selected venue
 function openBookings(venueName) {
   const year = document.getElementById("yearSelect").value;
@@ -126,9 +199,12 @@ function openBookings(venueName) {
 // 📅 Fetch monthly analytics from API
 function fetchMonthlyData(venueName, year) {
   const url = `AnalyticsAPI.php?action=fetch_monthly_analytics&venue=${encodeURIComponent(venueName)}&year=${year}`;
+  console.log('🔍 Fetching analytics for:', venueName, 'Year:', year);
+  
   fetch(url)
     .then(res => res.json())
     .then(data => {
+      console.log('📊 Analytics data received:', data);
       venueAnalyticsData = data.data || {};
       populateMonthButtons(Object.keys(venueAnalyticsData));
       showMonth("All");
@@ -138,11 +214,15 @@ function fetchMonthlyData(venueName, year) {
     });
 }
 
-// 📆 Show all month buttons (don't hide any)
+// 📆 Show only month buttons that have data
 function populateMonthButtons(months) {
   document.querySelectorAll('.month-btn').forEach(btn => {
-    // Show all month buttons regardless of data availability
-    btn.style.display = 'block';
+    const monthName = btn.textContent;
+    if (monthName === 'All' || venueAnalyticsData[monthName]) {
+      btn.style.display = 'block';
+    } else {
+      btn.style.display = 'none';
+    }
   });
 }
 
@@ -152,6 +232,9 @@ function showMonth(month) {
   const tableBody = document.getElementById("dailyBookingTable");
   const summaryRow = document.getElementById("summaryRow");
   tableBody.innerHTML = '';
+
+  console.log(`📅 Showing data for month: ${month}`);
+  console.log('📊 Available data:', venueAnalyticsData);
 
   if (month === 'All') {
     let monthTotals = {};
@@ -168,6 +251,8 @@ function showMonth(month) {
         total: monthlyRevenue
       };
     });
+
+    console.log('📈 Month totals:', monthTotals);
 
     Object.entries(monthTotals).forEach(([monthName, summary]) => {
       tableBody.innerHTML += `
@@ -190,6 +275,8 @@ function showMonth(month) {
     let totalBookings = 0;
     let totalRevenue = 0;
 
+    console.log(`📅 Data for ${month}:`, data);
+
     if (data.length === 0) {
       tableBody.innerHTML = `
         <tr>
@@ -203,7 +290,7 @@ function showMonth(month) {
           <tr>
             <td>${entry.date}</td>
             <td>${entry.bookings}</td>
-            <td>${entry.total} ₪</td>
+            <td>${entry.total.toFixed(2)} ₪</td>
           </tr>`;
         totalBookings += entry.bookings;
         totalRevenue += entry.total;

@@ -1,3 +1,10 @@
+// Check if we're in a browser environment
+if (typeof window === 'undefined') {
+    console.log('Not in browser environment, skipping initialization');
+    // Exit if not in browser
+    throw new Error('This script must run in a browser environment');
+}
+
 // Global variables
 let venuesData = [];
 let sportsData = [];
@@ -10,7 +17,6 @@ let currentEditingId = null;
 let venueGrid;
 let venueModal;
 let addVenueBtn;
-let closeModalBtn;
 let cancelBtn;
 let searchInput;
 let sortSelect;
@@ -20,12 +26,64 @@ let venueForm;
 let imageInput;
 let imagePreview;
 
+// Show message to user
+function showMessage(message, type = 'info') {
+    // Remove existing messages
+    const existingMessage = document.querySelector('.message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    
+    // Create new message
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}`;
+    messageDiv.textContent = message;
+    
+    // Style based on type
+    switch (type) {
+        case 'success':
+            messageDiv.style.borderLeftColor = '#22c55e';
+            messageDiv.style.backgroundColor = '#f0f9ff';
+            break;
+        case 'error':
+            messageDiv.style.borderLeftColor = '#ef4444';
+            messageDiv.style.backgroundColor = '#fef2f2';
+            break;
+        case 'warning':
+            messageDiv.style.borderLeftColor = '#f59e0b';
+            messageDiv.style.backgroundColor = '#fffbeb';
+            break;
+        default:
+            messageDiv.style.borderLeftColor = '#1e90ff';
+            messageDiv.style.backgroundColor = '#f8f9fa';
+    }
+    
+    // Insert at the top of the container
+    const container = document.querySelector('.container');
+    if (container) {
+        container.insertBefore(messageDiv, container.firstChild);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.remove();
+            }
+        }, 5000);
+    }
+}
+
 // Initialize DOM elements
 function initializeDOMElements() {
+    // Wait for DOM to be ready
+    if (!document.body) {
+        console.log('DOM not ready yet, retrying...');
+        setTimeout(initializeDOMElements, 50);
+        return;
+    }
+    
     venueGrid = document.getElementById('venueGrid');
     venueModal = document.getElementById('venueModal');
     addVenueBtn = document.querySelector('.add-venue-btn');
-    closeModalBtn = document.getElementById('closeModal');
     cancelBtn = document.querySelector('.cancel-btn');
     searchInput = document.getElementById('searchInput');
     sortSelect = document.getElementById('sortSelect');
@@ -34,25 +92,51 @@ function initializeDOMElements() {
     venueForm = document.querySelector('form');
     imageInput = document.getElementById('venueImages');
     imagePreview = document.getElementById('imagePreview');
+    
+    console.log('DOM elements initialized:', {
+        venueGrid: !!venueGrid,
+        venueModal: !!venueModal,
+        addVenueBtn: !!addVenueBtn,
+        cancelBtn: !!cancelBtn,
+        searchInput: !!searchInput,
+        sortSelect: !!sortSelect,
+        sortBySportSelect: !!sortBySportSelect,
+        modalTitle: !!modalTitle,
+        venueForm: !!venueForm,
+        imageInput: !!imageInput,
+        imagePreview: !!imagePreview
+    });
 }
 
 async function initializeApp() {
+    // Prevent multiple initializations
+    if (window.appInitialized) {
+        console.log('App already initialized, skipping...');
+        return;
+    }
+    
     window.initializeApp = initializeApp;
     
     try {
+        // Wait a bit to ensure DOM is fully ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         // Initialize DOM elements first
         initializeDOMElements();
         
         // Check if all required elements exist
-        if (!venueModal || !addVenueBtn || !closeModalBtn || !cancelBtn) {
+        if (!venueModal || !addVenueBtn || !cancelBtn) {
             console.error('Required modal elements not found');
             console.log('Missing elements:', {
                 venueModal: !!venueModal,
                 addVenueBtn: !!addVenueBtn,
-                closeModalBtn: !!closeModalBtn,
                 cancelBtn: !!cancelBtn
             });
-            showMessage('Modal elements not found. Please refresh the page.', 'error');
+            
+            // Only show message if DOM is ready and showMessage function exists
+            if (document.body && typeof showMessage === 'function') {
+                showMessage('Modal elements not found. Please refresh the page.', 'error');
+            }
             return;
         }
         
@@ -66,9 +150,16 @@ async function initializeApp() {
         populateSportsFilter();
         
         console.log('App initialization completed successfully');
+        
+        // Mark as initialized
+        window.appInitialized = true;
     } catch (error) {
         console.error('Error initializing app:', error);
-        showMessage('Error loading data. Please refresh the page.', 'error');
+        
+        // Only show message if DOM is ready and showMessage function exists
+        if (document.body && typeof showMessage === 'function') {
+            showMessage('Error loading data. Please refresh the page.', 'error');
+        }
     }
 }
 async function initMap() {
@@ -121,7 +212,7 @@ async function loadSports() {
         }
         
         console.log(`Loaded ${sportsData.length} sports:`, sportsData);
-        populateSportsDropdown();
+        populateSportsDropdown(); // No default sport during initial load
     } catch (error) {
         console.error('Error loading sports:', error);
         showMessage('Error loading sports data: ' + error.message, 'error');
@@ -144,7 +235,7 @@ async function loadVenues() {
 }
 
 // Populate sports dropdown in modal
-function populateSportsDropdown() {
+function populateSportsDropdown(defaultSport = null) {
     const sportSelect = document.getElementById('sportType');
     
     if (!sportSelect) {
@@ -157,8 +248,9 @@ function populateSportsDropdown() {
     sportSelect.disabled = true;
     
     if (sportsData && sportsData.length > 0) {
-        // Clear loading state
-        sportSelect.innerHTML = '<option value="">Select Sport Type</option>';
+        // Clear loading state - use default sport if provided, otherwise use generic text
+        const defaultText = defaultSport ? defaultSport : 'Select Sport Type';
+        sportSelect.innerHTML = `<option value="">${defaultText}</option>`;
         sportSelect.disabled = false;
         
         sportsData.forEach(sport => {
@@ -411,7 +503,6 @@ function updateCoordinates(lat, lng) {
 function setupEventListeners() {
     // Modal controls
     addVenueBtn.addEventListener('click', () => openModal());
-    closeModalBtn.addEventListener('click', () => closeModal());
     cancelBtn.addEventListener('click', () => closeModal());
     
     // Click outside modal to close
@@ -529,6 +620,12 @@ function openModal(venue = null) {
         document.getElementById('locationInput').value = venue.location;
         document.getElementById('isAvailable').checked = venue.is_available == 1;
         
+        // Hide required indicator and help text for editing (images not required when editing)
+        const requiredIndicator = document.querySelector('#venueImageLabel .required-field');
+        const fieldHelp = document.querySelector('#venueImageHelp');
+        if (requiredIndicator) requiredIndicator.style.display = 'none';
+        if (fieldHelp) fieldHelp.style.display = 'none';
+        
         // Set coordinates if available
         if (venue.latitude && venue.longitude) {
             const lat = parseFloat(venue.latitude);
@@ -571,6 +668,12 @@ function openModal(venue = null) {
         map.setCenter(defaultLocation);
         marker.position = defaultLocation;
         updateCoordinates(defaultLocation.lat, defaultLocation.lng);
+        
+        // Show required indicator and help text for new venues
+        const requiredIndicator = document.querySelector('#venueImageLabel .required-field');
+        const fieldHelp = document.querySelector('#venueImageHelp');
+        if (requiredIndicator) requiredIndicator.style.display = 'inline';
+        if (fieldHelp) fieldHelp.style.display = 'block';
     }
     
     // Show modal with enhanced animation
@@ -592,10 +695,24 @@ function openModal(venue = null) {
         
         // Ensure sports dropdown is populated
         if (sportsData && sportsData.length > 0) {
-            populateSportsDropdown();
+            // Pass the venue's sport category to show as default text and set selected value
+            if (venue && venue.SportCategory) {
+                populateSportsDropdown(venue.SportCategory);
+                // Set the selected value after a short delay to ensure dropdown is populated
+                setTimeout(() => {
+                    const sportSelect = document.getElementById('sportType');
+                    if (sportSelect) {
+                        sportSelect.value = venue.SportCategory;
+                    }
+                }, 100);
+            } else {
+                populateSportsDropdown(); // No default sport for new venues
+            }
         }
     }, 300);
 }
+
+
 
 // Close modal
 function closeModal() {
@@ -665,6 +782,16 @@ async function handleFormSubmit(e) {
     if (!latitude || !longitude) {
         showMessage('Please select a location on the map', 'error');
         return;
+    }
+    
+    // Check if images are required (only for new venues, not when editing)
+    if (!currentEditingId) {
+        const imageInput = document.getElementById('venueImages');
+        if (!imageInput.files || imageInput.files.length === 0) {
+            showMessage('Please select at least one venue image', 'error');
+            imageInput.focus();
+            return;
+        }
     }
     
     const formData = new FormData(venueForm);
@@ -806,8 +933,8 @@ function handleImagePreview(e) {
 
 // View venue details function
 function viewVenueDetails(venueId) {
-    // Redirect to player's VenueDetails.php with the facility ID
-    window.location.href = `../../player/VenueDetails/VenueDetails.php?facilities_id=${venueId}`;
+    // Redirect to player's VenueDetails.php with the facility ID in view-only mode
+    window.location.href = `../../player/VenueDetails/VenueDetails.php?facilities_id=${venueId}&view_only=true`;
 }
 
 // Edit venue function
@@ -953,49 +1080,7 @@ function applyFiltersAndSort(venues) {
     });
 }
 
-// Show message to user
-function showMessage(message, type = 'info') {
-    // Remove existing messages
-    const existingMessage = document.querySelector('.message');
-    if (existingMessage) {
-        existingMessage.remove();
-    }
-    
-    // Create new message
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${type}`;
-    messageDiv.textContent = message;
-    
-    // Style based on type
-    switch (type) {
-        case 'success':
-            messageDiv.style.borderLeftColor = '#22c55e';
-            messageDiv.style.backgroundColor = '#f0f9ff';
-            break;
-        case 'error':
-            messageDiv.style.borderLeftColor = '#ef4444';
-            messageDiv.style.backgroundColor = '#fef2f2';
-            break;
-        case 'warning':
-            messageDiv.style.borderLeftColor = '#f59e0b';
-            messageDiv.style.backgroundColor = '#fffbeb';
-            break;
-        default:
-            messageDiv.style.borderLeftColor = '#1e90ff';
-            messageDiv.style.backgroundColor = '#f8f9fa';
-    }
-    
-    // Insert at the top of the container
-    const container = document.querySelector('.container');
-    container.insertBefore(messageDiv, container.firstChild);
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        if (messageDiv.parentNode) {
-            messageDiv.remove();
-        }
-    }, 5000);
-}
+
 
 // Utility function to handle errors
 function handleError(error, context = '') {
@@ -1160,32 +1245,64 @@ function setupSuggestSportModalEvents() {
     }
 }
 
+// Function to check if DOM is ready
+function isDOMReady() {
+    return document.readyState === 'complete' || document.readyState === 'interactive';
+}
+
 // Function to wait for Google Maps to load
 function waitForGoogleMaps(callback) {
-    if (typeof google !== "undefined" && google.maps && google.maps.places) {
-        callback();
-    } else {
-        setTimeout(() => waitForGoogleMaps(callback), 100);
+    let attempts = 0;
+    const maxAttempts = 50; // 5 seconds max wait
+    
+    function checkGoogleMaps() {
+        attempts++;
+        
+        if (typeof google !== "undefined" && google.maps && google.maps.places) {
+            console.log('Google Maps API loaded successfully');
+            callback();
+        } else if (attempts < maxAttempts) {
+            console.log(`Waiting for Google Maps API... (attempt ${attempts}/${maxAttempts})`);
+            setTimeout(checkGoogleMaps, 100);
+        } else {
+            console.warn('Google Maps API not loaded after maximum attempts, proceeding anyway...');
+            callback();
+        }
     }
+    
+    checkGoogleMaps();
 }
 
 // Call UI enhancements after DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded');
     initializeUIEnhancements();
     
     // Wait for Google Maps to load before initializing
     waitForGoogleMaps(() => {
+        console.log('Google Maps loaded, initializing app...');
         initializeApp();
     });
 });
 
 // Also initialize when window loads as fallback
 window.addEventListener('load', function() {
+    console.log('Window loaded');
     // Additional fallback - try to initialize if not already done
     setTimeout(() => {
-        if (typeof google !== 'undefined' && google.maps && !map) {
+        if (!window.appInitialized) {
             console.log('Fallback initialization triggered');
             initializeApp();
         }
-    }, 1000);
+    }, 2000);
 });
+
+// Immediate initialization if DOM is already ready
+if (isDOMReady()) {
+    console.log('DOM already ready, initializing immediately...');
+    setTimeout(() => {
+        if (!window.appInitialized) {
+            initializeApp();
+        }
+    }, 100);
+}
