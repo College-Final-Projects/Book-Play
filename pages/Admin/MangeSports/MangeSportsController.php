@@ -9,21 +9,34 @@ switch ($action) {
 
     // 🟢 Add new sport directly (already accepted)
     case 'add_sport':
-        $name = $_POST['name'] ?? '';
+        $name = trim($_POST['name'] ?? '');
         if (!$name) {
             echo json_encode(["success" => false, "message" => "❌ Sport name is required."]);
             exit;
         }
 
-        $stmt = $conn->prepare("INSERT INTO sports (sport_name, is_Accepted) VALUES (?, 1)");
-        $stmt->bind_param("s", $name);
-
-        if ($stmt->execute()) {
-            echo json_encode(["success" => true, "message" => "✅ Sport added and pending approval"]);
+        // Check if sport already exists
+        $checkStmt = $conn->prepare("SELECT sport_id FROM sports WHERE sport_name = ?");
+        $checkStmt->bind_param("s", $name);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $checkStmt->close();
+            echo json_encode(["success" => false, "message" => "ℹ️ Sport '$name' already exists in the system."]);
         } else {
-            echo json_encode(["success" => false, "message" => "❌ Failed to add sport"]);
+            $checkStmt->close();
+            
+            $stmt = $conn->prepare("INSERT INTO sports (sport_name, is_Accepted) VALUES (?, 1)");
+            $stmt->bind_param("s", $name);
+
+            if ($stmt->execute()) {
+                echo json_encode(["success" => true, "message" => "✅ Sport '$name' added successfully"]);
+            } else {
+                echo json_encode(["success" => false, "message" => "❌ Failed to add sport '$name'. Please try again."]);
+            }
+            $stmt->close();
         }
-        $stmt->close();
         break;
 
     // ✅ Accept suggested sport and add to sports table
@@ -36,17 +49,43 @@ switch ($action) {
             exit;
         }
 
-        $stmt = $conn->prepare("INSERT INTO sports (sport_name, is_Accepted) VALUES (?, 1)");
-        $stmt->bind_param("s", $sport_name);
-        $stmt->execute();
-        $stmt->close();
+        // Check if sport already exists
+        $checkStmt = $conn->prepare("SELECT sport_id FROM sports WHERE sport_name = ?");
+        $checkStmt->bind_param("s", $sport_name);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            // Sport already exists, just delete the report and show message
+            $checkStmt->close();
+            
+            $deleteReport = $conn->prepare("DELETE FROM reports WHERE report_id = ?");
+            $deleteReport->bind_param("i", $report_id);
+            $deleteReport->execute();
+            $deleteReport->close();
 
-        $deleteReport = $conn->prepare("DELETE FROM reports WHERE report_id = ?");
-        $deleteReport->bind_param("i", $report_id);
-        $deleteReport->execute();
-        $deleteReport->close();
+            echo json_encode(["success" => true, "message" => "ℹ️ Sport '$sport_name' already exists in the system. Suggestion removed."]);
+        } else {
+            // Sport doesn't exist, add it and delete report
+            $checkStmt->close();
+            
+            $stmt = $conn->prepare("INSERT INTO sports (sport_name, is_Accepted) VALUES (?, 1)");
+            $stmt->bind_param("s", $sport_name);
+            
+            if ($stmt->execute()) {
+                $stmt->close();
+                
+                $deleteReport = $conn->prepare("DELETE FROM reports WHERE report_id = ?");
+                $deleteReport->bind_param("i", $report_id);
+                $deleteReport->execute();
+                $deleteReport->close();
 
-        echo json_encode(["success" => true, "message" => "✅ Sport accepted and added successfully."]);
+                echo json_encode(["success" => true, "message" => "✅ Sport '$sport_name' accepted and added successfully."]);
+            } else {
+                $stmt->close();
+                echo json_encode(["success" => false, "message" => "❌ Failed to add sport '$sport_name'. Please try again."]);
+            }
+        }
         break;
 
     // ❌ Reject suggested sport (only delete report)

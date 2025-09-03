@@ -344,6 +344,16 @@ select#gender option:hover {
   display: block;
 }
 
+.error-message.success {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.error-message.error {
+  color: #ef4444;
+  font-weight: 500;
+}
+
 /* Enhanced Personal Description textarea styling */
 #description {
   width: 100%;

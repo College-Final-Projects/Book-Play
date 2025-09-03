@@ -56,7 +56,7 @@ function openVenue(id) {
     alert("Venue ID not available");
     return;
   }
-  window.location.href = `../VenueDetails/VenueDetails.php?id=${id}`;
+  window.location.href = `../../player/VenueDetails/VenueDetails.php?facilities_id=${id}&view_only=true`;
 }
 
 function showComplaintDetails(report) {

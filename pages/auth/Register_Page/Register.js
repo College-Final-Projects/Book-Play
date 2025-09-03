@@ -186,6 +186,69 @@ window.verifyCode = function() {
     });
 };
 
+// ✅ Real-time username validation
+function checkUsernameAvailability(username) {
+  if (username.length < 3) {
+    return; // Don't check if username is too short
+  }
+  
+  fetch("verify.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({ 
+      check_username: "1", 
+      username: username 
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      const usernameError = document.getElementById("usernameError");
+      if (usernameError) {
+        if (data.status === "error") {
+          usernameError.textContent = data.message;
+          usernameError.style.display = "block";
+          usernameError.className = "error-message error";
+        } else {
+          usernameError.textContent = "✅ Username is available!";
+          usernameError.style.display = "block";
+          usernameError.className = "error-message success";
+        }
+      }
+    })
+    .catch((err) => {
+      console.error("Username check error:", err);
+    });
+}
+
+// ✅ Add username validation event listener
+document.addEventListener("DOMContentLoaded", function() {
+  const usernameInput = document.getElementById("username");
+  if (usernameInput) {
+    let timeoutId;
+    usernameInput.addEventListener("input", function() {
+      const username = this.value.trim();
+      const usernameError = document.getElementById("usernameError");
+      
+      // Clear previous timeout
+      clearTimeout(timeoutId);
+      
+      // Clear error message immediately
+      if (usernameError) {
+        usernameError.style.display = "none";
+      }
+      
+      // Check username availability after user stops typing for 500ms
+      if (username.length >= 3) {
+        timeoutId = setTimeout(() => {
+          checkUsernameAvailability(username);
+        }, 500);
+      }
+    });
+  }
+});
+
 // ✅ Final profile submission after verification (step 3)
 if (profileForm) { // If profile form exists
   profileForm.onsubmit = function(e) {

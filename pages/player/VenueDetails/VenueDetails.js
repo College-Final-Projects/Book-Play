@@ -1,7 +1,7 @@
 // Make currentRating global
 let currentRating = 0;
 
-// Function to hide review-related elements in view-only mode
+// Function to hide review-related elements in admin-only mode
 function hideReviewElements() {
   // Hide Report Venue button
   const reportBtn = document.querySelector('.report-btn');
@@ -14,24 +14,156 @@ function hideReviewElements() {
   const addCommentSection = document.querySelector('.add-comment');
   if (addCommentSection) {
     addCommentSection.style.display = 'none';
+    addCommentSection.style.visibility = 'hidden';
+    addCommentSection.style.height = '0';
+    addCommentSection.style.overflow = 'hidden';
     console.log('🚫 Hidden Add your review section');
   }
   
-  // Optionally hide the Reviews section title if no reviews exist
-  const reviewsTitle = document.querySelector('.section-title');
-  if (reviewsTitle && reviewsTitle.textContent === 'Reviews') {
-    // Only hide if there are no comments
-    const commentsContainer = document.getElementById('commentsContainer');
-    if (commentsContainer && commentsContainer.children.length === 0) {
-      reviewsTitle.style.display = 'none';
-      console.log('🚫 Hidden Reviews section title (no reviews)');
+  // Hide the Reviews section title and container completely
+  const sectionTitles = document.querySelectorAll('.section-title');
+  sectionTitles.forEach(title => {
+    if (title.textContent === 'Reviews') {
+      title.style.display = 'none';
+      console.log('🚫 Hidden Reviews section title');
+    }
+  });
+  
+  // Hide the comments container
+  const commentsContainer = document.getElementById('commentsContainer');
+  if (commentsContainer) {
+    commentsContainer.style.display = 'none';
+    commentsContainer.style.visibility = 'hidden';
+    commentsContainer.style.height = '0';
+    commentsContainer.style.overflow = 'hidden';
+    console.log('🚫 Hidden Reviews section');
+  }
+  
+  // Hide view more/less buttons
+  const viewMoreBtn = document.getElementById('view-more-btn');
+  const viewLessBtn = document.getElementById('view-less-btn');
+  if (viewMoreBtn) {
+    viewMoreBtn.style.display = 'none';
+    viewMoreBtn.style.visibility = 'hidden';
+    viewMoreBtn.style.height = '0';
+    viewMoreBtn.style.overflow = 'hidden';
+  }
+  if (viewLessBtn) {
+    viewLessBtn.style.display = 'none';
+    viewLessBtn.style.visibility = 'hidden';
+    viewLessBtn.style.height = '0';
+    viewLessBtn.style.overflow = 'hidden';
+  }
+  
+  // Add admin badge to indicate this is admin view
+  addAdminBadge();
+  
+  // Update back button text for admin mode
+  updateBackButtonText();
+}
+
+// Function to hide only add review section in view-only mode
+function hideAddReviewOnly() {
+  // Hide Report Venue button
+  const reportBtn = document.querySelector('.report-btn');
+  if (reportBtn) {
+    reportBtn.style.display = 'none';
+    console.log('🚫 Hidden Report Venue button (view-only mode)');
+  }
+  
+  // Hide Add your review section only
+  const addCommentSection = document.querySelector('.add-comment');
+  if (addCommentSection) {
+    addCommentSection.style.display = 'none';
+    addCommentSection.style.visibility = 'hidden';
+    addCommentSection.style.height = '0';
+    addCommentSection.style.overflow = 'hidden';
+    console.log('🚫 Hidden Add your review section (view-only mode)');
+  }
+  
+  // Save ReviewComplaints page URL for back button
+  saveReviewComplaintsURL();
+  
+  // Update back button text for view-only mode
+  updateBackButtonTextForViewOnly();
+}
+
+// Function to add admin badge
+function addAdminBadge() {
+  const venueTitleRow = document.querySelector('.venue-title-row');
+  if (venueTitleRow) {
+    // Check if admin badge already exists
+    if (!document.querySelector('.admin-badge')) {
+      const adminBadge = document.createElement('div');
+      adminBadge.className = 'admin-badge';
+      adminBadge.textContent = '👑 Admin View';
+      adminBadge.style.cssText = `
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        margin-left: 16px;
+      `;
+      venueTitleRow.appendChild(adminBadge);
+      console.log('👑 Added admin badge');
     }
   }
+}
+
+// Function to update back button text for admin mode
+function updateBackButtonText() {
+  const backButton = document.getElementById('backButton');
+  if (backButton) {
+    backButton.textContent = '← Back';
+    console.log('🔙 Updated back button text for admin mode');
+  }
+}
+
+// Function to update back button text for view-only mode
+function updateBackButtonTextForViewOnly() {
+  const backButton = document.getElementById('backButton');
+  if (backButton) {
+    backButton.textContent = '← Back';
+    console.log('🔙 Updated back button text for view-only mode');
+  }
+}
+
+// Function to save ReviewComplaints page URL
+function saveReviewComplaintsURL() {
+  // Store the ReviewComplaints page URL in sessionStorage
+  const reviewComplaintsURL = '../../Admin/ReviewComplaints/ReviewComplaints.php';
+  sessionStorage.setItem('reviewComplaintsURL', reviewComplaintsURL);
+  console.log('💾 Saved ReviewComplaints URL:', reviewComplaintsURL);
 }
 
 // Smart back button function - goes to previous page or fallback
 window.goBack = function goBack() {
   console.log('🔙 Back button clicked');
+  
+  // Check if we're in admin-only mode or view-only mode
+  const params = new URLSearchParams(window.location.search);
+  const isAdminOnly = params.get('admin_only') === 'true';
+  const isViewOnly = params.get('view_only') === 'true';
+  
+  if (isAdminOnly) {
+    // If admin mode, go back to ManageVenueRequests
+    console.log('👑 Admin mode detected, going back to ManageVenueRequests');
+    window.location.href = '../../Admin/ManageVenueRequests/ManageVenueRequests.php';
+    return;
+  }
+  
+  if (isViewOnly) {
+    // If view-only mode, check for saved ReviewComplaints URL
+    const reviewComplaintsURL = sessionStorage.getItem('reviewComplaintsURL');
+    if (reviewComplaintsURL) {
+      console.log('📋 View-only mode detected, going back to ReviewComplaints');
+      window.location.href = reviewComplaintsURL;
+      return;
+    }
+  }
   
   fetch('VenueDetails.php?action=get_previous_page')
     .then(res => {
@@ -87,14 +219,18 @@ window.goBack = function goBack() {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('🚀 VenueDetails.js DOMContentLoaded triggered');
   
-  // Check if this is view-only mode
+  // Check if this is admin-only mode
   const params = new URLSearchParams(window.location.search);
   const facilityId = params.get('facilities_id');
+  const isAdminOnly = params.get('admin_only') === 'true';
   const isViewOnly = params.get('view_only') === 'true';
   
-  if (isViewOnly) {
-    console.log('👁️ View-only mode detected, hiding review elements');
+  if (isAdminOnly) {
+    console.log('👑 Admin-only mode detected, hiding review elements');
     hideReviewElements();
+  } else if (isViewOnly) {
+    console.log('👁️ View-only mode detected, hiding add review section only');
+    hideAddReviewOnly();
   }
   
   // Add event listener to back button as backup

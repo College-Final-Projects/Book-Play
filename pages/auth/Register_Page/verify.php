@@ -89,6 +89,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['code']) && !isset($_P
 }
 
 /**
+ * Handle username availability check (Real-time validation)
+ * Checks if username is already taken in the database
+ */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['check_username'])) {
+    $username = $_POST['username'] ?? '';
+    
+    if (strlen($username) < 3) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "❌ Username must be at least 3 characters long."
+        ]);
+        exit();
+    }
+    
+    // Check if username already exists in database
+    $checkUser = $conn->prepare("SELECT username FROM users WHERE username = ?");
+    $checkUser->bind_param("s", $username);
+    $checkUser->execute();
+    $checkUser->store_result();
+    
+    if ($checkUser->num_rows > 0) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "❌ Username already exists. Please choose another one."
+        ]);
+    } else {
+        echo json_encode([
+            "status" => "success",
+            "message" => "✅ Username is available!"
+        ]);
+    }
+    
+    $checkUser->close();
+    exit();
+}
+
+/**
  * Handle profile form submission (Step 3 of registration)
  * Creates user profile with personal information and sports preferences
  */

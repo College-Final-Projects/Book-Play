@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
       alert("Venue ID not available");
       return;
     }
-    window.location.href = `../../player/VenueDetails/VenueDetails.php?facilities_id=${id}`;
+    window.location.href = `../../player/VenueDetails/VenueDetails.php?facilities_id=${id}&admin_only=true`;
   };
 
   window.closeModal = function () {
