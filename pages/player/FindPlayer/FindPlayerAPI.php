@@ -31,6 +31,9 @@ switch ($action) {
     case 'add_friend':
         addFriend($username);
         break;
+    case 'check_friend_status':
+        checkFriendStatus($username);
+        break;
     default:
         http_response_code(400);
         echo json_encode(['error' => 'Invalid action']);
@@ -380,7 +383,7 @@ function sortByMe($username) {
     echo json_encode($players);
 }
 
-// Add friend functionality
+// Add friend functionality - now creates friend requests
 function addFriend($username) {
     global $conn;
     
@@ -410,6 +413,17 @@ function addFriend($username) {
             return;
         }
         
+        // Check if friend request already exists
+        $stmt = $conn->prepare("SELECT * FROM friend_requests WHERE (from_username = ? AND to_username = ?) OR (from_username = ? AND to_username = ?)");
+        $stmt->bind_param("ssss", $username, $targetUsername, $targetUsername, $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            echo json_encode(['error' => 'Friend request already exists']);
+            return;
+        }
+        
         // Check if target user exists
         $stmt = $conn->prepare("SELECT username FROM users WHERE username = ?");
         $stmt->bind_param("s", $targetUsername);
@@ -421,15 +435,82 @@ function addFriend($username) {
             return;
         }
         
-        // Add friendship (both directions for easier querying)
-        $stmt = $conn->prepare("INSERT INTO friends (user1, user2) VALUES (?, ?), (?, ?)");
-        $stmt->bind_param("ssss", $username, $targetUsername, $targetUsername, $username);
+        // Create friend request
+        $stmt = $conn->prepare("INSERT INTO friend_requests (from_username, to_username) VALUES (?, ?)");
+        $stmt->bind_param("ss", $username, $targetUsername);
         
         if ($stmt->execute()) {
             echo json_encode(['success' => true, 'message' => 'Friend request sent successfully']);
         } else {
-            throw new Exception('Failed to add friend');
+            throw new Exception('Failed to send friend request');
         }
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+    }
+}
+
+// Check friend status for multiple users
+function checkFriendStatus($username) {
+    global $conn;
+    
+    $targetUsernames = $_POST['usernames'] ?? $_GET['usernames'] ?? '';
+    
+    if (empty($targetUsernames)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Usernames are required']);
+        return;
+    }
+    
+    // Convert comma-separated string to array
+    $usernames = is_array($targetUsernames) ? $targetUsernames : explode(',', $targetUsernames);
+    
+    try {
+        $statuses = [];
+        
+        foreach ($usernames as $targetUsername) {
+            $targetUsername = trim($targetUsername);
+            if (empty($targetUsername)) continue;
+            
+            // Check if already friends
+            $stmt = $conn->prepare("SELECT * FROM friends WHERE (user1 = ? AND user2 = ?) OR (user1 = ? AND user2 = ?)");
+            $stmt->bind_param("ssss", $username, $targetUsername, $targetUsername, $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                $statuses[$targetUsername] = 'friends';
+                continue;
+            }
+            
+            // Check if friend request exists (sent by current user)
+            $stmt = $conn->prepare("SELECT * FROM friend_requests WHERE from_username = ? AND to_username = ?");
+            $stmt->bind_param("ss", $username, $targetUsername);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                $statuses[$targetUsername] = 'request_sent';
+                continue;
+            }
+            
+            // Check if friend request exists (received by current user)
+            $stmt = $conn->prepare("SELECT * FROM friend_requests WHERE from_username = ? AND to_username = ?");
+            $stmt->bind_param("ss", $targetUsername, $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                $statuses[$targetUsername] = 'request_received';
+                continue;
+            }
+            
+            // No relationship
+            $statuses[$targetUsername] = 'none';
+        }
+        
+        echo json_encode(['success' => true, 'statuses' => $statuses]);
         
     } catch (Exception $e) {
         http_response_code(500);

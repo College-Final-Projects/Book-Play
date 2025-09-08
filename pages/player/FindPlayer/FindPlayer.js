@@ -6,6 +6,7 @@ let isAvailableToPlay = true;
 let searchTimeout;
 let friendsList = [];
 let hasUnsavedChanges = false;
+let friendStatuses = {}; // Store friend request statuses for each player
 
 // DOM elements
 const searchInput = document.getElementById('searchInput');
@@ -52,6 +53,9 @@ async function loadInitialData() {
         
         // Load all players for regular search
         await loadAllPlayers();
+        
+        // Load friend statuses for all players
+        await loadFriendStatuses();
         
         // Initially show all players
         currentPlayers = [...allPlayers];
@@ -137,6 +141,30 @@ async function loadAllPlayers() {
     }
 }
 
+// Load friend statuses for all players
+async function loadFriendStatuses() {
+    try {
+        if (allPlayers.length === 0) return;
+        
+        const usernames = allPlayers.map(player => player.username).join(',');
+        const response = await fetch('FindPlayerAPI.php?action=check_friend_status&usernames=' + encodeURIComponent(usernames), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+                friendStatuses = data.statuses;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading friend statuses:', error);
+    }
+}
+
 function displayUserAvailability() {
     days.forEach(day => {
         const checkbox = document.getElementById(day.substring(0, 3));
@@ -165,26 +193,64 @@ function showTimeSlots(day, slots) {
         const div = document.createElement('div');
         div.className = 'time-slot';
         div.innerHTML = `
-            <input type="time" class="start-time" value="${slot.start || ''}">
+            <input type="text" class="start-time flatpickr-time" placeholder="Start time" value="${slot.start || ''}" readonly>
             <span>–</span>
-            <input type="time" class="end-time" value="${slot.end || ''}">
+            <input type="text" class="end-time flatpickr-time" placeholder="End time" value="${slot.end || ''}" readonly>
             <button class="delete-slot" onclick="deleteTimeSlot(this)">×</button>
         `;
         container.appendChild(div);
         
-        const inputs = div.querySelectorAll('input');
-        inputs.forEach(input => {
-            input.addEventListener('change', () => {
-                if (validateTimeSlot(div)) {
-                    updateUserAvailability(day);
-                }
-            });
-        });
+        // Initialize flatpickr for the time inputs
+        initializeFlatpickrTime(div, day);
     });
     
     if (slots.length < 3) {
         showAddButton(day);
     }
+}
+
+// Initialize flatpickr for time inputs
+function initializeFlatpickrTime(timeSlotDiv, day) {
+    const startInput = timeSlotDiv.querySelector('.start-time');
+    const endInput = timeSlotDiv.querySelector('.end-time');
+    
+    // Initialize flatpickr for start time
+    const startFlatpickr = flatpickr(startInput, {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+        minuteIncrement: 15,
+        allowInput: false,
+        clickOpens: true,
+        onChange: function(selectedDates, dateStr, instance) {
+            console.log(`Start time changed for ${day}: ${dateStr}`);
+            if (validateTimeSlot(timeSlotDiv)) {
+                updateUserAvailability(day);
+            }
+        }
+    });
+    
+    // Initialize flatpickr for end time
+    const endFlatpickr = flatpickr(endInput, {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+        minuteIncrement: 15,
+        allowInput: false,
+        clickOpens: true,
+        onChange: function(selectedDates, dateStr, instance) {
+            console.log(`End time changed for ${day}: ${dateStr}`);
+            if (validateTimeSlot(timeSlotDiv)) {
+                updateUserAvailability(day);
+            }
+        }
+    });
+    
+    // Store flatpickr instances for cleanup if needed
+    timeSlotDiv.startFlatpickr = startFlatpickr;
+    timeSlotDiv.endFlatpickr = endFlatpickr;
 }
 
 // Validate time slot to prevent invalid times (e.g., 3 PM to 1 PM)
@@ -199,6 +265,10 @@ function validateTimeSlot(timeSlotDiv) {
         if (startTime >= endTime) {
             showNotification('❌ Start time must be before end time!', 'error');
             endInput.value = '';
+            // Clear the flatpickr value as well
+            if (timeSlotDiv.endFlatpickr) {
+                timeSlotDiv.endFlatpickr.clear();
+            }
             return false;
         }
     }
@@ -262,9 +332,9 @@ function addTimeSlot(day) {
     const div = document.createElement('div');
     div.className = 'time-slot';
     div.innerHTML = `
-        <input type="time" class="start-time">
+        <input type="text" class="start-time flatpickr-time" placeholder="Start time" readonly>
         <span>–</span>
-        <input type="time" class="end-time">
+        <input type="text" class="end-time flatpickr-time" placeholder="End time" readonly>
         <button class="delete-slot" onclick="deleteTimeSlot(this)">×</button>
     `;
     
@@ -272,15 +342,8 @@ function addTimeSlot(day) {
     if (addBtn) addBtn.remove();
     container.appendChild(div);
     
-    const inputs = div.querySelectorAll('input');
-    inputs.forEach(input => {
-        input.addEventListener('change', () => {
-            console.log(`Time changed for ${day}, validating and updating...`); // Debug log
-            if (validateTimeSlot(div)) {
-                updateUserAvailability(day);
-            }
-        });
-    });
+    // Initialize flatpickr for the time inputs
+    initializeFlatpickrTime(div, day);
     
     if (container.querySelectorAll('.time-slot').length < 3) {
         showAddButton(day);
@@ -296,9 +359,19 @@ function addTimeSlot(day) {
 }
 
 function deleteTimeSlot(btn) {
-    const container = btn.parentElement.parentElement;
+    const timeSlotDiv = btn.parentElement;
+    const container = timeSlotDiv.parentElement;
     const day = container.id.replace('slots-', '');
-    btn.parentElement.remove();
+    
+    // Clean up flatpickr instances before removing the element
+    if (timeSlotDiv.startFlatpickr) {
+        timeSlotDiv.startFlatpickr.destroy();
+    }
+    if (timeSlotDiv.endFlatpickr) {
+        timeSlotDiv.endFlatpickr.destroy();
+    }
+    
+    timeSlotDiv.remove();
     
     if (container.querySelectorAll('.time-slot').length < 3) {
         showAddButton(day);
@@ -480,6 +553,30 @@ async function sortByMe() {
         
         if (response.ok) {
             currentPlayers = await response.json();
+            
+            // Load friend statuses for filtered players
+            if (currentPlayers.length > 0) {
+                const usernames = currentPlayers.map(player => player.username).join(',');
+                try {
+                    const statusResponse = await fetch('FindPlayerAPI.php?action=check_friend_status&usernames=' + encodeURIComponent(usernames), {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (statusResponse.ok) {
+                        const statusData = await statusResponse.json();
+                        if (statusData.success) {
+                            // Update friend statuses for filtered players
+                            Object.assign(friendStatuses, statusData.statuses);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading friend statuses for filtered players:', error);
+                }
+            }
+            
             renderPlayers();
             
             const playerCount = currentPlayers.length;
@@ -535,22 +632,41 @@ function renderPlayers(playersToRender = currentPlayers) {
         return;
     }
     
-    playersGrid.innerHTML = playersToRender.map(player => `
-        <div class="player-card" onclick="openPlayerModal('${player.username}', '${player.name}', '${player.favorite_sports.join(', ')}', '${player.age}', '${player.gender}', '${player.phone}', '${player.distance}', '${player.image}')">
-            <div class="player-image">
-                <img src="${player.image}" alt="${player.name}" onerror="this.src='../../../uploads/users/default.jpg'" />
-            </div>
-            <div class="player-details">
-                <h4 class="player-name">${player.name}</h4>
-                <p class="player-sport">Sport: ${player.favorite_sports.length > 0 ? player.favorite_sports.join(', ') : 'Not specified'}</p>
-                <p class="player-location">${player.distance}</p>
-                <div class="player-actions">
-                    <button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('${player.username}')">Add Friend</button>
-                    <button class="connect-btn" onclick="event.stopPropagation(); connectToChat('${player.username}')">Connect</button>
+    playersGrid.innerHTML = playersToRender.map(player => {
+        const friendStatus = friendStatuses[player.username] || 'none';
+        let friendButton = '';
+        
+        switch (friendStatus) {
+            case 'friends':
+                friendButton = '<button class="add-friend-btn added" disabled>Already Friends</button>';
+                break;
+            case 'request_sent':
+                friendButton = '<button class="add-friend-btn added" disabled>Request Sent</button>';
+                break;
+            case 'request_received':
+                friendButton = '<button class="add-friend-btn added" disabled>Request Received</button>';
+                break;
+            default:
+                friendButton = `<button class="add-friend-btn" onclick="event.stopPropagation(); addFriend('${player.username}')">Add Friend</button>`;
+        }
+        
+        return `
+            <div class="player-card" onclick="openPlayerModal('${player.username}', '${player.name}', '${player.favorite_sports.join(', ')}', '${player.age}', '${player.gender}', '${player.phone}', '${player.distance}', '${player.image}')">
+                <div class="player-image">
+                    <img src="${player.image}" alt="${player.name}" onerror="this.src='../../../uploads/users/default.jpg'" />
+                </div>
+                <div class="player-details">
+                    <h4 class="player-name">${player.name}</h4>
+                    <p class="player-sport">Sport: ${player.favorite_sports.length > 0 ? player.favorite_sports.join(', ') : 'Not specified'}</p>
+                    <p class="player-location">${player.distance}</p>
+                    <div class="player-actions">
+                        ${friendButton}
+                        <button class="connect-btn" onclick="event.stopPropagation(); connectToChat('${player.username}')">Connect</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function addFriend(playerUsername) {
@@ -566,6 +682,10 @@ function addFriend(playerUsername) {
     .then(data => {
         if (data.success) {
             showNotification(`Friend request sent to ${playerUsername}!`, 'success');
+            // Update friend status locally
+            friendStatuses[playerUsername] = 'request_sent';
+            // Re-render players to update button states
+            renderPlayers();
         } else {
             showNotification(`Error: ${data.error}`, 'error');
         }
@@ -579,7 +699,7 @@ function addFriend(playerUsername) {
 // Connect to chat
 function connectToChat(playerUsername) {
     // Redirect to chat page with the player
-    window.location.href = `../chats/chats.php?user=${playerUsername}`;
+    window.location.href = `../Chats/Chats.php?user=${playerUsername}`;
 }
 
 function setupEventListeners() {
@@ -692,6 +812,23 @@ function handleSelectAll() {
 function openPlayerModal(username, name, sports, age, gender, phone, distance, image) {
     if (!playerModal || !modalBody) return;
     
+    const friendStatus = friendStatuses[username] || 'none';
+    let friendButton = '';
+    
+    switch (friendStatus) {
+        case 'friends':
+            friendButton = '<button class="modal-btn primary" disabled>Already Friends</button>';
+            break;
+        case 'request_sent':
+            friendButton = '<button class="modal-btn primary" disabled>Request Sent</button>';
+            break;
+        case 'request_received':
+            friendButton = '<button class="modal-btn primary" disabled>Request Received</button>';
+            break;
+        default:
+            friendButton = `<button class="modal-btn primary" onclick="addFriend('${username}')">Add Friend</button>`;
+    }
+    
     modalBody.innerHTML = `
         <div class="modal-header">
             <img src="${image}" alt="${name}" class="modal-player-image" onerror="this.src='../../../Images/default.jpg'" />
@@ -707,7 +844,7 @@ function openPlayerModal(username, name, sports, age, gender, phone, distance, i
                 <p><strong>Distance:</strong> ${distance}</p>
             </div>
             <div class="modal-actions">
-                <button class="modal-btn primary" onclick="addFriend('${username}')">Add Friend</button>
+                ${friendButton}
                 <button class="modal-btn secondary" onclick="connectToChat('${username}')">Connect</button>
             </div>
         </div>

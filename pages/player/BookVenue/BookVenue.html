@@ -16,7 +16,6 @@
     <div class="search-container">
       <div class="search-box-main">
         <input type="text" class="player-search" placeholder="🔍 Search for venues by name..." id="playerSearch">
-        <button class="search-btn">Search</button>
       </div>
     </div>
   </section>
@@ -24,22 +23,25 @@
   <div class="layout">
     <!-- Sidebar -->
     <aside class="sidebar">
-<div class="filter-section">
-        <h3>Sort by Available </h3>
+      <div class="filter-section">
+        <h3>Sort by Available</h3>
         <label class="sort-option">
-          <input type="radio" name="Available-sort" id="All-default" checked>
-          <span>All </span>
+          <input type="radio" name="Available-sort" id="available-all" checked>
+          <span>All</span>
         </label>
         <label class="sort-option">
-          <input type="radio" name="Available-sort" id="Available">
-          <span>Available </span>
+          <input type="radio" name="Available-sort" id="available-only">
+          <span>Available Only</span>
         </label>
-    
       </div>
       <div class="filter-section">
         <h3>Sort by Price</h3>
         <label class="sort-option">
-          <input type="radio" name="price-sort" id="price-low" checked>
+          <input type="radio" name="price-sort" id="price-none" checked>
+          <span>None</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="price-sort" id="price-low">
           <span>Low to High</span>
         </label>
         <label class="sort-option">
@@ -50,7 +52,11 @@
       <div class="filter-section">
         <h3>Sort by Rating</h3>
         <label class="sort-option">
-          <input type="radio" name="rating-sort" id="rating-low" checked>
+          <input type="radio" name="rating-sort" id="rating-none" checked>
+          <span>None</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="rating-sort" id="rating-low">
           <span>Low to High</span>
         </label>
         <label class="sort-option">
@@ -62,7 +68,11 @@
       <div class="filter-section">
         <h3>Sort by Distance</h3>
         <label class="sort-option">
-          <input type="radio" name="distance-sort" id="distance-near" checked>
+          <input type="radio" name="distance-sort" id="distance-none" checked>
+          <span>None</span>
+        </label>
+        <label class="sort-option">
+          <input type="radio" name="distance-sort" id="distance-near">
           <span>Nearest First</span>
         </label>
         <label class="sort-option">
@@ -71,6 +81,11 @@
         </label>
       </div>
 
+      <div class="filter-section">
+        <button class="clear-sorts-btn" onclick="clearAllSorts()">
+          🗑️ Clear All Sorts
+        </button>
+      </div>
       
     </aside>
 

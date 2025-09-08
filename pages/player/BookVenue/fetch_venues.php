@@ -25,7 +25,7 @@ if (!empty($sports)) {
     $types .= str_repeat('s', count($sports));
 }
 
-// Filter by venue name start
+// Filter by venue name start (like JoinGroup page)
 if (!empty($search)) {
     $conditions[] = "place_name LIKE ?";
     $params[] = $search . '%';
@@ -51,7 +51,7 @@ $sql = "
 
 $stmt = $conn->prepare($sql);
 if ($params) {
-    $stmt->bind_param($types . 's', ...array_merge($params, [$current_user]));
+    $stmt->bind_param('s' . $types, $current_user, ...$params);
 } else {
     $stmt->bind_param('s', $current_user);
 }

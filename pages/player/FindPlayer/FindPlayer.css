@@ -409,9 +409,110 @@ input:checked + .slider:before {
     -moz-appearance: textfield;
 }
 
-.time-slot input[type="time"]::-webkit-calendar-picker-indicator {
-    color: var(--primary);
+/* Flatpickr time input styling */
+.time-slot .flatpickr-time {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: var(--text-main);
+    flex: 1;
+    font-weight: 500;
+    min-width: 80px;
     cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.time-slot .flatpickr-time:hover {
+    background: rgba(30, 144, 255, 0.05);
+}
+
+.time-slot .flatpickr-time:focus {
+    background: rgba(30, 144, 255, 0.1);
+    box-shadow: 0 0 0 2px rgba(30, 144, 255, 0.2);
+}
+
+/* Flatpickr dropdown styling */
+.flatpickr-calendar {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-small);
+    box-shadow: 0 4px 12px var(--shadow-light), 0 2px 6px var(--shadow-medium);
+    backdrop-filter: blur(12px);
+}
+
+.flatpickr-time {
+    background: var(--card-bg);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.flatpickr-time input {
+    background: transparent;
+    color: var(--text-main);
+    border: none;
+    font-weight: 500;
+}
+
+.flatpickr-time input:hover,
+.flatpickr-time input:focus {
+    background: rgba(30, 144, 255, 0.1);
+}
+
+.flatpickr-time .flatpickr-time-separator {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.flatpickr-time .numInputWrapper {
+    background: transparent;
+}
+
+.flatpickr-time .numInputWrapper:hover {
+    background: rgba(30, 144, 255, 0.1);
+}
+
+.flatpickr-time .arrowUp,
+.flatpickr-time .arrowDown {
+    color: var(--primary);
+}
+
+.flatpickr-time .arrowUp:hover,
+.flatpickr-time .arrowDown:hover {
+    background: rgba(30, 144, 255, 0.1);
+}
+
+/* Additional flatpickr styling for better integration */
+.flatpickr-calendar.open {
+    z-index: 1000;
+}
+
+.flatpickr-calendar.arrowTop:before {
+    border-bottom-color: var(--card-bg);
+}
+
+.flatpickr-calendar.arrowTop:after {
+    border-bottom-color: var(--card-border);
+}
+
+/* Time input placeholder styling */
+.time-slot .flatpickr-time::placeholder {
+    color: var(--text-light);
+    font-style: italic;
+}
+
+/* Responsive flatpickr styling */
+@media (max-width: 768px) {
+    .flatpickr-calendar {
+        font-size: 14px;
+    }
+    
+    .time-slot .flatpickr-time {
+        font-size: 13px;
+        padding: 6px 10px;
+        min-width: 70px;
+    }
 }
 
 .time-slot .delete-slot {
@@ -701,10 +802,17 @@ input:checked + .slider:before {
     box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
-.add-friend-btn.added {
+.add-friend-btn.added,
+.add-friend-btn:disabled {
     background: var(--text-light);
     color: white;
     cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.add-friend-btn:disabled:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
 }
 
 .connect-btn {
@@ -876,6 +984,18 @@ input:checked + .slider:before {
 .modal-btn.secondary:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+}
+
+.modal-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
+}
+
+.modal-btn:disabled:hover {
+    transform: none !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
 }
 
 /* No Players Styling */

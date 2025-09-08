@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Aug 06, 2025 at 03:32 PM
+-- Generation Time: Sep 08, 2025 at 03:18 PM
 -- Server version: 11.5.2-MariaDB
 -- PHP Version: 8.4.0
 
@@ -72,6 +72,23 @@ CREATE TABLE IF NOT EXISTS `friends` (
   `user2` varchar(50) NOT NULL,
   PRIMARY KEY (`user1`,`user2`),
   KEY `user2` (`user2`)
+) ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `friend_requests`
+--
+
+DROP TABLE IF EXISTS `friend_requests`;
+CREATE TABLE IF NOT EXISTS `friend_requests` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `from_username` varchar(50) NOT NULL,
+  `to_username` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_request` (`from_username`,`to_username`),
+  KEY `idx_to_user` (`to_username`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_general_ci;
 
 -- --------------------------------------------------------
@@ -240,6 +257,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `phone_number` varchar(20) DEFAULT NULL,
   `user_image` text DEFAULT NULL,
   `is_admin` tinyint(1) NOT NULL DEFAULT 0,
+  `latitude` double(10,6) DEFAULT NULL,
+  `longitude` double(10,6) DEFAULT NULL,
   PRIMARY KEY (`username`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_general_ci;

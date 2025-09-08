@@ -70,10 +70,11 @@ function sortVenues(venues, sortOptions) {
   })));
   
   // First filter by availability if needed
-  if (sortOptions.available === "Available") {
+  if (sortOptions.available === "available-only") {
     venues = venues.filter(v => v.is_available == 1);
     console.log('✅ After availability filter - venues count:', venues.length);
   }
+  // Note: "available-all" shows all venues (no filtering needed)
 
   // Sort venues based on selected options
   venues.sort((a, b) => {
@@ -217,6 +218,20 @@ function renderVenues(venues) {
 
 // Global variable to store current venues data
 let currentVenuesData = [];
+
+// Function to clear all sorts
+function clearAllSorts() {
+  // Set all sort options to "none" (except available which defaults to "all")
+  document.getElementById('available-all').checked = true;
+  document.getElementById('price-none').checked = true;
+  document.getElementById('rating-none').checked = true;
+  document.getElementById('distance-none').checked = true;
+  
+  // Re-render venues without any sorting
+  if (currentVenuesData.length > 0) {
+    renderVenues([...currentVenuesData]);
+  }
+}
 
 // Test function to verify rating data
 function testRatingData() {

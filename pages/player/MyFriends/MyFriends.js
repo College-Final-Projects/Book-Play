@@ -232,7 +232,7 @@ function removeFriend(friendUsername) {
 
 function messageFriend(friendUsername) {
     // Redirect to chat page with the friend
-    window.location.href = `../Chats/Chats.php?friend=${encodeURIComponent(friendUsername)}`;
+    window.location.href = `../Chats/Chats.php?user=${encodeURIComponent(friendUsername)}`;
 }
 
 function showFriendModal(friendId) {

@@ -26,6 +26,48 @@ window.addEventListener('DOMContentLoaded', () => {
           userDiv.onclick = () => loadChat(user.username);
           sidebar.appendChild(userDiv);
         });
+
+        // Check if there's a user parameter in the URL (from FindPlayer page)
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUser = urlParams.get('user');
+        
+        if (targetUser) {
+          // Find the user in the sidebar and automatically select them
+          const userEntries = document.querySelectorAll('.user-entry');
+          let userFound = false;
+          
+          userEntries.forEach(entry => {
+            const username = entry.querySelector('.user-name').textContent;
+            if (username === targetUser) {
+              userFound = true;
+              // Simulate a click on this user to load their chat
+              entry.click();
+            }
+          });
+          
+          // If user not found in existing conversations, create a new conversation
+          if (!userFound) {
+            // Create a new user entry for this user
+            const userDiv = document.createElement("div");
+            userDiv.className = "user-entry";
+            
+            const usernameDiv = document.createElement("div");
+            usernameDiv.className = "user-name";
+            usernameDiv.textContent = targetUser;
+            
+            const lastMessageDiv = document.createElement("div");
+            lastMessageDiv.className = "last-message";
+            lastMessageDiv.textContent = "Start a new conversation";
+            
+            userDiv.appendChild(usernameDiv);
+            userDiv.appendChild(lastMessageDiv);
+            userDiv.onclick = () => loadChat(targetUser);
+            sidebar.appendChild(userDiv);
+            
+            // Automatically select this new user
+            userDiv.click();
+          }
+        }
       }
     });
 });

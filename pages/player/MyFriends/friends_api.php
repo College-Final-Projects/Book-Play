@@ -56,7 +56,7 @@ switch ($action) {
         $friends_check->close();
         
         // Insert friend request
-        $stmt = $conn->prepare("INSERT INTO friend_requests (from_username, to_username, status, created_at) VALUES (?, ?, 'pending', NOW())");
+        $stmt = $conn->prepare("INSERT INTO friend_requests (from_username, to_username, created_at) VALUES (?, ?, NOW())");
         $stmt->bind_param("ss", $username, $friend_username);
         
         if ($stmt->execute()) {
@@ -77,7 +77,7 @@ switch ($action) {
         }
         
         // Get request details
-        $get_request = $conn->prepare("SELECT * FROM friend_requests WHERE id = ? AND to_username = ? AND status = 'pending'");
+        $get_request = $conn->prepare("SELECT * FROM friend_requests WHERE id = ? AND to_username = ?");
         $get_request->bind_param("is", $request_id, $username);
         $get_request->execute();
         $request_result = $get_request->get_result();
@@ -102,11 +102,11 @@ switch ($action) {
             $add_friend->execute();
             $add_friend->close();
             
-            // Update request status
-            $update_request = $conn->prepare("UPDATE friend_requests SET status = 'accepted', updated_at = NOW() WHERE id = ?");
-            $update_request->bind_param("i", $request_id);
-            $update_request->execute();
-            $update_request->close();
+            // Delete the friend request
+            $delete_request = $conn->prepare("DELETE FROM friend_requests WHERE id = ?");
+            $delete_request->bind_param("i", $request_id);
+            $delete_request->execute();
+            $delete_request->close();
             
             $conn->commit();
             echo json_encode(["success" => true, "message" => "✅ Friend request accepted!"]);
@@ -126,7 +126,7 @@ switch ($action) {
             exit;
         }
         
-        $stmt = $conn->prepare("UPDATE friend_requests SET status = 'rejected', updated_at = NOW() WHERE id = ? AND to_username = ?");
+        $stmt = $conn->prepare("DELETE FROM friend_requests WHERE id = ? AND to_username = ?");
         $stmt->bind_param("is", $request_id, $username);
         
         if ($stmt->execute() && $stmt->affected_rows > 0) {
@@ -143,7 +143,7 @@ switch ($action) {
             SELECT fr.*, u.first_name, u.last_name, u.email, u.user_image, u.description, u.age, u.Gender
             FROM friend_requests fr
             JOIN users u ON fr.from_username = u.username
-            WHERE fr.to_username = ? AND fr.status = 'pending'
+            WHERE fr.to_username = ?
             ORDER BY fr.created_at DESC
         ");
         $stmt->bind_param("s", $username);
@@ -192,7 +192,7 @@ switch ($action) {
         $friends_count->close();
         
         // Count pending requests
-        $requests_count = $conn->prepare("SELECT COUNT(*) as count FROM friend_requests WHERE to_username = ? AND status = 'pending'");
+        $requests_count = $conn->prepare("SELECT COUNT(*) as count FROM friend_requests WHERE to_username = ?");
         $requests_count->bind_param("s", $username);
         $requests_count->execute();
         $requests_result = $requests_count->get_result();
