@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
   window.originalPrices = {};
   window.players = [];
   window.currentGroupId = null;
+  window.phase2Transitioned = false; // Flag to prevent refresh from overriding Phase 2
   
   // Initialize UI components
   initializeScrolling();
@@ -67,8 +68,12 @@ function fetchBookingDetails() {
       // Initialize action buttons based on user role
       initializeActionButtons();
       
-      // Start countdown timer with fetched data
-      startCountdown();
+      // Only start countdown if we haven't manually transitioned to Phase 2
+      if (!window.phase2Transitioned) {
+        startCountdown();
+      } else {
+        console.log("🛡️ Skipping countdown start - Phase 2 transition is active");
+      }
     })
     .catch(err => {
       console.error("❌ Failed to fetch booking details:", err);
@@ -190,7 +195,23 @@ function populatePlayerList(players) {
   console.log("🎯 Host controls check:", { currentUsername: window.currentUsername, currentHost, isHost: window.currentUsername === currentHost });
   
   if (currentHost === window.currentUsername) {
-    hostControls.style.display = "flex";
+    // Check timer phase and payment status
+    const isPhase1Active = window.countdownData && window.countdownData.phase === 1 && window.countdownData.seconds_remaining > 0;
+    const isPhase2Active = window.countdownData && window.countdownData.phase === 2 && window.countdownData.seconds_remaining > 0;
+    const paymentDeadlineMet = window.countdownData && window.countdownData.payment_deadline_met;
+    
+    if (isPhase1Active) {
+      console.log("⏰ Phase 1 (2-hour timer) is active - hiding price editing controls for host");
+      // Hide price editing controls during 2-hour timer period
+      hostControls.style.display = "none";
+    } else if (paymentDeadlineMet && (isPhase2Active || !isPhase1Active)) {
+      console.log("⏰ 20% payment made - showing price editing controls for host");
+      // Show price editing controls after 20% payment is made
+      hostControls.style.display = "flex";
+    } else {
+      console.log("⏰ Timer expired or no payment - hiding price editing controls for host");
+      hostControls.style.display = "none";
+    }
   } else {
     hostControls.style.display = "none";
   }
@@ -665,18 +686,33 @@ function initializeActionButtons() {
       
     } else if (currentUserRole === 'member') {
       console.log("👥 Setting up MEMBER buttons");
-      // Group member sees "Leave Group" and "Pay Now"
+      // Group member sees "Leave Group" and "Pay Now" (only after 20% payment is made)
       newCancelBtn.textContent = 'Leave Group';
       newCancelBtn.className = 'leave-btn';
       newCancelBtn.addEventListener('click', handleLeaveGroup);
       
-      newPayBtn.textContent = 'Pay Now';
-      newPayBtn.className = 'pay-btn';
-      console.log("🔗 Adding click listener to Pay Now button (MEMBER)");
-              newPayBtn.addEventListener('click', function(e) {
+      // Check timer phase and payment status
+      const isPhase1Active = window.countdownData && window.countdownData.phase === 1 && window.countdownData.seconds_remaining > 0;
+      const paymentDeadlineMet = window.countdownData && window.countdownData.payment_deadline_met;
+      
+      if (isPhase1Active) {
+        console.log("⏰ Phase 1 (2-hour timer) is active - hiding Pay Now button for member");
+        // Hide Pay Now button during 2-hour timer period
+        newPayBtn.style.display = 'none';
+      } else if (paymentDeadlineMet) {
+        console.log("⏰ 20% payment made - showing Pay Now button for member");
+        newPayBtn.textContent = 'Pay Now';
+        newPayBtn.className = 'pay-btn';
+        newPayBtn.style.display = 'inline-block';
+        console.log("🔗 Adding click listener to Pay Now button (MEMBER)");
+        newPayBtn.addEventListener('click', function(e) {
           console.log("🎯 Pay Now button clicked via event listener (MEMBER)");
           handlePayNow();
         });
+      } else {
+        console.log("⏰ No payment made yet - hiding Pay Now button for member");
+        newPayBtn.style.display = 'none';
+      }
       
     } else {
       console.log("🚫 Hiding buttons for GUEST role");
@@ -1198,30 +1234,103 @@ function startCountdown() {
     return;
   }
   
-  // Calculate deadline (24 hours before booking)
-  const deadlineDate = calculateCountdownDeadline();
-  
-  if (!deadlineDate) {
-    console.log('❌ Could not calculate deadline - using fallback');
-    window.timeRemaining = 6330; // Default fallback
-  } else {
-    // Calculate seconds remaining until deadline
-    const now = new Date();
-    const timeDiff = deadlineDate.getTime() - now.getTime();
-    window.timeRemaining = Math.max(0, Math.floor(timeDiff / 1000));
+  // Use server-provided countdown data or calculate Phase 2 timer
+  if (window.countdownData && window.countdownData.seconds_remaining !== undefined) {
+    window.timeRemaining = window.countdownData.seconds_remaining;
+    window.countdownPhase = window.countdownData.phase;
+    window.twentyPercentAmount = window.countdownData.twenty_percent_amount;
+    window.totalPaid = window.countdownData.total_paid;
+    window.paymentDeadlineMet = window.countdownData.payment_deadline_met;
     
-    console.log(`⏰ Countdown deadline: ${deadlineDate.toLocaleString()}`);
-    console.log(`⏰ Seconds remaining: ${window.timeRemaining}`);
+    console.log(`⏰ Using countdown data - Phase ${window.countdownPhase}, ${window.timeRemaining} seconds remaining`);
+    console.log(`💰 Twenty percent amount: ₪${window.twentyPercentAmount}, Total paid: ₪${window.totalPaid}`);
+    
+    // If we're in Phase 2, recalculate the timer to ensure accuracy
+    if (window.countdownPhase === 2) {
+      const bookingDate = document.getElementById('bookingDate').textContent;
+      const bookingTime = document.getElementById('bookingTime').textContent;
+      const [startTime] = bookingTime.split(' - ');
+      
+      console.log("📅 Phase 2 timer recalculation inputs:", {
+        bookingDate,
+        bookingTime,
+        startTime
+      });
+      
+      // Parse booking date and time properly with validation
+      let bookingDateTime;
+      
+      try {
+        // Try different date formats
+        if (bookingDate.includes('/')) {
+          // Format: DD/MM/YYYY
+          const [day, month, year] = bookingDate.split('/');
+          const [hours, minutes] = startTime.split(':');
+          
+          console.log("📅 Phase 2 recalculation - parsing date components:", { day, month, year, hours, minutes });
+          
+          // Create booking datetime (note: month is 0-indexed in JavaScript Date)
+          bookingDateTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes), 0);
+        } else if (bookingDate.includes('-')) {
+          // Format: YYYY-MM-DD
+          const [year, month, day] = bookingDate.split('-');
+          const [hours, minutes] = startTime.split(':');
+          
+          console.log("📅 Phase 2 recalculation - parsing date components:", { year, month, day, hours, minutes });
+          
+          bookingDateTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes), 0);
+        } else {
+          // Try direct parsing
+          bookingDateTime = new Date(`${bookingDate} ${startTime}`);
+        }
+        
+        // Validate the date
+        if (isNaN(bookingDateTime.getTime())) {
+          throw new Error('Invalid date created');
+        }
+        
+        console.log("✅ Phase 2 recalculation - valid booking datetime created:", bookingDateTime.toISOString());
+        
+      } catch (error) {
+        console.error("❌ Phase 2 recalculation - date parsing error:", error);
+        console.log("📅 Phase 2 recalculation - raw date values:", { bookingDate, startTime });
+        
+        // Fallback: use current time + 24 hours
+        bookingDateTime = new Date();
+        bookingDateTime.setHours(bookingDateTime.getHours() + 24);
+        console.log("⚠️ Phase 2 recalculation - using fallback date:", bookingDateTime.toISOString());
+      }
+      
+      // Calculate 24 hours before booking
+      const twentyFourHoursBeforeBooking = new Date(bookingDateTime);
+      twentyFourHoursBeforeBooking.setHours(twentyFourHoursBeforeBooking.getHours() - 24);
+      
+      // Calculate seconds remaining from now to 24 hours before booking
+      const now = new Date();
+      const secondsRemaining = Math.max(0, Math.floor((twentyFourHoursBeforeBooking - now) / 1000));
+      
+      window.timeRemaining = secondsRemaining;
+      window.countdownData.seconds_remaining = secondsRemaining;
+      
+      console.log(`⏰ Phase 2 timer recalculated: ${secondsRemaining} seconds remaining (${Math.floor(secondsRemaining / 3600)} hours)`);
+      console.log("⏰ Recalculation details:", {
+        now: now.toISOString(),
+        bookingDateTime: bookingDateTime.toISOString(),
+        twentyFourHoursBeforeBooking: twentyFourHoursBeforeBooking.toISOString(),
+        hoursRemaining: Math.floor(secondsRemaining / 3600),
+        minutesRemaining: Math.floor((secondsRemaining % 3600) / 60)
+      });
+    }
+  } else {
+    console.log('❌ No countdown data from server - using fallback');
+    window.timeRemaining = 7200; // 2 hours fallback
+    window.countdownPhase = 1;
+    window.twentyPercentAmount = Math.round((window.totalVenuePrice * 0.20) * 100) / 100;
+    window.totalPaid = totalPaidByAll;
+    window.paymentDeadlineMet = totalPaidByAll >= window.twentyPercentAmount;
   }
   
-  // Initialize countdown variables
-  window.countdownPhase = 1;
-  window.twentyPercentAmount = Math.round((window.totalVenuePrice * 0.20) * 100) / 100;
-  window.totalPaid = totalPaidByAll;
-  window.paymentDeadlineMet = totalPaidByAll >= window.twentyPercentAmount;
-  
   console.log(`⏰ Starting countdown - Phase ${window.countdownPhase}, ${window.timeRemaining} seconds remaining`);
-  console.log(`💰 Twenty percent amount: ₪${window.twentyPercentAmount}, Total paid: ₪${window.totalPaid}`);
   
   // Update display immediately
   updateCountdownDisplay();
@@ -1231,12 +1340,15 @@ function startCountdown() {
     clearInterval(window.countdownInterval); // Clear any existing interval
   }
   
+  console.log(`⏰ Starting countdown interval for Phase ${window.countdownPhase} with ${window.timeRemaining} seconds`);
+  
   window.countdownInterval = setInterval(() => {
     if (window.timeRemaining > 0) {
       window.timeRemaining--;
       updateCountdownDisplay();
     } else {
       // Countdown expired - handle deadline
+      console.log(`⏰ Countdown expired for Phase ${window.countdownPhase}`);
       handleCountdownExpired();
     }
   }, 1000);
@@ -1318,33 +1430,46 @@ function updateCountdownMessage(days, hours, minutes, seconds) {
   }
   
   if (window.countdownPhase === 1) {
-    // Phase 1: Need to pay 20%
+    // Phase 1: Need to pay 20% within 2 hours of booking creation
     timerTitle.textContent = '⏰ Payment Deadline';
     if (minimumAmount) {
       minimumAmount.textContent = window.twentyPercentAmount;
     }
     
+    // Check if current user is a member (not host)
+    const isMember = window.currentUserRole === 'member';
+    const memberMessage = isMember ? 
+      '<br><br><div class="member-notice">ℹ️ <strong>Note:</strong> Only the host can make payments during the 2-hour deadline period. You can pay after the deadline expires.</div>' : '';
+    
     timerMessage.innerHTML = `
-      You must pay at least <strong>20% (₪<span id="minimumAmount">${window.twentyPercentAmount}</span>)</strong> of the total booking price before 24 hours prior to your booking time, otherwise the booking will be automatically canceled.
+      You must pay at least <strong>20% (₪<span id="minimumAmount">${window.twentyPercentAmount}</span>)</strong> of the total booking price within 2 hours of booking creation, otherwise the booking will be automatically canceled.
       <br><br>
       <div class="payment-status">
         <span class="current-paid">Currently paid: <strong>₪${window.totalPaid}</strong></span>
       </div>
+      ${memberMessage}
     `;
   } else if (window.countdownPhase === 2) {
-    // Phase 2: Need full payment
-    timerTitle.textContent = '⏰ Full Payment Required';
-    const remaining = window.totalVenuePrice - window.totalPaid;
+    // Phase 2: 20% payment made - countdown to 24 hours before booking
+    timerTitle.textContent = '⏰ Final Payment Deadline';
+    
+    // Calculate time until booking
+    const bookingDate = document.getElementById('bookingDate').textContent;
+    const bookingTime = document.getElementById('bookingTime').textContent;
+    const [startTime] = bookingTime.split(' - ');
+    const bookingDateTime = new Date(`${bookingDate} ${startTime}`);
+    const timeUntilBooking = Math.floor((bookingDateTime - new Date()) / (1000 * 60 * 60)); // hours
     
     timerMessage.innerHTML = `
-      <div class="phase-2-message">
-        <div class="success-message">✅ 20% deposit requirement met!</div>
-        <div class="full-payment-requirement">
-          Complete full payment of <strong>₪${window.totalVenuePrice}</strong> before 24 hours prior to your booking time.
+      <div class="phase2-message">
+        <div class="success-badge">✅ 20% Deposit Paid!</div>
+        <p>Great! The initial deposit has been paid. Now you have until <strong>24 hours before the booking</strong> to complete the remaining payments.</p>
+        <div class="booking-info">
+          <span class="booking-countdown">Booking in: <strong>${timeUntilBooking} hours</strong></span>
+          <span class="remaining-amount">Remaining: <strong>₪${(window.totalVenuePrice - window.totalPaid).toFixed(2)}</strong></span>
         </div>
-        <div class="payment-status">
-          <span class="current-paid">Currently paid: <strong>₪${window.totalPaid}</strong></span>
-          <span class="remaining-amount">Remaining: <strong>₪${remaining.toFixed(2)}</strong></span>
+        <div class="phase2-note">
+          <strong>Note:</strong> All players can now make their payments. The host can edit individual payment amounts.
         </div>
       </div>
     `;
@@ -1359,6 +1484,11 @@ function handleCountdownExpired() {
     clearInterval(window.countdownInterval);
   }
   
+  // Update countdown data to reflect expiration
+  if (window.countdownData) {
+    window.countdownData.seconds_remaining = 0;
+  }
+  
   // Show expiration message
   const timerMessage = document.querySelector('.timer-message');
   if (timerMessage) {
@@ -1366,20 +1496,28 @@ function handleCountdownExpired() {
       timerMessage.innerHTML = `
         <div class="countdown-expired">
           <div class="countdown-expired-title">⚠️ Payment Deadline Expired</div>
-          <div class="countdown-expired-message">The booking will be cancelled automatically due to insufficient payment.</div>
+          <div class="countdown-expired-message">The 2-hour payment deadline has passed. The booking will be cancelled automatically due to insufficient payment.</div>
           <div class="countdown-expired-info">Required: ₪${window.twentyPercentAmount} | Paid: ₪${window.totalPaid}</div>
         </div>
       `;
     } else if (window.countdownPhase === 2) {
       timerMessage.innerHTML = `
         <div class="countdown-expired">
-          <div class="countdown-expired-title">⚠️ Payment Deadline Expired</div>
-          <div class="countdown-expired-message">Full payment was not completed in time.</div>
-          <div class="countdown-expired-info">Required: ₪${window.totalVenuePrice} | Paid: ₪${window.totalPaid}</div>
+          <div class="countdown-expired-title">⚠️ Final Payment Deadline Expired</div>
+          <div class="countdown-expired-message">The final payment deadline (24 hours before booking) has passed. The booking may be cancelled due to incomplete payment.</div>
+          <div class="countdown-expired-info">Total Required: ₪${window.totalVenuePrice} | Paid: ₪${window.totalPaid}</div>
         </div>
       `;
     }
   }
+  
+  // Re-initialize action buttons to show Pay Now button for members after timer expires
+  console.log("🔄 Re-initializing action buttons after timer expiration");
+  initializeActionButtons();
+  
+  // Re-initialize player list to show host controls after timer expires
+  console.log("🔄 Re-initializing player list after timer expiration");
+  populatePlayerList(window.players);
   
   // Check payment status and potentially cancel booking
   setTimeout(() => {
@@ -1595,32 +1733,52 @@ function populatePaymentModal() {
     initialDepositElement: !!initialDepositElement
   });
   
+  // Get host information and timer status
+  const hostUsername = getHostUsername(window.players);
+  const isHost = window.currentUsername === hostUsername;
+  const isTimerActive = window.countdownData && window.countdownData.seconds_remaining > 0;
+  
   if (totalPriceElement) totalPriceElement.textContent = totalPrice;
-  if (requiredPaymentElement) requiredPaymentElement.textContent = requiredPayment;
-  if (amountPaidElement) amountPaidElement.textContent = amountPaid;
-  if (amountToPayElement) amountToPayElement.textContent = amountToPay;
   if (initialDepositElement) initialDepositElement.textContent = twentyPercentAmount;
+  
+  // During timer period, hide regular payment info for host
+  if (isHost && isTimerActive) {
+    // Hide regular payment fields for host during timer
+    if (requiredPaymentElement) {
+      requiredPaymentElement.closest('.payment-item').style.display = 'none';
+    }
+    if (amountPaidElement) {
+      amountPaidElement.closest('.payment-item').style.display = 'none';
+    }
+    // Show only the amount to pay (which will be the 20% deposit)
+    if (amountToPayElement) {
+      amountToPayElement.textContent = twentyPercentAmount;
+    }
+  } else {
+    // Show all payment fields normally
+    if (requiredPaymentElement) {
+      requiredPaymentElement.closest('.payment-item').style.display = 'block';
+      requiredPaymentElement.textContent = requiredPayment;
+    }
+    if (amountPaidElement) {
+      amountPaidElement.closest('.payment-item').style.display = 'block';
+      amountPaidElement.textContent = amountPaid;
+    }
+    if (amountToPayElement) {
+      amountToPayElement.textContent = amountToPay;
+    }
+  }
   
   // Show/hide initial deposit section
   const initialPaymentSection = document.getElementById('initialPaymentSection');
   if (initialPaymentSection) {
+    // Get host information
+    const hostUsername = getHostUsername(window.players);
+    const isHost = window.currentUsername === hostUsername;
+    const isTimerActive = window.countdownData && window.countdownData.seconds_remaining > 0;
+    
     if (needsInitialDeposit) {
       initialPaymentSection.style.display = 'block';
-      
-      // Get host information
-      const hostUsername = getHostUsername(window.players);
-      const isHost = window.currentUsername === hostUsername;
-      
-      // Update the message based on user role
-      let message;
-      if (isHost) {
-        message = 'As the host, you are responsible for paying the initial 20% deposit to secure the booking.';
-      } else {
-        message = 'The host needs to pay the initial 20% deposit. You can contribute if they haven\'t paid yet.';
-      }
-      
-      const messageElement = initialPaymentSection.querySelector('p');
-      if (messageElement) messageElement.textContent = message;
       
       // Auto-check the deposit checkbox for host and update label
       const payInitialCheckbox = document.getElementById('payInitialDeposit');
@@ -1632,9 +1790,41 @@ function populatePaymentModal() {
           // Trigger the change event to update payment amount
           payInitialCheckbox.dispatchEvent(new Event('change'));
           
-          // Update label for host
-          if (checkboxLabel) {
-            checkboxLabel.innerHTML = `Pay the initial 20% deposit (₪<span id="modalInitialDeposit">${twentyPercentAmount}</span>) <strong>- Your Responsibility as Host</strong>`;
+          // During timer, disable checkbox and show simplified message
+          if (isTimerActive) {
+            payInitialCheckbox.disabled = true;
+            payInitialCheckbox.style.display = 'none'; // Hide the checkbox completely
+            
+            // Update the message for timer period
+            const messageElement = initialPaymentSection.querySelector('p');
+            if (messageElement) {
+              messageElement.innerHTML = `
+                <strong>🏦 20% Deposit Required</strong><br>
+                During the 2-hour deadline period, you must pay the 20% deposit to secure this booking.<br>
+                <em>Amount: ₪<span id="modalInitialDeposit">${twentyPercentAmount}</span></em>
+              `;
+            }
+            
+            // Hide the checkbox label since checkbox is hidden
+            if (checkboxLabel) {
+              checkboxLabel.style.display = 'none';
+            }
+          } else {
+            // Normal behavior when timer is not active
+            payInitialCheckbox.disabled = false;
+            payInitialCheckbox.style.display = 'inline-block';
+            
+            // Update the message for normal period
+            const messageElement = initialPaymentSection.querySelector('p');
+            if (messageElement) {
+              messageElement.textContent = 'As the host, you are responsible for paying the initial 20% deposit to secure the booking.';
+            }
+            
+            // Update label for host
+            if (checkboxLabel) {
+              checkboxLabel.style.display = 'inline-block';
+              checkboxLabel.innerHTML = `Pay the initial 20% deposit (₪<span id="modalInitialDeposit">${twentyPercentAmount}</span>) <strong>- Your Responsibility as Host</strong>`;
+            }
           }
         } else {
           // Update label for non-host
@@ -1661,15 +1851,35 @@ function updatePaymentAmount() {
   const amountPaid = currentUser?.payment_amount || 0;
   const baseAmountToPay = requiredPayment - amountPaid;
   
+  // Get host information and timer status
+  const hostUsername = getHostUsername(window.players);
+  const isHost = window.currentUsername === hostUsername;
+  const isTimerActive = window.countdownData && window.countdownData.seconds_remaining > 0;
+  
   if (payInitialCheckbox.checked) {
     const totalPrice = window.totalVenuePrice || 0;
     const twentyPercentAmount = Math.round((totalPrice * 0.20) * 100) / 100; // Keep 2 decimal places like backend
     const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
     const remainingInitialDeposit = Math.max(0, twentyPercentAmount - totalPaidByAll);
     
-    amountToPayElement.textContent = baseAmountToPay + remainingInitialDeposit;
+    // During 2-hour timer, host can only pay the 20% deposit
+    if (isHost && isTimerActive) {
+      amountToPayElement.textContent = remainingInitialDeposit;
+    } else {
+      amountToPayElement.textContent = baseAmountToPay + remainingInitialDeposit;
+    }
   } else {
-    amountToPayElement.textContent = baseAmountToPay;
+    // During 2-hour timer, host cannot pay their regular amount
+    if (isHost && isTimerActive) {
+      amountToPayElement.textContent = 0;
+    } else {
+      amountToPayElement.textContent = baseAmountToPay;
+    }
+  }
+  
+  // During timer period, ensure the checkbox is always checked for host
+  if (isHost && isTimerActive) {
+    payInitialCheckbox.checked = true;
   }
 }
 
@@ -1720,13 +1930,28 @@ function handleConfirmPayment() {
     console.log("📊 Payment response:", data);
     
     if (data.success) {
+      console.log("🎉 Payment successful! Response data:", data);
       showNotification(data.message, 'success');
       closePaymentModal();
       
-      // Refresh booking details to show updated payment status
-      setTimeout(() => {
-        fetchBookingDetails();
-      }, 1000);
+      // Update local payment data immediately
+      console.log("🔄 Updating payment data...");
+      updatePaymentDataAfterSuccess(data);
+      
+      // Check if this payment completes the 20% deposit
+      console.log("🔄 Checking for Phase 2 transition...");
+      const transitionedToPhase2 = checkAndTransitionToPhase2();
+      
+      // Only refresh booking details if we didn't transition to Phase 2
+      // This prevents the refresh from overriding the Phase 2 state
+      if (!transitionedToPhase2) {
+        setTimeout(() => {
+          console.log("🔄 Refreshing booking details...");
+          fetchBookingDetails();
+        }, 1000);
+      } else {
+        console.log("✅ Phase 2 transition completed - skipping refresh to preserve state");
+      }
     } else {
       throw new Error(data.error || 'Payment failed');
     }
@@ -1868,6 +2093,181 @@ function handleLeaveGroup() {
   });
 }
 
+function updatePaymentDataAfterSuccess(paymentData) {
+  console.log("💰 Updating payment data after success:", paymentData);
+  
+  // Update the current user's payment amount in the local data
+  const currentUser = window.players.find(p => p.username === window.currentUsername);
+  if (currentUser) {
+    currentUser.payment_amount = paymentData.total_paid;
+    console.log("✅ Updated current user payment amount to:", paymentData.total_paid);
+  }
+  
+  // Update global payment tracking
+  if (window.countdownData) {
+    window.countdownData.total_paid = paymentData.total_paid;
+    console.log("✅ Updated global total paid to:", paymentData.total_paid);
+  }
+  
+  // Also update the global totalPaid variable
+  window.totalPaid = paymentData.total_paid;
+  console.log("✅ Updated window.totalPaid to:", paymentData.total_paid);
+}
+
+function checkAndTransitionToPhase2() {
+  console.log("🔍 Checking if we should transition to Phase 2...");
+  
+  const totalPrice = window.totalVenuePrice || 0;
+  const twentyPercentAmount = Math.round((totalPrice * 0.20) * 100) / 100;
+  const totalPaid = window.totalPaid || window.countdownData?.total_paid || 0;
+  
+  console.log("💰 Payment status check:", {
+    totalPrice,
+    twentyPercentAmount,
+    totalPaid,
+    paymentDeadlineMet: totalPaid >= twentyPercentAmount,
+    windowTotalPaid: window.totalPaid,
+    countdownDataTotalPaid: window.countdownData?.total_paid
+  });
+  
+  // Check if 20% deposit is now paid
+  if (totalPaid >= twentyPercentAmount) {
+    console.log("🎉 20% deposit completed! Transitioning to Phase 2...");
+    
+    // Update countdown data to Phase 2
+    if (window.countdownData) {
+      window.countdownData.phase = 2;
+      window.countdownData.payment_deadline_met = true;
+      
+      // Calculate new timer: current time to 24 hours before booking
+      const bookingDate = document.getElementById('bookingDate').textContent;
+      const bookingTime = document.getElementById('bookingTime').textContent;
+      const [startTime] = bookingTime.split(' - ');
+      
+      console.log("📅 Timer calculation inputs:", {
+        bookingDate,
+        bookingTime,
+        startTime
+      });
+      
+      // Parse booking date and time properly with validation
+      let bookingDateTime;
+      
+      try {
+        // Try different date formats
+        if (bookingDate.includes('/')) {
+          // Format: DD/MM/YYYY
+          const [day, month, year] = bookingDate.split('/');
+          const [hours, minutes] = startTime.split(':');
+          
+          console.log("📅 Parsing date components:", { day, month, year, hours, minutes });
+          
+          // Create booking datetime (note: month is 0-indexed in JavaScript Date)
+          bookingDateTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes), 0);
+        } else if (bookingDate.includes('-')) {
+          // Format: YYYY-MM-DD
+          const [year, month, day] = bookingDate.split('-');
+          const [hours, minutes] = startTime.split(':');
+          
+          console.log("📅 Parsing date components:", { year, month, day, hours, minutes });
+          
+          bookingDateTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes), 0);
+        } else {
+          // Try direct parsing
+          bookingDateTime = new Date(`${bookingDate} ${startTime}`);
+        }
+        
+        // Validate the date
+        if (isNaN(bookingDateTime.getTime())) {
+          throw new Error('Invalid date created');
+        }
+        
+        console.log("✅ Valid booking datetime created:", bookingDateTime.toISOString());
+        
+      } catch (error) {
+        console.error("❌ Date parsing error:", error);
+        console.log("📅 Raw date values:", { bookingDate, startTime });
+        
+        // Fallback: try to parse as ISO string or use current time + 24 hours
+        bookingDateTime = new Date();
+        bookingDateTime.setHours(bookingDateTime.getHours() + 24);
+        console.log("⚠️ Using fallback date:", bookingDateTime.toISOString());
+      }
+      
+      // Calculate 24 hours before booking
+      const twentyFourHoursBeforeBooking = new Date(bookingDateTime);
+      twentyFourHoursBeforeBooking.setHours(twentyFourHoursBeforeBooking.getHours() - 24);
+      
+      // Calculate seconds remaining from now to 24 hours before booking
+      const now = new Date();
+      const secondsRemaining = Math.max(0, Math.floor((twentyFourHoursBeforeBooking - now) / 1000));
+      
+      console.log("⏰ Timer calculation details:", {
+        now: now.toISOString(),
+        bookingDateTime: bookingDateTime.toISOString(),
+        twentyFourHoursBeforeBooking: twentyFourHoursBeforeBooking.toISOString(),
+        secondsRemaining,
+        hoursRemaining: Math.floor(secondsRemaining / 3600),
+        minutesRemaining: Math.floor((secondsRemaining % 3600) / 60)
+      });
+      
+      window.countdownData.seconds_remaining = secondsRemaining;
+      window.countdownData.end_time = twentyFourHoursBeforeBooking.toISOString();
+      
+      console.log("⏰ Phase 2 timer set:", {
+        bookingDateTime: bookingDateTime.toISOString(),
+        twentyFourHoursBeforeBooking: twentyFourHoursBeforeBooking.toISOString(),
+        secondsRemaining,
+        hoursRemaining: Math.floor(secondsRemaining / 3600)
+      });
+    }
+    
+    // Update global variables
+    window.countdownPhase = 2;
+    window.paymentDeadlineMet = true;
+    window.phase2Transitioned = true; // Set flag to prevent refresh override
+    
+    // Update UI elements immediately
+    updateUIForPhase2();
+    
+    // Restart countdown with new Phase 2 timer
+    startCountdown();
+    
+    console.log("✅ Successfully transitioned to Phase 2!");
+    return true; // Return true to indicate transition occurred
+  } else {
+    console.log("⏳ 20% deposit not yet completed. Remaining:", twentyPercentAmount - totalPaid);
+    return false; // Return false to indicate no transition
+  }
+}
+
+function updateUIForPhase2() {
+  console.log("🎨 Updating UI for Phase 2...");
+  
+  // Force update the countdown display immediately
+  console.log("⏰ Force updating countdown display for Phase 2");
+  updateCountdownDisplay();
+  
+  // Ensure countdown timer is visible
+  const countdownTimer = document.getElementById('countdown');
+  if (countdownTimer) {
+    countdownTimer.style.display = 'flex';
+    console.log("✅ Countdown timer made visible");
+  } else {
+    console.log("❌ Countdown timer element not found");
+  }
+  
+  // Re-initialize action buttons to show Pay Now for members
+  console.log("🔘 Re-initializing action buttons");
+  initializeActionButtons();
+  
+  // Re-initialize player list to show host controls
+  console.log("👥 Re-initializing player list");
+  populatePlayerList(window.players);
+  
+  console.log("✅ UI updated for Phase 2");
+}
+
 function showNotification(message, type = 'info') {
   const existing = document.querySelector('.notification');
   if (existing) existing.remove();
@@ -1921,4 +2321,117 @@ function goBack() {
     // Otherwise, go back to previous page
     window.history.back();
   }
+}
+
+// 🔧 DEBUG: Force Phase 2 transition for testing
+function forcePhase2Transition() {
+  console.log("🔧 DEBUG: Forcing Phase 2 transition...");
+  
+  // Reset the flag first
+  window.phase2Transitioned = false;
+  
+  // Set payment data to simulate 20% deposit paid
+  const totalPrice = window.totalVenuePrice || 100;
+  const twentyPercentAmount = Math.round((totalPrice * 0.20) * 100) / 100;
+  
+  window.totalPaid = twentyPercentAmount;
+  if (window.countdownData) {
+    window.countdownData.total_paid = twentyPercentAmount;
+  }
+  
+  console.log("💰 Simulated payment data:", {
+    totalPrice,
+    twentyPercentAmount,
+    totalPaid: window.totalPaid
+  });
+  
+  // Force transition to Phase 2
+  checkAndTransitionToPhase2();
+  
+  // Also test the countdown display directly
+  console.log("🔧 DEBUG: Testing countdown display...");
+  updateCountdownDisplay();
+}
+
+// 🔧 DEBUG: Check current timer state
+function checkTimerState() {
+  console.log("🔧 DEBUG: Current timer state:", {
+    countdownPhase: window.countdownPhase,
+    timeRemaining: window.timeRemaining,
+    totalPaid: window.totalPaid,
+    totalVenuePrice: window.totalVenuePrice,
+    countdownData: window.countdownData,
+    countdownInterval: window.countdownInterval ? 'Running' : 'Stopped'
+  });
+  
+  const countdownTimer = document.getElementById('countdown');
+  console.log("🔧 DEBUG: Countdown timer element:", {
+    exists: !!countdownTimer,
+    display: countdownTimer ? countdownTimer.style.display : 'N/A',
+    visible: countdownTimer ? countdownTimer.offsetParent !== null : false
+  });
+}
+
+// 🔧 DEBUG: Test timer calculation with specific dates
+function testTimerCalculation() {
+  console.log("🔧 DEBUG: Testing timer calculation...");
+  
+  // Your specific dates
+  const currentTime = new Date('2025-09-10T15:55:00'); // 10/09/2025 15:55
+  const bookingDateTime = new Date('2025-09-13T12:00:00'); // 13/09/2025 12:00
+  
+  // Calculate 24 hours before booking
+  const twentyFourHoursBeforeBooking = new Date(bookingDateTime);
+  twentyFourHoursBeforeBooking.setHours(twentyFourHoursBeforeBooking.getHours() - 24);
+  
+  // Calculate seconds remaining
+  const secondsRemaining = Math.max(0, Math.floor((twentyFourHoursBeforeBooking - currentTime) / 1000));
+  const hoursRemaining = Math.floor(secondsRemaining / 3600);
+  const minutesRemaining = Math.floor((secondsRemaining % 3600) / 60);
+  
+  console.log("🔧 DEBUG: Timer calculation test:", {
+    currentTime: currentTime.toISOString(),
+    bookingDateTime: bookingDateTime.toISOString(),
+    twentyFourHoursBeforeBooking: twentyFourHoursBeforeBooking.toISOString(),
+    secondsRemaining,
+    hoursRemaining,
+    minutesRemaining,
+    expectedHours: "Should be around 44 hours"
+  });
+  
+  return {
+    hoursRemaining,
+    minutesRemaining,
+    secondsRemaining
+  };
+}
+
+// 🔧 DEBUG: Check actual date format from page
+function checkDateFormat() {
+  console.log("🔧 DEBUG: Checking actual date format from page...");
+  
+  const bookingDate = document.getElementById('bookingDate').textContent;
+  const bookingTime = document.getElementById('bookingTime').textContent;
+  
+  console.log("🔧 DEBUG: Raw date values from page:", {
+    bookingDate,
+    bookingTime,
+    bookingDateType: typeof bookingDate,
+    bookingTimeType: typeof bookingTime,
+    bookingDateLength: bookingDate.length,
+    bookingTimeLength: bookingTime.length
+  });
+  
+  // Try to parse the time part
+  const [startTime] = bookingTime.split(' - ');
+  console.log("🔧 DEBUG: Extracted start time:", {
+    startTime,
+    startTimeType: typeof startTime
+  });
+  
+  return {
+    bookingDate,
+    bookingTime,
+    startTime
+  };
 }

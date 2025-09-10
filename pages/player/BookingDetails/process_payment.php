@@ -97,7 +97,18 @@ try {
     if ($payInitialDeposit) {
         // Calculate remaining initial deposit needed
         $remainingInitialDeposit = max(0, $twentyPercentAmount - $totalPaidByAll);
-        $paymentAmount += $remainingInitialDeposit;
+        
+        // For the initial deposit payment, the user should pay the remaining deposit amount
+        // This is typically the case when the user's required_payment is already set to the 20% deposit
+        if ($remainingInitialDeposit > 0) {
+            // If the user's required payment is the full 20% deposit, use that amount
+            // Otherwise, add the remaining deposit to their base payment
+            if ($requiredPayment >= $twentyPercentAmount) {
+                $paymentAmount = $remainingInitialDeposit;
+            } else {
+                $paymentAmount += $remainingInitialDeposit;
+            }
+        }
     }
     
     if ($paymentAmount <= 0) {

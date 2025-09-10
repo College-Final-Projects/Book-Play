@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $booking_id = $stmt->insert_id;
 
-    if ($player_count > 1) {
+    if ($player_count >= 1) {
     $group_name = $username . "'s Group";
     $privacy = $group_type === 'public' ? 'public' : 'private';
     $password_to_save = ($privacy === 'private') ? $group_password : null;
@@ -78,9 +78,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $group_id = $group_stmt->insert_id;
 
-    // ⬇️ Add user to group
-    $add_host_stmt = $conn->prepare("INSERT INTO group_members (group_id, username, payment_amount) VALUES (?, ?, 0)");
-    $add_host_stmt->bind_param("is", $group_id, $username);
+    // ⬇️ Add user to group with 20% required payment
+    $twenty_percent_amount = round($total_price * 0.20, 2);
+    $add_host_stmt = $conn->prepare("INSERT INTO group_members (group_id, username, payment_amount, required_payment) VALUES (?, ?, 0, ?)");
+    $add_host_stmt->bind_param("isd", $group_id, $username, $twenty_percent_amount);
     $add_host_stmt->execute();
 }
 

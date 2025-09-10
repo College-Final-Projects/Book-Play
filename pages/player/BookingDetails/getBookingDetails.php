@@ -118,8 +118,6 @@ $totalPrice = round($booking['price'] * $hours, 2);
 $now = new DateTime();
 $bookingCreated = new DateTime($booking['created_at']);
 $bookingDateTime = new DateTime($booking['booking_date'] . ' ' . $booking['start_time']);
-$twentyFourHoursBefore = clone $bookingDateTime;
-$twentyFourHoursBefore->sub(new DateInterval('P1D')); // Subtract 24 hours
 
 // Calculate 20% of total venue price
 $twentyPercentAmount = round($totalPrice * 0.20, 2);
@@ -140,33 +138,36 @@ $countdownEndTime = null;
 $countdownSeconds = 0;
 $paymentDeadlineMet = $totalPaid >= $twentyPercentAmount;
 
-if (!$paymentDeadlineMet) {
-    // Phase 1: From booking creation, need to pay 20%
-    // Set to exactly 1 hour from booking creation
-    $firstDeadline = clone $bookingCreated;
-    $firstDeadline->add(new DateInterval('PT1H')); // Add 1 hour
+// Set timer to exactly 2 hours from booking creation
+$twoHourDeadline = clone $bookingCreated;
+$twoHourDeadline->add(new DateInterval('PT5M')); // Add 2 hours 
+
+if ($now < $twoHourDeadline) {
+    // Phase 1: 2-hour deadline for 20% payment
+    $countdownPhase = 1;
+    $countdownEndTime = $twoHourDeadline;
+    $countdownSeconds = $twoHourDeadline->getTimestamp() - $now->getTimestamp();
+} else if ($paymentDeadlineMet) {
+    // Phase 2: 20% payment made - start new timer to 24 hours before booking
+    $countdownPhase = 2;
     
-    if ($now < $firstDeadline) {
-        $countdownPhase = 1;
-        $countdownEndTime = $firstDeadline;
-        $countdownSeconds = $firstDeadline->getTimestamp() - $now->getTimestamp();
+    // Calculate 24 hours before booking date and time
+    $bookingDateTime = new DateTime($booking['booking_date'] . ' ' . $booking['start_time']);
+    $twentyFourHoursBeforeBooking = clone $bookingDateTime;
+    $twentyFourHoursBeforeBooking->sub(new DateInterval('PT24H')); // Subtract 24 hours
+    
+    if ($now < $twentyFourHoursBeforeBooking) {
+        $countdownEndTime = $twentyFourHoursBeforeBooking;
+        $countdownSeconds = $twentyFourHoursBeforeBooking->getTimestamp() - $now->getTimestamp();
     } else {
-        // First deadline passed without 20% payment - booking should be cancelled
-        $countdownPhase = 1;
+        // 24-hour deadline before booking has passed
+        $countdownPhase = 2;
         $countdownSeconds = 0; // Expired
     }
 } else {
-    // Phase 2: 20% paid, countdown to 24 hours before booking
-    if ($now < $twentyFourHoursBefore) {
-        $countdownPhase = 2;
-        $countdownEndTime = $twentyFourHoursBefore;
-        $countdownSeconds = $twentyFourHoursBefore->getTimestamp() - $now->getTimestamp();
-    } else {
-        // Second deadline passed - check if full payment made
-        $fullPaymentMet = $totalPaid >= $totalPrice;
-        $countdownPhase = 2;
-        $countdownSeconds = 0; // Expired
-    }
+    // 2-hour deadline passed but 20% not paid - booking should be cancelled
+    $countdownPhase = 1;
+    $countdownSeconds = 0; // Expired
 }
 
 // ✅ Fix venue image path
