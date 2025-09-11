@@ -132,43 +132,24 @@ $paymentData = $paymentResult->fetch_assoc();
 $totalPaid = floatval($paymentData['total_paid'] ?? 0);
 $stmt3->close();
 
-// Determine countdown phase and calculate remaining time
+// Single-phase: Full payment required within 24 hours of booking creation
 $countdownPhase = 1;
 $countdownEndTime = null;
 $countdownSeconds = 0;
-$paymentDeadlineMet = $totalPaid >= $twentyPercentAmount;
 
-// Set timer to exactly 2 hours from booking creation
-$twoHourDeadline = clone $bookingCreated;
-$twoHourDeadline->add(new DateInterval('PT5M')); // Add 2 hours 
+// Deadline = created_at + 24 hours
+$twentyFourHourDeadline = clone $bookingCreated;
+$twentyFourHourDeadline->add(new DateInterval('PT24H'));
 
-if ($now < $twoHourDeadline) {
-    // Phase 1: 2-hour deadline for 20% payment
-    $countdownPhase = 1;
-    $countdownEndTime = $twoHourDeadline;
-    $countdownSeconds = $twoHourDeadline->getTimestamp() - $now->getTimestamp();
-} else if ($paymentDeadlineMet) {
-    // Phase 2: 20% payment made - start new timer to 24 hours before booking
-    $countdownPhase = 2;
-    
-    // Calculate 24 hours before booking date and time
-    $bookingDateTime = new DateTime($booking['booking_date'] . ' ' . $booking['start_time']);
-    $twentyFourHoursBeforeBooking = clone $bookingDateTime;
-    $twentyFourHoursBeforeBooking->sub(new DateInterval('PT24H')); // Subtract 24 hours
-    
-    if ($now < $twentyFourHoursBeforeBooking) {
-        $countdownEndTime = $twentyFourHoursBeforeBooking;
-        $countdownSeconds = $twentyFourHoursBeforeBooking->getTimestamp() - $now->getTimestamp();
-    } else {
-        // 24-hour deadline before booking has passed
-        $countdownPhase = 2;
-        $countdownSeconds = 0; // Expired
-    }
+if ($now < $twentyFourHourDeadline) {
+    $countdownEndTime = $twentyFourHourDeadline;
+    $countdownSeconds = $twentyFourHourDeadline->getTimestamp() - $now->getTimestamp();
 } else {
-    // 2-hour deadline passed but 20% not paid - booking should be cancelled
-    $countdownPhase = 1;
     $countdownSeconds = 0; // Expired
 }
+
+// Payment deadline met only when full price is paid
+$paymentDeadlineMet = $totalPaid >= $totalPrice;
 
 // ✅ Fix venue image path
 $venueImage = '';

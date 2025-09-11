@@ -93,4 +93,39 @@ function sendCancellationEmail($to, $subject, $message) {
         return false;
     }
 }
+
+/**
+ * Booking Confirmation Email
+ * Sends a confirmation email with a simple receipt for the booking.
+ *
+ * @param string $to Recipient's email address
+ * @param string $subject Email subject
+ * @param string $message HTML message content
+ * @return bool True if email sent successfully, false otherwise
+ */
+function sendBookingConfirmationEmail($to, $subject, $message) {
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'bookandplay.team@gmail.com';
+        $mail->Password = 'zfdi dqpm tyug tfvh';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        $mail->setFrom('bookandplay.team@gmail.com', 'Book And Play');
+        $mail->addAddress($to);
+
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $message;
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        error_log("Error sending booking confirmation email: {$mail->ErrorInfo}");
+        return false;
+    }
+}
 ?>
