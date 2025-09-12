@@ -90,34 +90,16 @@ try {
     $totalPaidByAll = $totalPaidData['total_paid'] ?? 0;
     $stmt->close();
     
-    // Calculate payment amount
-    $baseAmountToPay = $requiredPayment - $currentPaymentAmount;
-    $paymentAmount = $baseAmountToPay;
-    
-    if ($payInitialDeposit) {
-        // Calculate remaining initial deposit needed
-        $remainingInitialDeposit = max(0, $twentyPercentAmount - $totalPaidByAll);
-        
-        // For the initial deposit payment, the user should pay the remaining deposit amount
-        // This is typically the case when the user's required_payment is already set to the 20% deposit
-        if ($remainingInitialDeposit > 0) {
-            // If the user's required payment is the full 20% deposit, use that amount
-            // Otherwise, add the remaining deposit to their base payment
-            if ($requiredPayment >= $twentyPercentAmount) {
-                $paymentAmount = $remainingInitialDeposit;
-            } else {
-                $paymentAmount += $remainingInitialDeposit;
-            }
-        }
-    }
+    // Calculate payment amount: charge exactly the user's required_payment
+    $paymentAmount = (float)$requiredPayment;
     
     if ($paymentAmount <= 0) {
         throw new Exception('No payment amount to process');
     }
     
-    // Update user's payment amount
-    $newPaymentAmount = $currentPaymentAmount + $paymentAmount;
-    $updatePaymentSql = "UPDATE group_members SET payment_amount = ? WHERE group_id = ? AND username = ?";
+    // Update user's payment amount and set required_payment to 0
+    $newPaymentAmount = (float)$currentPaymentAmount + (float)$paymentAmount;
+    $updatePaymentSql = "UPDATE group_members SET payment_amount = ?, required_payment = 0 WHERE group_id = ? AND username = ?";
     $stmt = $conn->prepare($updatePaymentSql);
     $stmt->bind_param("dis", $newPaymentAmount, $groupId, $currentUsername);
     $stmt->execute();
@@ -133,11 +115,8 @@ try {
     // Commit transaction
     $conn->commit();
     
-    // Prepare response message
+    // Prepare response message (no deposit contribution suffix)
     $message = "Payment of $" . number_format($paymentAmount, 2) . " processed successfully";
-    if ($payInitialDeposit) {
-        $message .= " (including initial deposit contribution)";
-    }
     
     echo json_encode([
         'success' => true,
