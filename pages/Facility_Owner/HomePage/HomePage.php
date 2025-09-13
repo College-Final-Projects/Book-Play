@@ -17,9 +17,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_user_image') {
     $stmt->execute();
     $result = $stmt->get_result();
     if ($user = $result->fetch_assoc()) {
-        echo json_encode(['image' => $user['user_image'], 'username' => $user['username']]);
+        echo json_encode([
+            'success' => true,
+            'image' => $user['user_image'], 
+            'username' => $user['username']
+        ]);
     } else {
-        echo json_encode(['error' => 'User not found']);
+        echo json_encode(['success' => false, 'error' => 'User not found']);
     }
     exit;
 }

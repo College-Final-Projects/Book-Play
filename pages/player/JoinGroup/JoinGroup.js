@@ -1,6 +1,7 @@
 let allGroups = [];
 let userLocation = null;
 let selectedGroup = null;
+let currentGroupsData = [];
 
 function toggleFavorite(element) {
   element.classList.toggle("active");
@@ -25,6 +26,103 @@ function viewBookingDetails(booking_id) {
   window.location.href = url;
 }
 
+function sortGroups(groups, sortOptions) {
+  console.log('🔄 Sorting groups with options:', sortOptions);
+  console.log('📊 Before filtering - groups count:', groups.length);
+  
+  // Debug: Log first few groups to check data
+  console.log('🔍 Sample group data:', groups.slice(0, 3).map(g => ({
+    name: g.group_name,
+    rating: g.rating,
+    price: g.price,
+    distance: g.distance,
+    privacy: g.privacy
+  })));
+  
+  // First filter by privacy if needed
+  if (sortOptions.public === "public-only") {
+    groups = groups.filter(g => g.privacy === 'public');
+    console.log('✅ After public filter - groups count:', groups.length);
+  } else if (sortOptions.public === "private-only") {
+    groups = groups.filter(g => g.privacy === 'private');
+    console.log('✅ After private filter - groups count:', groups.length);
+  }
+  // Note: "public-all" shows all groups (no filtering needed)
+
+  // Sort groups based on selected options
+  groups.sort((a, b) => {
+    let comparison = 0;
+    
+    // Distance sorting (highest priority)
+    if (sortOptions.distance === "distance-near") {
+      if (a.distance !== undefined && b.distance !== undefined) {
+        comparison = a.distance - b.distance;
+        if (comparison !== 0) return comparison;
+      }
+    } else if (sortOptions.distance === "distance-far") {
+      if (a.distance !== undefined && b.distance !== undefined) {
+        comparison = b.distance - a.distance;
+        if (comparison !== 0) return comparison;
+      }
+    }
+
+    // Rating sorting
+    if (sortOptions.rating === "rating-high") {
+      const ratingA = parseFloat(a.rating) || 0;
+      const ratingB = parseFloat(b.rating) || 0;
+      comparison = ratingB - ratingA;
+      if (comparison !== 0) return comparison;
+    } else if (sortOptions.rating === "rating-low") {
+      const ratingA = parseFloat(a.rating) || 0;
+      const ratingB = parseFloat(b.rating) || 0;
+      comparison = ratingA - ratingB;
+      if (comparison !== 0) return comparison;
+    }
+
+    // Price sorting
+    if (sortOptions.price === "price-low") {
+      const priceA = parseFloat(a.price) || 0;
+      const priceB = parseFloat(b.price) || 0;
+      comparison = priceA - priceB;
+      if (comparison !== 0) return comparison;
+    } else if (sortOptions.price === "price-high") {
+      const priceA = parseFloat(a.price) || 0;
+      const priceB = parseFloat(b.price) || 0;
+      comparison = priceB - priceA;
+      if (comparison !== 0) return comparison;
+    }
+
+    return 0;
+  });
+
+  console.log('✅ After sorting - groups count:', groups.length);
+  
+  // Log final sorted order for debugging
+  console.log('📋 Final sorted order (first 5):', groups.slice(0, 5).map(g => ({
+    name: g.group_name,
+    price: `₪${g.price}`,
+    rating: g.rating || 0,
+    distance: g.distance ? `${g.distance.toFixed(2)}km` : 'N/A',
+    privacy: g.privacy
+  })));
+  
+  return groups;
+}
+
+// Function to clear all sorts
+function clearAllSorts() {
+  // Set all sort options to "none" (except public which defaults to "all")
+  document.getElementById('public-all').checked = true;
+  document.getElementById('price-none').checked = true;
+  document.getElementById('rating-none').checked = true;
+  document.getElementById('distance-none').checked = true;
+  
+  // Re-render groups without any sorting
+  if (currentGroupsData.length > 0) {
+    renderGroups([...currentGroupsData]);
+  }
+}
+
 window.onload = function () {
   getUserLocation().then(location => {
     userLocation = location;
@@ -42,7 +140,21 @@ window.onload = function () {
               parseFloat(group.longitude)
             )
           }));
-          renderGroups(allGroups);
+          
+          // Store the groups data globally
+          currentGroupsData = allGroups;
+          
+          const sortOptions = {
+            public: document.querySelector("input[name='public-sort']:checked")?.id,
+            price: document.querySelector("input[name='price-sort']:checked")?.id,
+            rating: document.querySelector("input[name='rating-sort']:checked")?.id,
+            distance: document.querySelector("input[name='distance-sort']:checked")?.id
+          };
+          
+          console.log('Sort options:', sortOptions);
+          
+          const sortedGroups = sortGroups([...allGroups], sortOptions);
+          renderGroups(sortedGroups);
         } else {
           console.error("Invalid response format:", data);
         }
@@ -81,8 +193,8 @@ function renderGroups(groups) {
         <div class="venue-tags">
           <span class="tag">${group.SportCategory}</span>
           <span class="player-count">
-            ⭐ ${group.rating ? parseFloat(group.rating).toFixed(1) : "N/A"} |
-            📍 ${group.distance ? group.distance.toFixed(2) + " km" : "N/A"}
+            <span>👥 ${group.current_members || 0}/${group.max_members || 10} players</span>
+            <span>⭐ ${group.rating ? parseFloat(group.rating).toFixed(1) : "N/A"} | 📍 ${group.distance ? group.distance.toFixed(2) + " km" : "N/A"}</span>
           </span>
         </div>
         <div class="venue-footer">
@@ -236,48 +348,97 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-// ✅ Search
-document.getElementById('playerSearch').addEventListener('input', function () {
-  const query = this.value.trim().toLowerCase();
-  const filtered = allGroups.filter(group =>
-    group.group_name.toLowerCase().startsWith(query)
-  );
-  renderGroups(filtered);
-});
+// Event listeners for sorting (BookVenue style)
+document.addEventListener("DOMContentLoaded", () => {
+  // Debug: Check initial radio button states
+  console.log('🔍 Initial radio button states:');
+  console.log('Public:', document.querySelector("input[name='public-sort']:checked")?.id);
+  console.log('Price:', document.querySelector("input[name='price-sort']:checked")?.id);
+  console.log('Rating:', document.querySelector("input[name='rating-sort']:checked")?.id);
+  console.log('Distance:', document.querySelector("input[name='distance-sort']:checked")?.id);
 
-// ✅ Sort
-document.getElementById('price-low').addEventListener('change', () => {
-  renderGroups([...allGroups].sort((a, b) => a.price - b.price));
-});
+  const sortGroupNames = ["public-sort", "price-sort", "rating-sort", "distance-sort"];
+  sortGroupNames.forEach(group => {
+    document.querySelectorAll(`input[name='${group}']`).forEach(radio => {
+      radio.addEventListener("change", () => {
+        console.log(`🔄 Radio changed: ${group} - ${radio.id}`);
+        
+        // Only resort existing data, don't make new API call
+        if (currentGroupsData.length > 0) {
+          const sortOptions = {
+            public: document.querySelector("input[name='public-sort']:checked")?.id,
+            price: document.querySelector("input[name='price-sort']:checked")?.id,
+            rating: document.querySelector("input[name='rating-sort']:checked")?.id,
+            distance: document.querySelector("input[name='distance-sort']:checked")?.id
+          };
+          
+          console.log('🔄 Sorting existing data with options:', sortOptions);
+          console.log('📊 Current groups data length:', currentGroupsData.length);
+          
+          // Show before/after sorting for debugging
+          const beforeSorting = [...currentGroupsData].slice(0, 3).map(g => ({
+            name: g.group_name,
+            price: g.price,
+            rating: g.rating,
+            privacy: g.privacy
+          }));
+          console.log('📋 Before sorting (first 3):', beforeSorting);
+          
+          const sortedGroups = sortGroups([...currentGroupsData], sortOptions);
+          
+          const afterSorting = sortedGroups.slice(0, 3).map(g => ({
+            name: g.group_name,
+            price: g.price,
+            rating: g.rating,
+            privacy: g.privacy
+          }));
+          console.log('📋 After sorting (first 3):', afterSorting);
+          
+          renderGroups(sortedGroups);
+        } else {
+          console.log('⚠️ No groups data available for sorting');
+        }
+      });
+    });
+  });
 
-document.getElementById('price-high').addEventListener('change', () => {
-  renderGroups([...allGroups].sort((a, b) => b.price - a.price));
-});
+  // Search functionality
+  const searchInput = document.getElementById("playerSearch");
+  let searchTimeout;
 
-document.getElementById('only-public').addEventListener('change', () => {
-  renderGroups(allGroups.filter(g => g.privacy === 'public'));
-});
-
-document.getElementById('only-private').addEventListener('change', () => {
-  renderGroups(allGroups.filter(g => g.privacy === 'private'));
-});
-
-document.getElementById('all-groups').addEventListener('change', () => {
-  renderGroups(allGroups);
-});
-
-document.getElementById('rating-low').addEventListener('change', () => {
-  renderGroups([...allGroups].sort((a, b) => (a.rating || 0) - (b.rating || 0)));
-});
-
-document.getElementById('rating-high').addEventListener('change', () => {
-  renderGroups([...allGroups].sort((a, b) => (b.rating || 0) - (a.rating || 0)));
-});
-
-document.getElementById('distance-near').addEventListener('change', () => {
-  renderGroups([...allGroups].sort((a, b) => a.distance - b.distance));
-});
-
-document.getElementById('distance-far').addEventListener('change', () => {
-  renderGroups([...allGroups].sort((a, b) => b.distance - a.distance));
+  searchInput.addEventListener("input", () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      const searchValue = searchInput.value.trim();
+      if (searchValue === '') {
+        // If search is empty, show all groups with current sorting
+        if (currentGroupsData.length > 0) {
+          const sortOptions = {
+            public: document.querySelector("input[name='public-sort']:checked")?.id,
+            price: document.querySelector("input[name='price-sort']:checked")?.id,
+            rating: document.querySelector("input[name='rating-sort']:checked")?.id,
+            distance: document.querySelector("input[name='distance-sort']:checked")?.id
+          };
+          const sortedGroups = sortGroups([...currentGroupsData], sortOptions);
+          renderGroups(sortedGroups);
+        }
+      } else {
+        // Filter groups by search term
+        const filtered = currentGroupsData.filter(group =>
+          group.group_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+          group.location.toLowerCase().includes(searchValue.toLowerCase())
+        );
+        
+        const sortOptions = {
+          public: document.querySelector("input[name='public-sort']:checked")?.id,
+          price: document.querySelector("input[name='price-sort']:checked")?.id,
+          rating: document.querySelector("input[name='rating-sort']:checked")?.id,
+          distance: document.querySelector("input[name='distance-sort']:checked")?.id
+        };
+        
+        const sortedGroups = sortGroups([...filtered], sortOptions);
+        renderGroups(sortedGroups);
+      }
+    }, 300);
+  });
 });

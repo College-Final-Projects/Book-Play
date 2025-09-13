@@ -70,11 +70,22 @@ switch ($action) {
         echo json_encode(['success' => true, 'data' => $analytics]);
         break;
 
-    // 🏅 2. Fetch all accepted sports
+    // 🏅 2. Fetch only sports that have analytics/bookings data
     case 'fetch_sports':
         $sports = [];
-        $sql = "SELECT * FROM sports WHERE is_Accepted = 1";
-        $result = $conn->query($sql);
+        $owner_username = $_SESSION['username'];
+        
+        // Only show sports that have actual bookings/analytics data for this owner
+        $sql = "SELECT DISTINCT sf.SportCategory as sport_name
+                FROM sportfacilities sf
+                INNER JOIN bookings b ON sf.facilities_id = b.facilities_id
+                WHERE sf.is_Accepted = 1 AND sf.owner_username = ?
+                ORDER BY sf.SportCategory";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $owner_username);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
         if ($result && $result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
@@ -85,25 +96,31 @@ switch ($action) {
         echo json_encode(['success' => true, 'sports' => $sports]);
         break;
 
-    // 🏟️ 3. Fetch all accepted venues
+    // 🏟️ 3. Fetch only venues that have analytics/bookings data
     case 'fetch_venues':
         $venues = [];
+        $owner_username = $_SESSION['username'];
         
-        // More specific query to ensure we get all necessary fields
-        $sql = "SELECT 
-                    facilities_id, 
-                    place_name, 
-                    location, 
-                    description, 
-                    image_url, 
-                    owner_username, 
-                    SportCategory, 
-                    price, 
-                    is_Accepted 
-                FROM sportfacilities 
-                WHERE is_Accepted = 1";
+        // Only show venues that have actual bookings/analytics data for this owner
+        $sql = "SELECT DISTINCT
+                    sf.facilities_id, 
+                    sf.place_name, 
+                    sf.location, 
+                    sf.description, 
+                    sf.image_url, 
+                    sf.owner_username, 
+                    sf.SportCategory, 
+                    sf.price, 
+                    sf.is_Accepted 
+                FROM sportfacilities sf
+                INNER JOIN bookings b ON sf.facilities_id = b.facilities_id
+                WHERE sf.is_Accepted = 1 AND sf.owner_username = ?
+                ORDER BY sf.place_name";
         
-        $result = $conn->query($sql);
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $owner_username);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
         if (!$result) {
             echo json_encode(['success' => false, 'message' => 'Database query failed: ' . $conn->error]);

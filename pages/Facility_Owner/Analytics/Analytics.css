@@ -49,6 +49,41 @@
   margin: 0 auto;
 }
 
+/* No Bookings Message */
+.no-bookings-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin: 40px auto;
+  max-width: 400px;
+}
+
+.no-bookings-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.no-bookings-message h3 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 12px 0;
+}
+
+.no-bookings-message p {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   background: linear-gradient(135deg, var(--bg-light), var(--bg-secondary));

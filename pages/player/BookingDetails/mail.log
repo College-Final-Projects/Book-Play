@@ -1,0 +1,213 @@
+[2025-09-09 16:29:40] TO:<test@example.com> | Test Subject
+This is a test email body.
+---
+[2025-09-09 19:30:46] TO:<host@example.com> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:30:46] TO:<player1> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:30:46] TO:<player2> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:30:46] TO:<player3> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:30:46] TO:<player4> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:30:55] TO:<host@example.com> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:30:55] TO:<player1> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:30:55] TO:<player2> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:30:55] TO:<player3> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:30:55] TO:<player4> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:31:26] TO:<host@example.com> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:31:26] TO:<player1> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:31:26] TO:<player2> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:31:26] TO:<player3> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---
+[2025-09-09 19:31:26] TO:<player4> | Booking Canceled — Deposit Not Paid
+Your booking has been automatically canceled because the deposit was not paid within the required timeframe.
+
+Booking Details:
+- Venue: Sample Sports Center
+- Event Date: 2025-01-15 18:00:00
+- Total Amount: $500.00
+
+Reason: The 20% deposit was not paid within 2 hours of booking creation.
+
+Next Steps: You can create a new booking if the venue is still available.
+
+Thank you for using our booking system.
+---

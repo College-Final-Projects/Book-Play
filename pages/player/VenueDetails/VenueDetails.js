@@ -139,81 +139,71 @@ function saveReviewComplaintsURL() {
   console.log('💾 Saved ReviewComplaints URL:', reviewComplaintsURL);
 }
 
-// Smart back button function - goes to previous page or fallback
+// Simple and reliable back button function
 window.goBack = function goBack() {
   console.log('🔙 Back button clicked');
+  console.log('📍 Current URL:', window.location.href);
+  console.log('🔗 Document referrer:', document.referrer);
   
-  // Check if we're in admin-only mode or view-only mode
+  // Check URL parameters
   const params = new URLSearchParams(window.location.search);
   const isAdminOnly = params.get('admin_only') === 'true';
   const isViewOnly = params.get('view_only') === 'true';
   
+  console.log('🔍 URL params - admin_only:', isAdminOnly, 'view_only:', isViewOnly);
+  
+  // Handle admin mode
   if (isAdminOnly) {
-    // If admin mode, go back to ManageVenueRequests
-    console.log('👑 Admin mode detected, going back to ManageVenueRequests');
+    console.log('👑 Admin mode: going to ManageVenueRequests');
     window.location.href = '../../Admin/ManageVenueRequests/ManageVenueRequests.php';
     return;
   }
   
+  // Handle view-only mode - use direct referrer check first
   if (isViewOnly) {
-    // If view-only mode, check for saved ReviewComplaints URL
-    const reviewComplaintsURL = sessionStorage.getItem('reviewComplaintsURL');
-    if (reviewComplaintsURL) {
-      console.log('📋 View-only mode detected, going back to ReviewComplaints');
-      window.location.href = reviewComplaintsURL;
+    console.log('👁️ View-only mode detected');
+    
+    // First, try document.referrer if it's valid
+    if (document.referrer && document.referrer !== window.location.href) {
+      const referrer = document.referrer.toLowerCase();
+      console.log('🔗 Checking referrer:', referrer);
+      
+      // Check if referrer contains valid pages
+      if (referrer.includes('reviewcomplaints') || 
+          referrer.includes('bookvenue') || 
+          referrer.includes('joingroup') ||
+          referrer.includes('managevenue') ||
+          referrer.includes('favorites') ||
+          referrer.includes('homepage')) {
+        console.log('✅ Using valid referrer:', document.referrer);
+        window.location.href = document.referrer;
+        return;
+      }
+    }
+    
+    // If referrer is not valid, try browser history
+    if (window.history.length > 1) {
+      console.log('📜 Using browser history back');
+      window.history.back();
       return;
     }
+    
+    // Ultimate fallback for view-only mode
+    console.log('🏠 View-only fallback: going to BookVenue');
+    window.location.href = '../BookVenue/BookVenue.php';
+    return;
   }
   
-  fetch('VenueDetails.php?action=get_previous_page')
-    .then(res => {
-      console.log('📡 Response received:', res.status);
-      return res.json();
-    })
-    .then(data => {
-      console.log('📊 Previous page data:', data);
-      if (data.debug) {
-        console.log('🔍 Debug info:', data.debug);
-      }
-      
-      if (data.url && data.url !== window.location.href) {
-        // Check if it's a valid previous page
-        const url = data.url.toLowerCase();
-        
-        // Prefer these pages as valid previous pages
-        const validPages = ['bookvenue', 'managevenue', 'favorites', 'homepage'];
-        const isValidPage = validPages.some(page => url.includes(page.toLowerCase()));
-        
-        if (isValidPage) {
-          console.log('✅ Going to stored previous page:', data.url);
-          window.location.href = data.url;
-        } else {
-          console.log('⚠️ Previous page not in valid list, using BookVenue fallback');
-          window.location.href = '../BookVenue/BookVenue.php';
-        }
-      } else {
-        console.log('⚠️ No valid previous page, using fallback');
-        // Fallback to browser history or default page
-        if (window.history.length > 1) {
-          console.log('📜 Using browser history back');
-          window.history.back();
-        } else {
-          console.log('🏠 Going to BookVenue page (ultimate fallback)');
-          window.location.href = '../BookVenue/BookVenue.php';
-        }
-      }
-    })
-    .catch(error => {
-      console.error('❌ Error getting previous page:', error);
-      // Fallback on error
-      if (window.history.length > 1) {
-        console.log('📜 Error fallback: using browser history back');
-        window.history.back();
-      } else {
-        console.log('🏠 Error fallback: going to BookVenue page');
-        window.location.href = '../BookVenue/BookVenue.php';
-      }
-    });
+  // Regular mode - try browser history first, then fallback
+  if (window.history.length > 1) {
+    console.log('📜 Regular mode: using browser history back');
+    window.history.back();
+    return;
+  }
+  
+  // Fallback for regular mode
+  console.log('🏠 Regular mode fallback: going to BookVenue');
+  window.location.href = '../BookVenue/BookVenue.php';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -224,6 +214,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const facilityId = params.get('facilities_id');
   const isAdminOnly = params.get('admin_only') === 'true';
   const isViewOnly = params.get('view_only') === 'true';
+  
+  // Debug current state
+  console.log('🔍 Current URL:', window.location.href);
+  console.log('🔗 Document referrer:', document.referrer);
+  console.log('📋 URL parameters:', Object.fromEntries(params));
+  console.log('🔍 Is view-only:', isViewOnly);
+  console.log('🔍 Is admin-only:', isAdminOnly);
   
   if (isAdminOnly) {
     console.log('👑 Admin-only mode detected, hiding review elements');

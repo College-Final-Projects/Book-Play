@@ -93,6 +93,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 const venuesList = document.querySelector('.venues-list');
                 venuesList.innerHTML = '';
 
+                // Check if there are no venues with bookings
+                if (!data.venues || data.venues.length === 0) {
+                    venuesContainer.innerHTML = `
+                        <div class="no-bookings-message">
+                            <div class="no-bookings-icon">📅</div>
+                            <h3>No bookings yet</h3>
+                            <p>You don't have any venues with bookings at the moment.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
                 // Remove duplicates based on ID
                 const uniqueVenues = [];
                 const seenIds = new Set();
@@ -152,6 +164,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     const showBookings = () => {
                         venueCardsView.style.display = 'none';
                         bookingDetailView.classList.remove('hidden');
+                        
+                        // Hide the search and sort container when viewing bookings
+                        const searchSortContainer = document.querySelector('.search-sort-container');
+                        if (searchSortContainer) {
+                            searchSortContainer.style.display = 'none';
+                        }
 
                         const venueTitle = document.querySelector('.booking-content .venue-details h2');
                         const venueLocation = document.querySelector('.location-badge');
@@ -475,6 +493,12 @@ document.addEventListener('DOMContentLoaded', function () {
         backBtn.addEventListener('click', function () {
             if (bookingDetailView) bookingDetailView.classList.add('hidden');
             if (venueCardsView) venueCardsView.style.display = 'flex';
+            
+            // Show the search and sort container when going back to venue cards
+            const searchSortContainer = document.querySelector('.search-sort-container');
+            if (searchSortContainer) {
+                searchSortContainer.style.display = 'flex';
+            }
         });
     }
 
