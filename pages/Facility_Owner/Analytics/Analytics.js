@@ -38,6 +38,22 @@ function loadFacilities() {
       
       console.log(`✅ Loaded ${data.venues.length} venues`);
       facilities = data.venues;
+      
+      // Check if there are no venues with analytics
+      if (facilities.length === 0) {
+        const venueGrid = document.getElementById('venueCards');
+        if (venueGrid) {
+          venueGrid.innerHTML = `
+            <div class="no-bookings-message">
+              <div class="no-bookings-icon">📊</div>
+              <h3>No bookings yet</h3>
+              <p>You don't have any venues with analytics data at the moment.</p>
+            </div>
+          `;
+        }
+        return;
+      }
+      
       applyFilters();
     })
     .catch(error => {

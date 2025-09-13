@@ -26,6 +26,7 @@ $query = "
     f.longitude,
     (SELECT AVG(r.rating_value) FROM ratings r WHERE r.facilities_id = f.facilities_id) AS rating,
     (SELECT COUNT(*) FROM group_members gm WHERE gm.group_id = g.group_id) AS current_members,
+    g.max_members,
     CASE WHEN gm2.username IS NOT NULL THEN 1 ELSE 0 END AS is_member
   FROM groups g
   JOIN sportfacilities f ON g.facilities_id = f.facilities_id

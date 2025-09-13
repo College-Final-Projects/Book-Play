@@ -1999,6 +1999,9 @@ function goBack() {
     // Otherwise, go back to previous page
     window.history.back();
   }
+<<<<<<< HEAD
+}
+=======
 }
 
 // 🔧 DEBUG: Force Phase 2 transition for testing
@@ -2113,3 +2116,4 @@ function checkDateFormat() {
     startTime
   };
 }
+>>>>>>> 79a05ac6ce2c452012dcf25b4d9e7446ccdff30b

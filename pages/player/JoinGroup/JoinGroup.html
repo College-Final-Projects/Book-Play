@@ -26,22 +26,26 @@
       <div class="filter-section">
         <h3>Sort by Group Type</h3>
         <label class="sort-option">
-          <input type="radio" name="public-sort" id="all-groups" checked>
+          <input type="radio" name="public-sort" id="public-all" checked>
           <span>All</span>
         </label>
         <label class="sort-option">
-          <input type="radio" name="public-sort" id="only-public">
-          <span>Public</span>
+          <input type="radio" name="public-sort" id="public-only">
+          <span>Public Only</span>
         </label>
         <label class="sort-option">
-          <input type="radio" name="public-sort" id="only-private">
-          <span>Private</span>
+          <input type="radio" name="public-sort" id="private-only">
+          <span>Private Only</span>
         </label>
       </div>
 
       <!-- Sort by Price -->
       <div class="filter-section">
         <h3>Sort by Price</h3>
+        <label class="sort-option">
+          <input type="radio" name="price-sort" id="price-none" checked>
+          <span>None</span>
+        </label>
         <label class="sort-option">
           <input type="radio" name="price-sort" id="price-low">
           <span>Low to High</span>
@@ -56,6 +60,10 @@
       <div class="filter-section">
         <h3>Sort by Rating</h3>
         <label class="sort-option">
+          <input type="radio" name="rating-sort" id="rating-none" checked>
+          <span>None</span>
+        </label>
+        <label class="sort-option">
           <input type="radio" name="rating-sort" id="rating-low">
           <span>Low to High</span>
         </label>
@@ -69,6 +77,10 @@
       <div class="filter-section">
         <h3>Sort by Distance</h3>
         <label class="sort-option">
+          <input type="radio" name="distance-sort" id="distance-none" checked>
+          <span>None</span>
+        </label>
+        <label class="sort-option">
           <input type="radio" name="distance-sort" id="distance-near">
           <span>Nearest First</span>
         </label>
@@ -76,6 +88,13 @@
           <input type="radio" name="distance-sort" id="distance-far">
           <span>Farthest First</span>
         </label>
+      </div>
+
+      <!-- Clear All Sorts Button -->
+      <div class="filter-section">
+        <button class="clear-sorts-btn" onclick="clearAllSorts()">
+          🗑️ Clear All Sorts
+        </button>
       </div>
     </aside>
 
