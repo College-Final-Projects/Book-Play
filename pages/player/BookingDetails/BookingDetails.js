@@ -50,6 +50,8 @@ function fetchBookingDetails() {
   window.currentGroupId = data.booking?.group_id || null;
   window.currentBookingId = data.booking?.booking_id || null;
   window.totalVenuePrice = data.booking?.total_price || 0;
+  window.bookingPaid = data.booking?.paid || 0; // Store Paid amount from bookings table
+  window.maxMembers = data.booking?.max_members || 10; // Store max_members from groups table
   window.countdownData = data.countdown || null;
   window.currentUserRole = data.current_user?.role || 'guest';
 
@@ -61,6 +63,9 @@ function fetchBookingDetails() {
       // Populate UI
       populateBookingDetails(data.booking);
       populatePlayerList(data.players);
+      
+      // Update player count display
+      updatePlayerCountDisplay();
       
       // Initialize privacy toggle after data is loaded
       initializePrivacyToggle();
@@ -102,7 +107,8 @@ function populateBookingDetails(booking) {
     window.isPrivate = true;
     privacyToggle.innerHTML = `<span class="privacy-status">Private</span><span class="privacy-icon">🔒</span>`;
     privacyToggle.classList.add("private");
-    passwordSection.style.display = "block";
+    // Always keep password section hidden
+    passwordSection.style.display = "none";
     roomPassword.textContent = booking.group_password;
     roomPasswordInput.value = booking.group_password;
     
@@ -192,11 +198,23 @@ function populatePlayerList(players) {
     hostControls.style.display = "none";
   }
 
+  // Update player count display
+  updatePlayerCountDisplay();
+
   initializePlayerActions(); // Re-bind actions
 }
 function getHostUsername(players) {
   const host = players.find(p => p.is_host == "1");
   return host ? host.username : null;
+}
+
+function updatePlayerCountDisplay() {
+  const sectionTitle = document.querySelector('.section-title');
+  if (sectionTitle && sectionTitle.textContent === 'Players') {
+    const currentPlayers = window.players ? window.players.length : 0;
+    const maxPlayers = window.maxMembers || 10;
+    sectionTitle.textContent = `Players ${currentPlayers}/${maxPlayers}`;
+  }
 }
 
 
@@ -304,11 +322,12 @@ function handlePrivacyToggle(e) {
   if (window.isPrivate) {
     this.innerHTML = '<span class="privacy-status">Private</span><span class="privacy-icon">🔒</span>';
     this.classList.add('private');
-    passwordSection.style.display = 'block';
+    // Always keep password section hidden
+    passwordSection.style.display = 'none';
     
-    // Show edit password button for host
+    // Hide edit password button for host (since password section is hidden)
     if (editPasswordBtn) {
-      editPasswordBtn.style.display = 'inline-block';
+      editPasswordBtn.style.display = 'none';
     }
     
     showNotification('Room is now private!', 'success');
@@ -850,9 +869,12 @@ function saveChanges() {
     return;
   }
 
-  // Validate price sum before saving (must equal 80% of total)
+  // Validate price sum before saving (must equal Total Venue Price - Paid)
   if (!validatePriceSum()) {
-    showNotification('Cannot save: Sum must equal 80% of total price.', 'error');
+    const targetTotal = parseFloat(window.totalVenuePrice) || 0;
+    const bookingPaid = parseFloat(window.bookingPaid) || 0;
+    const requiredAmount = (targetTotal - bookingPaid).toFixed(2);
+    showNotification(`Cannot save: Sum must equal ₪${requiredAmount} (Total Price - Paid).`, 'error');
     return;
   }
 
@@ -1006,12 +1028,13 @@ function validatePriceSum() {
   });
   
   const targetTotal = parseFloat(window.totalVenuePrice) || 0;
+  const bookingPaid = parseFloat(window.bookingPaid) || 0;
   const saveBtn = document.getElementById('savePricesBtn');
   
-  // Single-phase rule: split exactly 80% of total among members
-  const eightyPercentAmount = Math.round((targetTotal * 0.8) * 100) / 100;
-  const isValid = Math.abs(sum - eightyPercentAmount) < 0.01;
-  const validationMessage = `Sum must equal exactly ₪${eightyPercentAmount.toFixed(2)} (80% of total price)`;
+  // New rule: sum must equal Total Venue Price - Paid amount from bookings table
+  const requiredAmount = Math.round((targetTotal - bookingPaid) * 100) / 100;
+  const isValid = Math.abs(sum - requiredAmount) < 0.01;
+  const validationMessage = `Sum must equal exactly ₪${requiredAmount.toFixed(2)} (Total Price - Paid: ₪${targetTotal.toFixed(2)} - ₪${bookingPaid.toFixed(2)})`;
   
   // Update validation state
   if (isValid && hasNonZeroValues && !window.lastValidationState) {

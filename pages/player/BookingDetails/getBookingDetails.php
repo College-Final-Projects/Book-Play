@@ -24,6 +24,7 @@ $bookingSql = "
     g.group_name, 
     g.privacy,
     g.group_password,
+    g.max_members,
     v.location AS venue_location, 
     v.image_url, 
     v.price, 
@@ -204,9 +205,11 @@ echo json_encode([
     'booking_time' => $booking['start_time'] . ' - ' . $booking['end_time'],
     'booking_id' => $booking['booking_id'],
     'total_price' => $totalPrice,
+    'paid' => $booking['Paid'], // Add Paid amount from bookings table
     'privacy' => $booking['privacy'],
     'group_password' => $booking['group_password'],
     'group_id' => $booking['group_id'],
+    'max_members' => $booking['max_members'] ?? 10, // Add max_members from groups table
     'created_at' => $booking['created_at'],
     'booking_datetime' => $booking['booking_date'] . ' ' . $booking['start_time']
   ],

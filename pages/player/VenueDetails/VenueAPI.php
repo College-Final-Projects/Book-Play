@@ -64,11 +64,20 @@ if (!$testResult) {
 $testRow = $testResult->fetch_assoc();
 error_log("✅ Database query test successful. Total facilities: " . $testRow['count']);
 
-// Fetch facility details with owner information
+// Fetch facility details with owner information and group data
 error_log("Preparing facility query...");
 $stmt = $conn->prepare("
-    SELECT sf.* 
+    SELECT sf.*, 
+           g.group_id,
+           g.max_members,
+           COALESCE(member_count.current_members, 0) as current_members
     FROM sportfacilities sf 
+    LEFT JOIN groups g ON sf.facilities_id = g.facilities_id
+    LEFT JOIN (
+        SELECT group_id, COUNT(*) as current_members 
+        FROM group_members 
+        GROUP BY group_id
+    ) member_count ON g.group_id = member_count.group_id
     WHERE sf.facilities_id = ?
 ");
 
@@ -129,12 +138,23 @@ $averageRating = $avgRow['avg_rating'] ? round($avgRow['avg_rating'], 1) : 0; //
 
 error_log("✅ Average rating calculated: " . $averageRating);
 
+// Extract group information
+$groupInfo = [
+  'group_id' => $row['group_id'] ?? null,
+  'max_members' => $row['max_members'] ?? 10,
+  'current_members' => $row['current_members'] ?? 0
+];
+
+// Remove group-specific fields from facility data to keep it clean
+unset($row['group_id'], $row['max_members'], $row['current_members']);
+
 // Return combined JSON
 $response = [
   'success' => true,
   'facility' => $row,
   'comments' => $comments,
-  'average_rating' => $averageRating
+  'average_rating' => $averageRating,
+  'group_info' => $groupInfo
 ];
 
 error_log("✅ Preparing final response...");

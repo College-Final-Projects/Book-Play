@@ -275,22 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       console.log('✅ API call successful, populating data...');
 
-      // Show average rating in stars
-      const starsContainer = document.getElementById('venue-stars');
-      const average = parseFloat(data.average_rating || 0);
-
-      const fullStars = Math.floor(average);
-      const halfStar = average - fullStars >= 0.5;
-      let starsHTML = '';
-
-      for (let i = 1; i <= 5; i++) {
-        if (i <= fullStars) {
-          starsHTML += '★'; // full star
-        } else {
-          starsHTML += '☆'; // empty star
-        }
-      }
-      starsContainer.textContent = starsHTML;
+      // Venue rating stars removed
 
       const facility = data.facility;
       console.log('🏟️ Facility data:', facility);
@@ -327,6 +312,9 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('venue-sport').textContent = `⚽ Sport: ${facility.SportCategory}`;
       document.getElementById('venue-owner').textContent = `👤 Owner: ${facility.owner_username || 'Not specified'}`;
       document.getElementById('venue-price').textContent = `₪${facility.price} / hour`;
+      
+      // Player count information removed
+      
       document.getElementById('venue-description').textContent = facility.description || 'No description available.';
 
       // Populate comments
