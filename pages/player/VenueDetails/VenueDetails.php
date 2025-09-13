@@ -8,27 +8,8 @@ if (isset($_SERVER['HTTP_REFERER']) &&
     strpos($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST']) !== false &&
     !isset($_GET['action']) && // Don't store on API calls
     strpos($_SERVER['HTTP_REFERER'], 'VenueDetails.php') === false) { // Don't store if coming from same page
-    
-    $referrer = $_SERVER['HTTP_REFERER'];
-    $referrer_lower = strtolower($referrer);
-    
-    // Check if it's a valid referrer (not logout or other invalid pages)
-    $invalid_pages = ['logout', 'login', 'register', 'venuedetails'];
-    $is_valid_referrer = true;
-    
-    foreach ($invalid_pages as $invalid_page) {
-        if (strpos($referrer_lower, $invalid_page) !== false) {
-            $is_valid_referrer = false;
-            break;
-        }
-    }
-    
-    if ($is_valid_referrer) {
-        $_SESSION['previous_page'] = $referrer;
-        error_log("VenueDetails: Stored valid previous page: " . $referrer);
-    } else {
-        error_log("VenueDetails: Invalid referrer detected, not storing: " . $referrer);
-    }
+    $_SESSION['previous_page'] = $_SERVER['HTTP_REFERER'];
+    error_log("VenueDetails: Stored previous page: " . $_SERVER['HTTP_REFERER']);
 }
 
 // ✅ API to get previous page URL (for back button)

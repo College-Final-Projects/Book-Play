@@ -1085,7 +1085,7 @@ function startCountdown() {
   
   // Check if full payment is already made (use server-provided totals)
   const serverTotalPaid = (window.countdownData && !isNaN(Number(window.countdownData.total_paid))) ? Number(window.countdownData.total_paid) : (Number(window.totalPaid) || 0);
-  const isFullyPaid = serverTotalPaid >= (window.totalVenuePrice || 0);
+  const isFullyPaid = serverTotalPaid == (window.totalVenuePrice || 0);
   
   if (isFullyPaid) {
     console.log('✅ Full payment made - disabling countdown timer');
@@ -1238,11 +1238,15 @@ function handleCountdownExpired() {
     timerMessage.innerHTML = `
       <div class="countdown-expired">
         <div class="countdown-expired-title">⚠️ Payment Deadline Expired</div>
-        <div class="countdown-expired-message">The 24-hour full payment deadline has passed. The booking will be cancelled automatically due to insufficient payment.</div>
+        <div class="countdown-expired-message">The 24-hour full payment deadline has passed. The booking is being cancelled automatically due to insufficient payment.</div>
         <div class="countdown-expired-info">Total Required: ₪${window.totalVenuePrice} | Paid: ₪${window.totalPaid}</div>
+        <div class="cancellation-status">🔄 Processing cancellation and refunds...</div>
       </div>
     `;
   }
+  
+  // Call the cancellation API
+  cancelBookingDueToExpiration();
   
   // Re-initialize action buttons to show Pay Now button for members after timer expires
   console.log("🔄 Re-initializing action buttons after timer expiration");
@@ -1999,9 +2003,6 @@ function goBack() {
     // Otherwise, go back to previous page
     window.history.back();
   }
-<<<<<<< HEAD
-}
-=======
 }
 
 // 🔧 DEBUG: Force Phase 2 transition for testing
@@ -2116,4 +2117,132 @@ function checkDateFormat() {
     startTime
   };
 }
->>>>>>> 79a05ac6ce2c452012dcf25b4d9e7446ccdff30b
+
+// Function to cancel booking due to countdown expiration
+function cancelBookingDueToExpiration() {
+  console.log("🚫 Cancelling booking due to countdown expiration");
+  console.log("📋 Current booking ID:", window.currentBookingId);
+  console.log("📋 Current group ID:", window.currentGroupId);
+  
+  // Try to get booking ID from URL if not available globally
+  let bookingId = window.currentBookingId;
+  if (!bookingId) {
+    const urlParams = new URLSearchParams(window.location.search);
+    bookingId = urlParams.get('booking_id');
+    console.log("📋 Got booking ID from URL:", bookingId);
+  }
+  
+  if (!bookingId) {
+    console.error("❌ No booking ID available for cancellation");
+    const timerMessage = document.querySelector('.timer-message');
+    if (timerMessage) {
+      timerMessage.innerHTML = `
+        <div class="countdown-expired">
+          <div class="countdown-expired-title">❌ Cancellation Failed</div>
+          <div class="countdown-expired-message">No booking ID found. Cannot cancel booking.</div>
+        </div>
+      `;
+    }
+    return;
+  }
+  
+  const formData = new URLSearchParams();
+  formData.append('booking_id', bookingId);
+  
+  fetch('cancelBookingExpired.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: formData.toString()
+  })
+  .then(response => {
+    console.log("📡 Response status:", response.status);
+    console.log("📡 Response headers:", response.headers);
+    return response.text();
+  })
+  .then(text => {
+    console.log("📋 Raw response text:", text);
+    
+    // Handle empty response
+    if (!text || text.trim() === '') {
+      console.error("❌ Empty response from server");
+      throw new Error('Empty response from server. Please check if you are logged in and try again.');
+    }
+    
+    try {
+      const data = JSON.parse(text);
+      return data;
+    } catch (parseError) {
+      console.error("❌ JSON parse error:", parseError);
+      console.error("📋 Raw text that failed to parse:", text);
+      throw new Error(`Invalid JSON response: ${text.substring(0, 200)}...`);
+    }
+  })
+  .then(data => {
+    if (data.success) {
+      console.log("✅ Booking cancelled successfully");
+      console.log("💰 Refunds processed:", data.refunds);
+      
+      // Update the UI to show cancellation success
+      const timerMessage = document.querySelector('.timer-message');
+      if (timerMessage) {
+        timerMessage.innerHTML = `
+          <div class="countdown-expired">
+            <div class="countdown-expired-title">✅ Booking Cancelled</div>
+            <div class="countdown-expired-message">The booking has been cancelled due to insufficient payment within 24 hours.</div>
+            <div class="countdown-expired-info">Total Required: ₪${window.totalVenuePrice} | Paid: ₪${window.totalPaid}</div>
+            <div class="cancellation-success">
+              <h4>Refund Information:</h4>
+              <ul>
+                ${data.refunds.map(refund => `
+                  <li><strong>${refund.first_name} ${refund.last_name}</strong>: ₪${refund.refund_amount} 
+                    ${refund.is_host ? '(Host - 20% venue fee deducted)' : ''}
+                  </li>
+                `).join('')}
+              </ul>
+              <p>Refunds will be processed within 3-5 business days.</p>
+            </div>
+            <div class="redirect-notice">
+              <p>You will be redirected to My Bookings in 10 seconds...</p>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Redirect to MyBookings page after 10 seconds
+      setTimeout(() => {
+        window.location.href = '../MyBookings/MyBookings.php';
+      }, 10000);
+      
+    } else {
+      console.error("❌ Failed to cancel booking:", data.error);
+      
+      // Show error message
+      const timerMessage = document.querySelector('.timer-message');
+      if (timerMessage) {
+        timerMessage.innerHTML = `
+          <div class="countdown-expired">
+            <div class="countdown-expired-title">❌ Cancellation Failed</div>
+            <div class="countdown-expired-message">There was an error cancelling the booking: ${data.error}</div>
+            <div class="countdown-expired-info">Please contact support for assistance.</div>
+          </div>
+        `;
+      }
+    }
+  })
+  .catch(error => {
+    console.error("❌ Error cancelling booking:", error);
+    
+    // Show error message
+    const timerMessage = document.querySelector('.timer-message');
+    if (timerMessage) {
+      timerMessage.innerHTML = `
+        <div class="countdown-expired">
+          <div class="countdown-expired-title">❌ Cancellation Failed</div>
+          <div class="countdown-expired-message">There was an error cancelling the booking. Please contact support.</div>
+        </div>
+      `;
+    }
+  });
+}

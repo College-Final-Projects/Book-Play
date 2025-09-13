@@ -1,4 +1,3 @@
-
 <?php
 // Allow errors to be logged but prevent HTML output
 error_reporting(E_ALL);

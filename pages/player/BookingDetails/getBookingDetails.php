@@ -150,7 +150,7 @@ if ($now < $twentyFourHourDeadline) {
 }
 
 // Payment deadline met only when full price is paid
-$paymentDeadlineMet = $totalPaid >= $totalPrice;
+$paymentDeadlineMet = $totalPaid == $totalPrice;
 
 // ✅ Fix venue image path
 $venueImage = '';
