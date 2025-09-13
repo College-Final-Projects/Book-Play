@@ -101,14 +101,10 @@ if (!$booking) {
     exit;
 }
 
-// Calculate payment per person
-$total_members_after_join = $member_count_row['count'] + 1;
-$payment_per_person = $booking['Total_Price'] / $total_members_after_join;
-
-// Insert user into group_members
-$insert_query = "INSERT INTO group_members (group_id, username, payment_amount, required_payment) VALUES (?, ?, 0, ?)";
+// Insert user into group_members with required_payment = 0
+$insert_query = "INSERT INTO group_members (group_id, username, payment_amount, required_payment) VALUES (?, ?, 0, 0)";
 $insert_stmt = mysqli_prepare($conn, $insert_query);
-mysqli_stmt_bind_param($insert_stmt, "isd", $group_id, $current_user, $payment_per_person);
+mysqli_stmt_bind_param($insert_stmt, "is", $group_id, $current_user);
 
 if (mysqli_stmt_execute($insert_stmt)) {
     echo json_encode([

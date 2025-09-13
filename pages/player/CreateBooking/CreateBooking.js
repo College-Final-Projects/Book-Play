@@ -295,10 +295,16 @@ function updateSummary() {
     if (diffHours > 0) {
       document.getElementById('summaryDuration').textContent = `${diffHours} hour${diffHours !== 1 ? 's' : ''}`;
       const price = window.selectedFacilityPrice || 0;
-document.getElementById('summaryTotal').textContent = `₪${diffHours * price}`;
+      const total = diffHours * price;
+document.getElementById('summaryTotal').textContent = `₪${total}`;
+      const deposit = Math.round(total * 0.20 * 100) / 100;
+      const depositEl = document.getElementById('summaryDeposit');
+      if (depositEl) depositEl.textContent = `₪${deposit}`;
     } else {
       document.getElementById('summaryDuration').textContent = '-';
       document.getElementById('summaryTotal').textContent = '₪0';
+      const depositEl = document.getElementById('summaryDeposit');
+      if (depositEl) depositEl.textContent = '₪0';
     }
   }
 

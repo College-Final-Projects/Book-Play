@@ -5,10 +5,11 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize global variables
   window.isPrivate = false;
   window.isEditingPrices = false;
-  window.timeRemaining = 6330; // 1:45:30
+  window.timeRemaining = 86400; // 24 hours default
   window.originalPrices = {};
   window.players = [];
   window.currentGroupId = null;
+  window.phase2Transitioned = false; // (Deprecated) No longer used in single-phase model
   
   // Initialize UI components
   initializeScrolling();
@@ -67,7 +68,7 @@ function fetchBookingDetails() {
       // Initialize action buttons based on user role
       initializeActionButtons();
       
-      // Start countdown timer with fetched data
+      // Start countdown (single-phase model)
       startCountdown();
     })
     .catch(err => {
@@ -150,9 +151,9 @@ function populatePlayerList(players) {
     // Badge
     let badgeHTML = "";
     if (isHost && isCurrentUser) {
-      badgeHTML = `<div class="host-badge">HOST (YOU)<br><small>🏦 20% Deposit Responsible</small></div>`;
+      badgeHTML = `<div class="host-badge">HOST (YOU)</div>`;
     } else if (isHost) {
-      badgeHTML = `<div class="host-badge">HOST<br><small>🏦 20% Deposit Responsible</small></div>`;
+      badgeHTML = `<div class="host-badge">HOST</div>`;
     } else if (isCurrentUser) {
       badgeHTML = `<div class="me-badge">ME</div>`;
     }
@@ -162,9 +163,7 @@ function populatePlayerList(players) {
     if (!isCurrentUser && window.currentUsername === getHostUsername(uniquePlayers)) {
       buttonsHTML += `<button class="switch-host-btn">👑 Make Host</button>`;
     }
-    if (!isCurrentUser) {
-      buttonsHTML += `<button class="friend-btn">👥 Add Friend</button>`;
-    }
+    // Removed Add Friend button on Booking Details page
     
 
 
@@ -183,12 +182,10 @@ function populatePlayerList(players) {
     container.appendChild(playerCard);
   });
 
-  // Show or hide host controls
+  // Show host controls (single-phase: host can edit prices during the 24h window)
   const hostControls = document.getElementById("hostControls");
   const currentHost = getHostUsername(uniquePlayers);
-  
   console.log("🎯 Host controls check:", { currentUsername: window.currentUsername, currentHost, isHost: window.currentUsername === currentHost });
-  
   if (currentHost === window.currentUsername) {
     hostControls.style.display = "flex";
   } else {
@@ -670,13 +667,15 @@ function initializeActionButtons() {
       newCancelBtn.className = 'leave-btn';
       newCancelBtn.addEventListener('click', handleLeaveGroup);
       
+      // Single-phase: always show Pay Now for members during 24-hour window
       newPayBtn.textContent = 'Pay Now';
       newPayBtn.className = 'pay-btn';
+      newPayBtn.style.display = 'inline-block';
       console.log("🔗 Adding click listener to Pay Now button (MEMBER)");
-              newPayBtn.addEventListener('click', function(e) {
-          console.log("🎯 Pay Now button clicked via event listener (MEMBER)");
-          handlePayNow();
-        });
+      newPayBtn.addEventListener('click', function(e) {
+        console.log("🎯 Pay Now button clicked via event listener (MEMBER)");
+        handlePayNow();
+      });
       
     } else {
       console.log("🚫 Hiding buttons for GUEST role");
@@ -837,8 +836,6 @@ function enterEditMode() {
   document.getElementById('savePricesBtn').style.display = 'inline-block';
   document.getElementById('cancelEditBtn').style.display = 'inline-block';
   
-  // Add auto-balance button
-  addAutoBalanceButton();
   
   // Reset validation state
   window.lastValidationState = false;
@@ -853,9 +850,9 @@ function saveChanges() {
     return;
   }
 
-  // Validate price sum before saving
+  // Validate price sum before saving (must equal 80% of total)
   if (!validatePriceSum()) {
-    showNotification('Cannot save: Sum of player prices must equal total venue price!', 'error');
+    showNotification('Cannot save: Sum must equal 80% of total price.', 'error');
     return;
   }
 
@@ -988,8 +985,6 @@ function exitEditMode() {
   document.getElementById('savePricesBtn').style.display = 'none';
   document.getElementById('cancelEditBtn').style.display = 'none';
   
-  // Remove auto-balance button
-  removeAutoBalanceButton();
   
   // Clear validation state
   window.lastValidationState = false;
@@ -1013,33 +1008,13 @@ function validatePriceSum() {
   const targetTotal = parseFloat(window.totalVenuePrice) || 0;
   const saveBtn = document.getElementById('savePricesBtn');
   
-  // Calculate total paid by all members for smart validation
-  const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
-  const twentyPercentAmount = Math.round((targetTotal * 0.20) * 100) / 100;
-  const needsInitialDeposit = totalPaidByAll < twentyPercentAmount;
+  // Single-phase rule: split exactly 80% of total among members
+  const eightyPercentAmount = Math.round((targetTotal * 0.8) * 100) / 100;
+  const isValid = Math.abs(sum - eightyPercentAmount) < 0.01;
+  const validationMessage = `Sum must equal exactly ₪${eightyPercentAmount.toFixed(2)} (80% of total price)`;
   
-  let isValid = false;
-  let validationMessage = '';
-  
-  if (needsInitialDeposit) {
-    // No one paid the 20% - sum must be >= 80% of total price
-    const eightyPercentAmount = targetTotal * 0.8;
-    isValid = Math.abs(sum - eightyPercentAmount) < 0.01; // Must equal exactly 80%
-    validationMessage = `Sum must equal exactly ₪${eightyPercentAmount.toFixed(2)} (80% of total price)`;
-  } else {
-    // Someone paid the 20% - sum must equal remaining amount
-    const remainingAmount = targetTotal - totalPaidByAll;
-    isValid = Math.abs(sum - remainingAmount) < 0.01; // Allow small floating point differences
-    validationMessage = `Sum must equal remaining amount: ₪${remainingAmount.toFixed(2)}`;
-  }
-  
-  // Show success notification popup only if it wasn't valid before (first time achieving balance)
+  // Update validation state
   if (isValid && hasNonZeroValues && !window.lastValidationState) {
-    const successMessage = needsInitialDeposit 
-      ? `✅ Perfect! Sum equals exactly 80%\nSum: ₪${sum.toFixed(2)} / Required: ₪${(targetTotal * 0.8).toFixed(2)}`
-      : `✅ Perfect! Sum matches remaining amount\nSum: ₪${sum.toFixed(2)} / Remaining: ₪${(targetTotal - totalPaidByAll).toFixed(2)}`;
-    
-    showNotification(successMessage, 'success');
     window.lastValidationState = true;
   } else if (!isValid) {
     window.lastValidationState = false;
@@ -1048,7 +1023,7 @@ function validatePriceSum() {
   // Enable/disable save button based on validation
   // Only enforce validation if there are non-zero values
   if (saveBtn) {
-    const shouldDisable = hasNonZeroValues && !isValid;
+    const shouldDisable = !isValid && hasNonZeroValues;
     saveBtn.disabled = shouldDisable;
     saveBtn.title = shouldDisable ? validationMessage : 'Save changes';
   }
@@ -1056,111 +1031,8 @@ function validatePriceSum() {
   return !hasNonZeroValues || isValid; // Valid if no values entered OR sum matches requirements
 }
 
-function addAutoBalanceButton() {
-  const hostControls = document.getElementById('hostControls');
-  if (hostControls && !document.getElementById('autoBalanceBtn')) {
-    const autoBalanceBtn = document.createElement('button');
-    autoBalanceBtn.id = 'autoBalanceBtn';
-    autoBalanceBtn.className = 'auto-balance-btn';
-    autoBalanceBtn.innerHTML = '⚖️ Smart Split';
-    autoBalanceBtn.title = 'Smart price distribution based on payment status';
-    autoBalanceBtn.addEventListener('click', autoBalancePrices);
-    
-    // Insert before save button
-    const saveBtn = document.getElementById('savePricesBtn');
-    hostControls.insertBefore(autoBalanceBtn, saveBtn);
-  }
-}
 
-function removeAutoBalanceButton() {
-  const autoBalanceBtn = document.getElementById('autoBalanceBtn');
-  if (autoBalanceBtn) {
-    autoBalanceBtn.remove();
-  }
-}
 
-function autoBalancePrices() {
-  const inputs = document.querySelectorAll('.payment-input');
-  const totalPrice = parseFloat(window.totalVenuePrice) || 0;
-  const playerCount = inputs.length;
-  
-  if (playerCount === 0) {
-    showNotification('No players to balance prices for', 'warning');
-    return;
-  }
-  
-  // Calculate total paid by all members
-  const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
-  const twentyPercentAmount = Math.round((totalPrice * 0.20) * 100) / 100;
-  const needsInitialDeposit = totalPaidByAll < twentyPercentAmount;
-  
-  console.log("💰 Smart price splitting analysis:", {
-    totalPrice,
-    totalPaidByAll,
-    twentyPercentAmount,
-    needsInitialDeposit
-  });
-  
-  let pricePerPlayer;
-  let message;
-  
-  if (needsInitialDeposit) {
-    // No one paid the 20% - distribute 80% of total price among all players
-    // Host pays less share since they're responsible for the 20% deposit
-    const eightyPercentAmount = totalPrice * 0.8;
-    const hostUsername = getHostUsername(window.players);
-    
-    // Calculate prices for each player
-    inputs.forEach(input => {
-      const playerUsername = input.dataset.player;
-      if (playerUsername === hostUsername) {
-        // Host pays 30% of the 80% (so they pay less share)
-        const hostShare = eightyPercentAmount * 0.3;
-        input.value = hostShare; // Removed .toFixed(2)
-      } else {
-        // Other players pay 70% of the 80% divided among them
-        const nonHostCount = playerCount - 1;
-        const nonHostShare = (eightyPercentAmount * 0.7) / nonHostCount;
-        input.value = nonHostShare; // Removed .toFixed(2)
-      }
-    });
-    
-    message = `Smart split (20% not paid): Host pays ₪${eightyPercentAmount * 0.3} + 20% deposit, others pay ₪${(eightyPercentAmount * 0.7) / (playerCount - 1)}`;
-    
-    // Reset validation state and trigger validation
-    window.lastValidationState = false;
-    validatePriceSum();
-    
-    // Show the smart auto-balance confirmation
-    setTimeout(() => {
-      showNotification(message, 'info');
-    }, 500);
-    
-    return; // Exit early since we've handled the distribution
-  } else {
-    // Someone paid the 20% - distribute remaining amount
-    const remainingAmount = totalPrice - totalPaidByAll;
-    pricePerPlayer = remainingAmount / playerCount;
-    message = `Smart split (20% paid): ₪${pricePerPlayer} per player (Remaining: ₪${remainingAmount})`;
-  }
-  
-  console.log(`💰 Smart auto-balancing: ${message}`);
-  
-  inputs.forEach(input => {
-    input.value = pricePerPlayer; // Removed .toFixed(2)
-  });
-  
-  // Reset validation state so the success popup will show
-  window.lastValidationState = false;
-  
-  // Trigger validation (this will show the success popup)
-  validatePriceSum();
-  
-  // Show the smart auto-balance confirmation
-  setTimeout(() => {
-    showNotification(message, 'info');
-  }, 500);
-}
 
 function calculateCountdownDeadline() {
   // Get booking date and time from the page
@@ -1188,9 +1060,9 @@ function calculateCountdownDeadline() {
 function startCountdown() {
   console.log('🚀 startCountdown() called');
   
-  // Check if full payment is already made
-  const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
-  const isFullyPaid = totalPaidByAll >= window.totalVenuePrice;
+  // Check if full payment is already made (use server-provided totals)
+  const serverTotalPaid = (window.countdownData && !isNaN(Number(window.countdownData.total_paid))) ? Number(window.countdownData.total_paid) : (Number(window.totalPaid) || 0);
+  const isFullyPaid = serverTotalPaid >= (window.totalVenuePrice || 0);
   
   if (isFullyPaid) {
     console.log('✅ Full payment made - disabling countdown timer');
@@ -1198,30 +1070,22 @@ function startCountdown() {
     return;
   }
   
-  // Calculate deadline (24 hours before booking)
-  const deadlineDate = calculateCountdownDeadline();
-  
-  if (!deadlineDate) {
-    console.log('❌ Could not calculate deadline - using fallback');
-    window.timeRemaining = 6330; // Default fallback
+  // Use server-provided countdown data (single-phase model)
+  if (window.countdownData && window.countdownData.seconds_remaining !== undefined) {
+    window.timeRemaining = window.countdownData.seconds_remaining;
+    window.countdownPhase = 1;
+    window.totalPaid = window.countdownData.total_paid;
+    window.paymentDeadlineMet = window.countdownData.payment_deadline_met;
+    console.log(`⏰ Using countdown data - ${window.timeRemaining} seconds remaining`);
   } else {
-    // Calculate seconds remaining until deadline
-    const now = new Date();
-    const timeDiff = deadlineDate.getTime() - now.getTime();
-    window.timeRemaining = Math.max(0, Math.floor(timeDiff / 1000));
-    
-    console.log(`⏰ Countdown deadline: ${deadlineDate.toLocaleString()}`);
-    console.log(`⏰ Seconds remaining: ${window.timeRemaining}`);
+    console.log('❌ No countdown data from server - using fallback');
+    window.timeRemaining = 86400; // 24 hours fallback
+    window.countdownPhase = 1;
+    window.totalPaid = serverTotalPaid;
+    window.paymentDeadlineMet = serverTotalPaid >= (window.totalVenuePrice || 0);
   }
   
-  // Initialize countdown variables
-  window.countdownPhase = 1;
-  window.twentyPercentAmount = Math.round((window.totalVenuePrice * 0.20) * 100) / 100;
-  window.totalPaid = totalPaidByAll;
-  window.paymentDeadlineMet = totalPaidByAll >= window.twentyPercentAmount;
-  
   console.log(`⏰ Starting countdown - Phase ${window.countdownPhase}, ${window.timeRemaining} seconds remaining`);
-  console.log(`💰 Twenty percent amount: ₪${window.twentyPercentAmount}, Total paid: ₪${window.totalPaid}`);
   
   // Update display immediately
   updateCountdownDisplay();
@@ -1231,12 +1095,15 @@ function startCountdown() {
     clearInterval(window.countdownInterval); // Clear any existing interval
   }
   
+  console.log(`⏰ Starting countdown interval for Phase ${window.countdownPhase} with ${window.timeRemaining} seconds`);
+  
   window.countdownInterval = setInterval(() => {
     if (window.timeRemaining > 0) {
       window.timeRemaining--;
       updateCountdownDisplay();
     } else {
       // Countdown expired - handle deadline
+      console.log(`⏰ Countdown expired for Phase ${window.countdownPhase}`);
       handleCountdownExpired();
     }
   }, 1000);
@@ -1287,7 +1154,7 @@ function updateCountdownDisplay() {
   if (minutesElement) minutesElement.textContent = minutes.toString().padStart(2, '0');
   if (secondsElement) secondsElement.textContent = seconds.toString().padStart(2, '0');
   
-  // Update countdown message based on phase
+  // Update countdown message
   updateCountdownMessage(days, hours, minutes, seconds);
 }
 
@@ -1317,38 +1184,16 @@ function updateCountdownMessage(days, hours, minutes, seconds) {
     return;
   }
   
-  if (window.countdownPhase === 1) {
-    // Phase 1: Need to pay 20%
-    timerTitle.textContent = '⏰ Payment Deadline';
-    if (minimumAmount) {
-      minimumAmount.textContent = window.twentyPercentAmount;
-    }
-    
-    timerMessage.innerHTML = `
-      You must pay at least <strong>20% (₪<span id="minimumAmount">${window.twentyPercentAmount}</span>)</strong> of the total booking price before 24 hours prior to your booking time, otherwise the booking will be automatically canceled.
-      <br><br>
-      <div class="payment-status">
-        <span class="current-paid">Currently paid: <strong>₪${window.totalPaid}</strong></span>
-      </div>
-    `;
-  } else if (window.countdownPhase === 2) {
-    // Phase 2: Need full payment
-    timerTitle.textContent = '⏰ Full Payment Required';
-    const remaining = window.totalVenuePrice - window.totalPaid;
-    
-    timerMessage.innerHTML = `
-      <div class="phase-2-message">
-        <div class="success-message">✅ 20% deposit requirement met!</div>
-        <div class="full-payment-requirement">
-          Complete full payment of <strong>₪${window.totalVenuePrice}</strong> before 24 hours prior to your booking time.
-        </div>
-        <div class="payment-status">
-          <span class="current-paid">Currently paid: <strong>₪${window.totalPaid}</strong></span>
-          <span class="remaining-amount">Remaining: <strong>₪${remaining.toFixed(2)}</strong></span>
-        </div>
-      </div>
-    `;
-  }
+  // Single-phase message: full payment within 24 hours
+  timerTitle.textContent = '⏰ Full Payment Deadline';
+  timerMessage.innerHTML = `
+    The group must complete <strong>full payment</strong> within <strong>24 hours</strong> of booking creation.
+    <br><br>
+    <div class="payment-status">
+      <span class="current-paid">Currently paid: <strong>₪${window.totalPaid}</strong></span>
+      <span class="remaining-amount">Remaining: <strong>₪${(window.totalVenuePrice - (window.totalPaid || 0)).toFixed(2)}</strong></span>
+    </div>
+  `;
 }
 
 function handleCountdownExpired() {
@@ -1359,27 +1204,30 @@ function handleCountdownExpired() {
     clearInterval(window.countdownInterval);
   }
   
+  // Update countdown data to reflect expiration
+  if (window.countdownData) {
+    window.countdownData.seconds_remaining = 0;
+  }
+  
   // Show expiration message
   const timerMessage = document.querySelector('.timer-message');
   if (timerMessage) {
-    if (window.countdownPhase === 1) {
-      timerMessage.innerHTML = `
-        <div class="countdown-expired">
-          <div class="countdown-expired-title">⚠️ Payment Deadline Expired</div>
-          <div class="countdown-expired-message">The booking will be cancelled automatically due to insufficient payment.</div>
-          <div class="countdown-expired-info">Required: ₪${window.twentyPercentAmount} | Paid: ₪${window.totalPaid}</div>
-        </div>
-      `;
-    } else if (window.countdownPhase === 2) {
-      timerMessage.innerHTML = `
-        <div class="countdown-expired">
-          <div class="countdown-expired-title">⚠️ Payment Deadline Expired</div>
-          <div class="countdown-expired-message">Full payment was not completed in time.</div>
-          <div class="countdown-expired-info">Required: ₪${window.totalVenuePrice} | Paid: ₪${window.totalPaid}</div>
-        </div>
-      `;
-    }
+    timerMessage.innerHTML = `
+      <div class="countdown-expired">
+        <div class="countdown-expired-title">⚠️ Payment Deadline Expired</div>
+        <div class="countdown-expired-message">The 24-hour full payment deadline has passed. The booking will be cancelled automatically due to insufficient payment.</div>
+        <div class="countdown-expired-info">Total Required: ₪${window.totalVenuePrice} | Paid: ₪${window.totalPaid}</div>
+      </div>
+    `;
   }
+  
+  // Re-initialize action buttons to show Pay Now button for members after timer expires
+  console.log("🔄 Re-initializing action buttons after timer expiration");
+  initializeActionButtons();
+  
+  // Re-initialize player list to show host controls after timer expires
+  console.log("🔄 Re-initializing player list after timer expiration");
+  populatePlayerList(window.players);
   
   // Check payment status and potentially cancel booking
   setTimeout(() => {
@@ -1532,14 +1380,6 @@ function openPaymentModal() {
     updatePaymentAmount();
   };
   
-  // Show host responsibility notification
-  const hostUsername = getHostUsername(window.players);
-  const isHost = window.currentUsername === hostUsername;
-  if (isHost) {
-    const totalPrice = window.totalVenuePrice || 0;
-    const twentyPercentAmount = Math.round((totalPrice * 0.20) * 100) / 100; // Keep 2 decimal places like backend
-    showNotification(`As the host, you are responsible for the 20% deposit (₪${twentyPercentAmount}) to secure this booking.`, 'info');
-  }
 }
 
 function closePaymentModal() {
@@ -1560,7 +1400,7 @@ function populatePaymentModal() {
   const totalPrice = window.totalVenuePrice || 0;
   const requiredPayment = currentUser?.required_payment || 0;
   const amountPaid = currentUser?.payment_amount || 0;
-  const amountToPay = requiredPayment - amountPaid;
+  const amountToPay = requiredPayment; // Show required_payment directly from group_members table
   
   console.log("💰 Payment calculations:", {
     totalPrice,
@@ -1595,52 +1435,73 @@ function populatePaymentModal() {
     initialDepositElement: !!initialDepositElement
   });
   
+  // Get host information and timer status
+  const hostUsername = getHostUsername(window.players);
+  const isHost = window.currentUsername === hostUsername;
+  const isTimerActive = window.countdownData && window.countdownData.seconds_remaining > 0;
+  
   if (totalPriceElement) totalPriceElement.textContent = totalPrice;
-  if (requiredPaymentElement) requiredPaymentElement.textContent = requiredPayment;
-  if (amountPaidElement) amountPaidElement.textContent = amountPaid;
-  if (amountToPayElement) amountToPayElement.textContent = amountToPay;
   if (initialDepositElement) initialDepositElement.textContent = twentyPercentAmount;
+  
+  // Show all payment fields for both host and members
+  if (false) {
+    // Hide regular payment fields for host during timer
+    if (requiredPaymentElement) {
+      requiredPaymentElement.closest('.payment-item').style.display = 'none';
+    }
+    if (amountPaidElement) {
+      amountPaidElement.closest('.payment-item').style.display = 'none';
+    }
+    // Show only the amount to pay (which will be the 20% deposit)
+    if (amountToPayElement) {
+      amountToPayElement.textContent = twentyPercentAmount;
+    }
+  } else {
+    // Show all payment fields normally
+    if (requiredPaymentElement) {
+      requiredPaymentElement.closest('.payment-item').style.display = 'block';
+      requiredPaymentElement.textContent = requiredPayment;
+    }
+    if (amountPaidElement) {
+      amountPaidElement.closest('.payment-item').style.display = 'block';
+      amountPaidElement.textContent = amountPaid;
+    }
+    if (amountToPayElement) {
+      amountToPayElement.textContent = amountToPay;
+    }
+  }
   
   // Show/hide initial deposit section
   const initialPaymentSection = document.getElementById('initialPaymentSection');
   if (initialPaymentSection) {
+    // Get host information
+    const hostUsername = getHostUsername(window.players);
+    const isHost = window.currentUsername === hostUsername;
+    const isTimerActive = window.countdownData && window.countdownData.seconds_remaining > 0;
+    
     if (needsInitialDeposit) {
       initialPaymentSection.style.display = 'block';
-      
-      // Get host information
-      const hostUsername = getHostUsername(window.players);
-      const isHost = window.currentUsername === hostUsername;
-      
-      // Update the message based on user role
-      let message;
-      if (isHost) {
-        message = 'As the host, you are responsible for paying the initial 20% deposit to secure the booking.';
-      } else {
-        message = 'The host needs to pay the initial 20% deposit. You can contribute if they haven\'t paid yet.';
-      }
-      
-      const messageElement = initialPaymentSection.querySelector('p');
-      if (messageElement) messageElement.textContent = message;
       
       // Auto-check the deposit checkbox for host and update label
       const payInitialCheckbox = document.getElementById('payInitialDeposit');
       const checkboxLabel = document.querySelector('label[for="payInitialDeposit"]');
       
       if (payInitialCheckbox) {
-        if (isHost) {
-          payInitialCheckbox.checked = true;
-          // Trigger the change event to update payment amount
-          payInitialCheckbox.dispatchEvent(new Event('change'));
-          
-          // Update label for host
-          if (checkboxLabel) {
-            checkboxLabel.innerHTML = `Pay the initial 20% deposit (₪<span id="modalInitialDeposit">${twentyPercentAmount}</span>) <strong>- Your Responsibility as Host</strong>`;
-          }
-        } else {
-          // Update label for non-host
-          if (checkboxLabel) {
-            checkboxLabel.innerHTML = `Contribute to the initial 20% deposit (₪<span id="modalInitialDeposit">${twentyPercentAmount}</span>)`;
-          }
+        // Unified behavior for host and members: no auto-check, no disabling
+        payInitialCheckbox.checked = false;
+        payInitialCheckbox.disabled = false;
+        payInitialCheckbox.style.display = 'inline-block';
+
+        // Update the message
+        const messageElement = initialPaymentSection.querySelector('p');
+        if (messageElement) {
+          messageElement.textContent = 'You can contribute to the initial 20% deposit to secure the booking.';
+        }
+
+        // Update label consistently
+        if (checkboxLabel) {
+          checkboxLabel.style.display = 'inline-block';
+          checkboxLabel.innerHTML = `Contribute to the initial 20% deposit (₪<span id="modalInitialDeposit">${twentyPercentAmount}</span>)`;
         }
       }
     } else {
@@ -1659,17 +1520,21 @@ function updatePaymentAmount() {
   const currentUser = window.players.find(p => p.username === window.currentUsername);
   const requiredPayment = currentUser?.required_payment || 0;
   const amountPaid = currentUser?.payment_amount || 0;
-  const baseAmountToPay = requiredPayment - amountPaid;
+  const baseAmountToPay = requiredPayment; // Show required_payment directly from group_members table
   
-  if (payInitialCheckbox.checked) {
-    const totalPrice = window.totalVenuePrice || 0;
-    const twentyPercentAmount = Math.round((totalPrice * 0.20) * 100) / 100; // Keep 2 decimal places like backend
-    const totalPaidByAll = window.players.reduce((sum, player) => sum + (player.payment_amount || 0), 0);
-    const remainingInitialDeposit = Math.max(0, twentyPercentAmount - totalPaidByAll);
-    
-    amountToPayElement.textContent = baseAmountToPay + remainingInitialDeposit;
-  } else {
+  // Get host information and timer status
+  const hostUsername = getHostUsername(window.players);
+  const isHost = window.currentUsername === hostUsername;
+  const isTimerActive = window.countdownData && window.countdownData.seconds_remaining > 0;
+
+  // Always display required_payment as Amount to Pay
+  if (amountToPayElement) {
     amountToPayElement.textContent = baseAmountToPay;
+  }
+  
+  // During timer period, ensure the checkbox is always checked for host
+  if (isHost && isTimerActive) {
+    payInitialCheckbox.checked = true;
   }
 }
 
@@ -1720,13 +1585,28 @@ function handleConfirmPayment() {
     console.log("📊 Payment response:", data);
     
     if (data.success) {
+      console.log("🎉 Payment successful! Response data:", data);
       showNotification(data.message, 'success');
       closePaymentModal();
       
-      // Refresh booking details to show updated payment status
-      setTimeout(() => {
-        fetchBookingDetails();
-      }, 1000);
+      // Update local payment data immediately
+      console.log("🔄 Updating payment data...");
+      updatePaymentDataAfterSuccess(data);
+      
+      // Check if this payment completes the 20% deposit
+      console.log("🔄 Checking for Phase 2 transition...");
+      const transitionedToPhase2 = checkAndTransitionToPhase2();
+      
+      // Only refresh booking details if we didn't transition to Phase 2
+      // This prevents the refresh from overriding the Phase 2 state
+      if (!transitionedToPhase2) {
+        setTimeout(() => {
+          console.log("🔄 Refreshing booking details...");
+          fetchBookingDetails();
+        }, 1000);
+      } else {
+        console.log("✅ Phase 2 transition completed - skipping refresh to preserve state");
+      }
     } else {
       throw new Error(data.error || 'Payment failed');
     }
@@ -1868,6 +1748,181 @@ function handleLeaveGroup() {
   });
 }
 
+function updatePaymentDataAfterSuccess(paymentData) {
+  console.log("💰 Updating payment data after success:", paymentData);
+  
+  // Update the current user's payment amount in the local data
+  const currentUser = window.players.find(p => p.username === window.currentUsername);
+  if (currentUser) {
+    currentUser.payment_amount = paymentData.total_paid;
+    console.log("✅ Updated current user payment amount to:", paymentData.total_paid);
+  }
+  
+  // Update global payment tracking
+  if (window.countdownData) {
+    window.countdownData.total_paid = paymentData.total_paid;
+    console.log("✅ Updated global total paid to:", paymentData.total_paid);
+  }
+  
+  // Also update the global totalPaid variable
+  window.totalPaid = paymentData.total_paid;
+  console.log("✅ Updated window.totalPaid to:", paymentData.total_paid);
+}
+
+function checkAndTransitionToPhase2() {
+  console.log("🔍 Checking if we should transition to Phase 2...");
+  
+  const totalPrice = window.totalVenuePrice || 0;
+  const twentyPercentAmount = Math.round((totalPrice * 0.20) * 100) / 100;
+  const totalPaid = window.totalPaid || window.countdownData?.total_paid || 0;
+  
+  console.log("💰 Payment status check:", {
+    totalPrice,
+    twentyPercentAmount,
+    totalPaid,
+    paymentDeadlineMet: totalPaid >= twentyPercentAmount,
+    windowTotalPaid: window.totalPaid,
+    countdownDataTotalPaid: window.countdownData?.total_paid
+  });
+  
+  // Check if 20% deposit is now paid
+  if (totalPaid >= twentyPercentAmount) {
+    console.log("🎉 20% deposit completed! Transitioning to Phase 2...");
+    
+    // Update countdown data to Phase 2
+    if (window.countdownData) {
+      window.countdownData.phase = 2;
+      window.countdownData.payment_deadline_met = true;
+      
+      // Calculate new timer: current time to 24 hours before booking
+      const bookingDate = document.getElementById('bookingDate').textContent;
+      const bookingTime = document.getElementById('bookingTime').textContent;
+      const [startTime] = bookingTime.split(' - ');
+      
+      console.log("📅 Timer calculation inputs:", {
+        bookingDate,
+        bookingTime,
+        startTime
+      });
+      
+      // Parse booking date and time properly with validation
+      let bookingDateTime;
+      
+      try {
+        // Try different date formats
+        if (bookingDate.includes('/')) {
+          // Format: DD/MM/YYYY
+          const [day, month, year] = bookingDate.split('/');
+          const [hours, minutes] = startTime.split(':');
+          
+          console.log("📅 Parsing date components:", { day, month, year, hours, minutes });
+          
+          // Create booking datetime (note: month is 0-indexed in JavaScript Date)
+          bookingDateTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes), 0);
+        } else if (bookingDate.includes('-')) {
+          // Format: YYYY-MM-DD
+          const [year, month, day] = bookingDate.split('-');
+          const [hours, minutes] = startTime.split(':');
+          
+          console.log("📅 Parsing date components:", { year, month, day, hours, minutes });
+          
+          bookingDateTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes), 0);
+        } else {
+          // Try direct parsing
+          bookingDateTime = new Date(`${bookingDate} ${startTime}`);
+        }
+        
+        // Validate the date
+        if (isNaN(bookingDateTime.getTime())) {
+          throw new Error('Invalid date created');
+        }
+        
+        console.log("✅ Valid booking datetime created:", bookingDateTime.toISOString());
+        
+      } catch (error) {
+        console.error("❌ Date parsing error:", error);
+        console.log("📅 Raw date values:", { bookingDate, startTime });
+        
+        // Fallback: try to parse as ISO string or use current time + 24 hours
+        bookingDateTime = new Date();
+        bookingDateTime.setHours(bookingDateTime.getHours() + 24);
+        console.log("⚠️ Using fallback date:", bookingDateTime.toISOString());
+      }
+      
+      // Calculate 24 hours before booking
+      const twentyFourHoursBeforeBooking = new Date(bookingDateTime);
+      twentyFourHoursBeforeBooking.setHours(twentyFourHoursBeforeBooking.getHours() - 24);
+      
+      // Calculate seconds remaining from now to 24 hours before booking
+      const now = new Date();
+      const secondsRemaining = Math.max(0, Math.floor((twentyFourHoursBeforeBooking - now) / 1000));
+      
+      console.log("⏰ Timer calculation details:", {
+        now: now.toISOString(),
+        bookingDateTime: bookingDateTime.toISOString(),
+        twentyFourHoursBeforeBooking: twentyFourHoursBeforeBooking.toISOString(),
+        secondsRemaining,
+        hoursRemaining: Math.floor(secondsRemaining / 3600),
+        minutesRemaining: Math.floor((secondsRemaining % 3600) / 60)
+      });
+      
+      window.countdownData.seconds_remaining = secondsRemaining;
+      window.countdownData.end_time = twentyFourHoursBeforeBooking.toISOString();
+      
+      console.log("⏰ Phase 2 timer set:", {
+        bookingDateTime: bookingDateTime.toISOString(),
+        twentyFourHoursBeforeBooking: twentyFourHoursBeforeBooking.toISOString(),
+        secondsRemaining,
+        hoursRemaining: Math.floor(secondsRemaining / 3600)
+      });
+    }
+    
+    // Update global variables
+    window.countdownPhase = 2;
+    window.paymentDeadlineMet = true;
+    window.phase2Transitioned = true; // Set flag to prevent refresh override
+    
+    // Update UI elements immediately
+    updateUIForPhase2();
+    
+    // Restart countdown with new Phase 2 timer
+    startCountdown();
+    
+    console.log("✅ Successfully transitioned to Phase 2!");
+    return true; // Return true to indicate transition occurred
+  } else {
+    console.log("⏳ 20% deposit not yet completed. Remaining:", twentyPercentAmount - totalPaid);
+    return false; // Return false to indicate no transition
+  }
+}
+
+function updateUIForPhase2() {
+  console.log("🎨 Updating UI for Phase 2...");
+  
+  // Force update the countdown display immediately
+  console.log("⏰ Force updating countdown display for Phase 2");
+  updateCountdownDisplay();
+  
+  // Ensure countdown timer is visible
+  const countdownTimer = document.getElementById('countdown');
+  if (countdownTimer) {
+    countdownTimer.style.display = 'flex';
+    console.log("✅ Countdown timer made visible");
+  } else {
+    console.log("❌ Countdown timer element not found");
+  }
+  
+  // Re-initialize action buttons to show Pay Now for members
+  console.log("🔘 Re-initializing action buttons");
+  initializeActionButtons();
+  
+  // Re-initialize player list to show host controls
+  console.log("👥 Re-initializing player list");
+  populatePlayerList(window.players);
+  
+  console.log("✅ UI updated for Phase 2");
+}
+
 function showNotification(message, type = 'info') {
   const existing = document.querySelector('.notification');
   if (existing) existing.remove();
@@ -1921,4 +1976,121 @@ function goBack() {
     // Otherwise, go back to previous page
     window.history.back();
   }
+<<<<<<< HEAD
 }
+=======
+}
+
+// 🔧 DEBUG: Force Phase 2 transition for testing
+function forcePhase2Transition() {
+  console.log("🔧 DEBUG: Forcing Phase 2 transition...");
+  
+  // Reset the flag first
+  window.phase2Transitioned = false;
+  
+  // Set payment data to simulate 20% deposit paid
+  const totalPrice = window.totalVenuePrice || 100;
+  const twentyPercentAmount = Math.round((totalPrice * 0.20) * 100) / 100;
+  
+  window.totalPaid = twentyPercentAmount;
+  if (window.countdownData) {
+    window.countdownData.total_paid = twentyPercentAmount;
+  }
+  
+  console.log("💰 Simulated payment data:", {
+    totalPrice,
+    twentyPercentAmount,
+    totalPaid: window.totalPaid
+  });
+  
+  // Force transition to Phase 2
+  checkAndTransitionToPhase2();
+  
+  // Also test the countdown display directly
+  console.log("🔧 DEBUG: Testing countdown display...");
+  updateCountdownDisplay();
+}
+
+// 🔧 DEBUG: Check current timer state
+function checkTimerState() {
+  console.log("🔧 DEBUG: Current timer state:", {
+    countdownPhase: window.countdownPhase,
+    timeRemaining: window.timeRemaining,
+    totalPaid: window.totalPaid,
+    totalVenuePrice: window.totalVenuePrice,
+    countdownData: window.countdownData,
+    countdownInterval: window.countdownInterval ? 'Running' : 'Stopped'
+  });
+  
+  const countdownTimer = document.getElementById('countdown');
+  console.log("🔧 DEBUG: Countdown timer element:", {
+    exists: !!countdownTimer,
+    display: countdownTimer ? countdownTimer.style.display : 'N/A',
+    visible: countdownTimer ? countdownTimer.offsetParent !== null : false
+  });
+}
+
+// 🔧 DEBUG: Test timer calculation with specific dates
+function testTimerCalculation() {
+  console.log("🔧 DEBUG: Testing timer calculation...");
+  
+  // Your specific dates
+  const currentTime = new Date('2025-09-10T15:55:00'); // 10/09/2025 15:55
+  const bookingDateTime = new Date('2025-09-13T12:00:00'); // 13/09/2025 12:00
+  
+  // Calculate 24 hours before booking
+  const twentyFourHoursBeforeBooking = new Date(bookingDateTime);
+  twentyFourHoursBeforeBooking.setHours(twentyFourHoursBeforeBooking.getHours() - 24);
+  
+  // Calculate seconds remaining
+  const secondsRemaining = Math.max(0, Math.floor((twentyFourHoursBeforeBooking - currentTime) / 1000));
+  const hoursRemaining = Math.floor(secondsRemaining / 3600);
+  const minutesRemaining = Math.floor((secondsRemaining % 3600) / 60);
+  
+  console.log("🔧 DEBUG: Timer calculation test:", {
+    currentTime: currentTime.toISOString(),
+    bookingDateTime: bookingDateTime.toISOString(),
+    twentyFourHoursBeforeBooking: twentyFourHoursBeforeBooking.toISOString(),
+    secondsRemaining,
+    hoursRemaining,
+    minutesRemaining,
+    expectedHours: "Should be around 44 hours"
+  });
+  
+  return {
+    hoursRemaining,
+    minutesRemaining,
+    secondsRemaining
+  };
+}
+
+// 🔧 DEBUG: Check actual date format from page
+function checkDateFormat() {
+  console.log("🔧 DEBUG: Checking actual date format from page...");
+  
+  const bookingDate = document.getElementById('bookingDate').textContent;
+  const bookingTime = document.getElementById('bookingTime').textContent;
+  
+  console.log("🔧 DEBUG: Raw date values from page:", {
+    bookingDate,
+    bookingTime,
+    bookingDateType: typeof bookingDate,
+    bookingTimeType: typeof bookingTime,
+    bookingDateLength: bookingDate.length,
+    bookingTimeLength: bookingTime.length
+  });
+  
+  // Try to parse the time part
+  const [startTime] = bookingTime.split(' - ');
+  console.log("🔧 DEBUG: Extracted start time:", {
+    startTime,
+    startTimeType: typeof startTime
+  });
+  
+  return {
+    bookingDate,
+    bookingTime,
+    startTime
+  };
+}
+>>>>>>> 79a05ac6ce2c452012dcf25b4d9e7446ccdff30b

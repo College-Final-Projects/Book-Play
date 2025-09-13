@@ -348,27 +348,6 @@ body {
 
 
 
-/* Auto Balance Button */
-.auto-balance-btn {
-  background: var(--purple);
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: var(--radius-small);
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  margin-right: 8px;
-  transition: var(--transition);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.auto-balance-btn:hover {
-  background: #7c3aed;
-  transform: translateY(-1px);
-}
 
 /* Disabled save button styling */
 #savePricesBtn:disabled {
