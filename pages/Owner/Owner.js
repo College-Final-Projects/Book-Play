@@ -22,7 +22,7 @@ function closeAdminsModal() {
   document.getElementById("adminsModal").style.display = "none";
 }
 function fetchAdmins() {
-  fetch('./owner_admins.php?action=list')
+  fetch('./OwnerAPI.php?action=admins_list')
     .then(response => response.json())
     .then(data => {
       const adminsList = document.getElementById('adminsList');
@@ -45,7 +45,7 @@ function fetchAdmins() {
 }
 function removeAdmin(username) {
   if (!confirm('Are you sure you want to remove admin rights from ' + username + '?')) return;
-  fetch('./owner_admins.php?action=remove', {
+  fetch('./OwnerAPI.php?action=admins_remove', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: 'username=' + encodeURIComponent(username)
@@ -65,7 +65,7 @@ function removeAdmin(username) {
 }
 
 function fetchExistingUsers() {
-  fetch('./owner_admins.php?action=get_users')
+  fetch('./OwnerAPI.php?action=admins_get_users')
     .then(response => response.json())
     .then(data => {
       const input = document.getElementById('newAdminInput');
@@ -99,7 +99,7 @@ function addAdmin() {
     return;
   }
   
-  fetch('./owner_admins.php?action=add', {
+  fetch('./OwnerAPI.php?action=admins_add', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: 'username=' + encodeURIComponent(username)
@@ -126,7 +126,7 @@ function addAdmin() {
 
 // Admin Requests Logic
 function fetchAdminRequests() {
-  fetch('./owner_admin_requests.php?action=list')
+  fetch('./OwnerAPI.php?action=admin_requests_list')
     .then(response => response.json())
     .then(data => {
       const tbody = document.querySelector('.table-container tbody');
@@ -154,7 +154,7 @@ function fetchAdminRequests() {
     });
 }
 function acceptAdminRequest(username) {
-  fetch('owner_admin_requests.php?action=accept', {
+  fetch('OwnerAPI.php?action=admin_requests_accept', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: 'username=' + encodeURIComponent(username)
@@ -173,7 +173,7 @@ function acceptAdminRequest(username) {
     });
 }
 function rejectAdminRequest(username) {
-  fetch('owner_admin_requests.php?action=reject', {
+  fetch('OwnerAPI.php?action=admin_requests_reject', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: 'username=' + encodeURIComponent(username)

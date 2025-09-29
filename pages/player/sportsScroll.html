@@ -2,7 +2,7 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  fetch("fetch_sports.php")
+  fetch("BookVenueAPI.php?action=fetch_sports")
     .then(res => res.json())
     .then(data => {
       if (data.success) {

@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const datePicker = initializeDatePicker();
 
     // Fetch venues data
-    fetch("BookedFacilitiesFetch.php")
+    fetch("BookingsAPI.php?action=get_facilities")
         .then(res => res.json())
         .then(data => {
             if (data.success) {
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         venueLocation.textContent = venue.location;
                         venueRating.textContent = `${starsHTML} (${venue.rating ?? 'N/A'})`;
 
-                        fetch(`get_bookings.php?facilities_id=${venue.id}`)
+                        fetch(`BookingsAPI.php?action=get_bookings&facilities_id=${venue.id}`)
                             .then(res => res.json())
                             .then(data => {
                                 allBookings = data.bookings || [];
@@ -403,7 +403,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             formData.append('facility_id', selectedVenueId);
 
-            fetch('add_booking.php', {
+            formData.append('action', 'add_booking');
+            fetch('BookingsAPI.php', {
                 method: 'POST',
                 body: formData
             })
@@ -428,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             document.getElementById('addBookingModal').style.display = 'none';
 
                             // Refresh bookings
-                            fetch(`get_bookings.php?facilities_id=${selectedVenueId}`)
+                            fetch(`BookingsAPI.php?action=get_bookings&facilities_id=${selectedVenueId}`)
                                 .then(res => res.json())
                                 .then(data => {
                                     allBookings = data.bookings || [];
@@ -503,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Load sports for filter dropdown
-    fetch("get_sports.php")
+    fetch("BookingsAPI.php?action=get_sports")
         .then(res => res.json())
         .then(sports => {
             if (sportSelect) {
@@ -561,10 +562,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            fetch('send_message.php', {
+            fetch('BookingsAPI.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ receiver_username: receiver, message })
+                body: new URLSearchParams({ action: 'send_message', receiver_username: receiver, message })
             })
             .then(res => res.json())
             .then(data => {

@@ -195,7 +195,16 @@ async function initMap() {
 async function loadSports() {
     try {
         console.log('Loading sports data...');
-        const response = await fetch('fetch_venues.php?action=get_sports');
+        
+        // First test if API is accessible
+        const testResponse = await fetch('ManageVenueAPI.php?action=test');
+        if (!testResponse.ok) {
+            throw new Error(`API not accessible: HTTP ${testResponse.status}`);
+        }
+        const testResult = await testResponse.json();
+        console.log('API test result:', testResult);
+        
+        const response = await fetch('ManageVenueAPI.php?action=get_sports');
         
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -223,7 +232,7 @@ async function loadSports() {
 // Load venues data from server
 async function loadVenues() {
     try {
-        const response = await fetch('fetch_venues.php?action=get_facilities');
+        const response = await fetch('ManageVenueAPI.php?action=get_facilities');
         if (!response.ok) throw new Error('Failed to fetch venues');
         
         venuesData = await response.json();
@@ -825,7 +834,7 @@ async function handleFormSubmit(e) {
             saveBtn.disabled = true;
         }
         
-        const response = await fetch('fetch_venues.php', {
+        const response = await fetch('ManageVenueAPI.php', {
             method: 'POST',
             body: formData
         });
@@ -971,7 +980,7 @@ async function toggleAvailability(venueId, isAvailable) {
         formData.append('facility_id', venueId);
         formData.append('is_available', isAvailable ? 1 : 0);
         
-        const response = await fetch('fetch_venues.php', {
+        const response = await fetch('ManageVenueAPI.php', {
             method: 'POST',
             body: formData
         });
@@ -1145,6 +1154,7 @@ function setupSuggestSportForm() {
             e.preventDefault();
             
             const formData = new FormData(this);
+            formData.append('action', 'suggest_sport');
             const sportName = formData.get('sport_name').trim();
             
             if (!sportName) {
@@ -1153,7 +1163,7 @@ function setupSuggestSportForm() {
             }
             
             // Submit the suggestion
-            fetch('sport_suggestion.php', {
+            fetch('ManageVenueAPI.php', {
                 method: 'POST',
                 body: formData
             })
@@ -1176,7 +1186,7 @@ function setupSuggestSportForm() {
 
 // Check if sport already exists
 function checkSportExists(sportName) {
-    fetch(`sport_suggestion.php?sport_name=${encodeURIComponent(sportName)}`)
+    fetch(`ManageVenueAPI.php?action=check_sport&sport_name=${encodeURIComponent(sportName)}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {

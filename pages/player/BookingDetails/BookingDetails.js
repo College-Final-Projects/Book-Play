@@ -30,7 +30,7 @@ function fetchBookingDetails() {
 
   console.log("🔍 Fetching booking details for ID:", bookingId);
 
-  fetch(`getBookingDetails.php?booking_id=${bookingId}`)
+  fetch(`BookingDetailsAPI.php?action=get_booking_details&booking_id=${bookingId}`)
     .then(res => {
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
@@ -361,10 +361,10 @@ function updatePrivacyOnServer(privacy) {
 
   console.log("🔄 Updating privacy on server:", { groupId: window.currentGroupId, privacy });
 
-  fetch('updatePrivacy.php', {
+  fetch('BookingDetailsAPI.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: formData.toString()
+    body: formData.toString() + '&action=update_privacy'
   })
   .then(res => {
     if (!res.ok) {
@@ -488,10 +488,10 @@ function handleSavePassword() {
   formData.append('action', 'save_custom_password');
   formData.append('password', newPassword);
 
-  fetch('updatePrivacy.php', {
+  fetch('BookingDetailsAPI.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: formData.toString()
+    body: formData.toString() + '&action=update_privacy'
   })
   .then(res => {
     if (!res.ok) {
@@ -728,10 +728,10 @@ function switchHost(newHostUsername) {
   formData.append('group_id', window.currentGroupId);
   formData.append('username', newHostUsername);
 
-  fetch('makeHost.php', {
+  fetch('BookingDetailsAPI.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: formData.toString()
+    body: formData.toString() + '&action=make_host'
   })
   .then(res => {
     if (!res.ok) {
@@ -919,10 +919,10 @@ function saveChanges() {
       price: update.price
     });
 
-    return fetch('updatePlayerPrice.php', {
+    return fetch('BookingDetailsAPI.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: formData.toString()
+      body: formData.toString() + '&action=update_player_price'
     })
     .then(res => {
       if (!res.ok) {
@@ -1265,10 +1265,10 @@ function handleCountdownExpired() {
 function checkPaymentStatusAndCancel() {
   // This would typically make an API call to check current payment status
   // and handle cancellation if needed
-  fetch('checkPaymentStatus.php', {
+  fetch('BookingDetailsAPI.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `booking_id=${window.currentBookingId}&group_id=${window.currentGroupId}`
+    body: `booking_id=${window.currentBookingId}&group_id=${window.currentGroupId}&action=check_payment_status`
   })
   .then(res => res.json())
   .then(data => {
@@ -1592,8 +1592,9 @@ function handleConfirmPayment() {
   console.log("🔗 API URL: process_payment.php");
   
   // Call payment API
-  console.log("🔗 Making fetch request to: ./process_payment.php");
-  fetch('./process_payment.php', {
+  console.log("🔗 Making fetch request to: BookingDetailsAPI.php");
+  paymentData.action = 'process_payment';
+  fetch('./BookingDetailsAPI.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(paymentData)
@@ -1674,10 +1675,10 @@ function handleCancelBooking() {
   const formData = new URLSearchParams();
   formData.append('booking_id', window.currentBookingId);
 
-  fetch('cancel_booking.php', {
+  fetch('BookingDetailsAPI.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: formData.toString()
+    body: formData.toString() + '&action=cancel_booking'
   })
   .then(res => {
     if (!res.ok) {
@@ -1739,10 +1740,10 @@ function handleLeaveGroup() {
   const formData = new URLSearchParams();
   formData.append('group_id', window.currentGroupId);
 
-  fetch('leave_group_api.php', {
+  fetch('BookingDetailsAPI.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: formData.toString()
+    body: formData.toString() + '&action=leave_group'
   })
   .then(res => {
     if (!res.ok) {
@@ -2149,12 +2150,12 @@ function cancelBookingDueToExpiration() {
   const formData = new URLSearchParams();
   formData.append('booking_id', bookingId);
   
-  fetch('cancelBookingExpired.php', {
+  fetch('BookingDetailsAPI.php', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: formData.toString()
+    body: formData.toString() + '&action=cancel_booking_expired'
   })
   .then(response => {
     console.log("📡 Response status:", response.status);

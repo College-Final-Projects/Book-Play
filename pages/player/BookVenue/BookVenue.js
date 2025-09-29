@@ -14,7 +14,7 @@ function filterVenuesBySports(sports = [], searchTerm = "") {
   sports.forEach(sport => params.append("sports[]", sport));
   if (searchTerm) params.append("search", searchTerm);
 
-  fetch("fetch_venues.php?" + params.toString())
+  fetch("BookVenueAPI.php?action=fetch_venues&" + params.toString())
     .then(res => res.json())
     .then(data => {
       if (!data.success) {
@@ -136,10 +136,10 @@ function sortVenues(venues, sortOptions) {
 }
 
 function toggleFavorite(iconElement, facilityId) {
-  fetch('toggle_favorite.php', {
+  fetch('BookVenueAPI.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ facility_id: facilityId })
+    body: new URLSearchParams({ action: 'toggle_favorite', facility_id: facilityId })
   })
   .then(res => res.json())
   .then(data => {

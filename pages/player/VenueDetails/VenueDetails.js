@@ -443,7 +443,7 @@ function submitReport() {
   }
 
   // Send report to backend
-  fetch('SubmitReport.php', {
+  fetch('VenueAPI.php?action=submit_report', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ 
@@ -483,7 +483,7 @@ document.querySelector('.submit-btn').addEventListener('click', () => {
     return;
   }
 
-  fetch('SubmitRating.php', {
+  fetch('VenueAPI.php?action=submit_rating', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ facilities_id: facilityId, rating, comment })

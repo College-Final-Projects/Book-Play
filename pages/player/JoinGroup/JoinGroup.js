@@ -264,7 +264,7 @@ function joinGroupAPI(groupId, accessCode) {
     joinBtn.textContent = 'Joining...';
   }
 
-  fetch('join_group_api.php', {
+  fetch('JoinGroupAPI.php?action=join', {
     method: 'POST',
     body: formData
   })

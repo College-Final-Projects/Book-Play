@@ -27,8 +27,8 @@
  * Fetches available sports and creates interactive filter controls
  */
 document.addEventListener("DOMContentLoaded", () => {
-  // Fetch sports data from server
-  fetch("../BookVenue/fetch_sports.php")
+  // Fetch sports data from server (updated to unified API)
+  fetch("../BookVenue/BookVenueAPI.php?action=fetch_sports")
     .then(res => res.json())
     .then(data => {
       if (data.success) {

@@ -2,7 +2,7 @@ let currentChatUser = null; // Current user in chat
 
 // When page loads, fetch conversations
 window.addEventListener('DOMContentLoaded', () => {
-  fetch("fetch_conversations.php")
+  fetch("MessagesAPI.php?action=get_conversations")
     .then(response => response.json())
     .then(data => {
       if (data.success) {
@@ -25,7 +25,7 @@ function loadChat(username) {
   currentChatUser = username;
   document.getElementById("chatHeader").textContent = username;
 
-  fetch(`fetch_messages.php?chat_with=${encodeURIComponent(username)}`)
+  fetch(`MessagesAPI.php?action=get_messages&chat_with=${encodeURIComponent(username)}`)
     .then(res => res.json())
     .then(data => {
       const chatBody = document.getElementById("chatBody");
@@ -62,10 +62,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const message = messageInput.value.trim();
     if (!message || !currentChatUser) return;
 
-    fetch("send_message.php", {
+    fetch("MessagesAPI.php", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
+        action: "send_message",
         receiver: currentChatUser,
         message: message
       })

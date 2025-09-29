@@ -50,7 +50,7 @@ function createVenueCard(venue) {
 // Fetch favorite venues from API
 async function fetchFavorites() {
     try {
-        const response = await fetch('fetch_favorites.php');
+        const response = await fetch('FavoritesAPI.php?action=list');
         const data = await response.json();
         
         if (data.success) {
@@ -90,7 +90,7 @@ async function toggleFavorite(venueId) {
         const formData = new FormData();
         formData.append('facility_id', venueId);
         
-        const response = await fetch('remove_favorite.php', {
+        const response = await fetch('FavoritesAPI.php?action=remove', {
             method: 'POST',
             body: formData
         });

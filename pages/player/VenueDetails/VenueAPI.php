@@ -1,5 +1,5 @@
 <?php
-// VenueAPI.php - returns facility details + comments
+// VenueAPI.php - returns facility details + comments and handles submits
 
 // Add debugging at the very beginning
 error_log("=== VENUEAPI.PHP DEBUG START ===");
@@ -40,6 +40,70 @@ if ($conn->connect_error) {
 }
 
 error_log("✅ Database connection successful");
+
+$action = $_GET['action'] ?? $_POST['action'] ?? '';
+
+if ($action === 'submit_report') {
+    session_start();
+    if (!isset($_SESSION['username'])) {
+        echo json_encode(['success' => false, 'message' => 'User not logged in']);
+        exit;
+    }
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        echo json_encode(['success' => false, 'message' => 'Only POST method allowed']);
+        exit;
+    }
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!$input) {
+        echo json_encode(['success' => false, 'message' => 'Invalid JSON input']);
+        exit;
+    }
+    $facility_id = $input['facilities_id'] ?? null;
+    $reason = $input['reason'] ?? '';
+    $details = $input['details'] ?? '';
+    $username = $_SESSION['username'];
+    if (!$facility_id || !$reason) {
+        echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+        exit;
+    }
+    $check_stmt = $conn->prepare("SELECT facilities_id FROM sportfacilities WHERE facilities_id = ?");
+    $check_stmt->bind_param("i", $facility_id);
+    $check_stmt->execute();
+    $result = $check_stmt->get_result();
+    if ($result->num_rows === 0) {
+        echo json_encode(['success' => false, 'message' => 'Venue not found']);
+        exit;
+    }
+    $stmt = $conn->prepare("INSERT INTO reports (username, type, facilities_id, Reason, message, created_at) VALUES (?, 'report_place', ?, ?, ?, NOW())");
+    $stmt->bind_param("siss", $username, $facility_id, $reason, $details);
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true, 'message' => 'Report submitted successfully']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Failed to submit report: ' . $conn->error]);
+    }
+    exit;
+}
+
+if ($action === 'submit_rating') {
+    session_start();
+    $input = json_decode(file_get_contents("php://input"), true);
+    $username = $_SESSION['username'] ?? null;
+    $facilityIdInput = $input['facilities_id'] ?? null;
+    $rating = $input['rating'] ?? null;
+    $comment = $input['comment'] ?? null;
+    if (!$username || !$facilityIdInput || !$rating || $comment === null) {
+        echo json_encode(['success' => false, 'message' => 'Missing data']);
+        exit;
+    }
+    $stmt = $conn->prepare("INSERT INTO ratings (facilities_id, username, rating_value, comment) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("isis", $facilityIdInput, $username, $rating, $comment);
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true, 'message' => 'Rating submitted']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Failed to submit rating']);
+    }
+    exit;
+}
 
 $facilityId = $_GET['facilities_id'] ?? null;
 error_log("Facility ID received: " . $facilityId);
